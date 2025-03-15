@@ -12,6 +12,7 @@ import likeRoute from "./routes/likeRoute.js";
 import messageRoute from "./routes/messageRoute.js";
 import postRoute from "./routes/postRoute.js";
 import shareRoute from "./routes/shareRoute.js";
+import authRoute from "./routes/authRoute.js";
 
 dotenv.config();
 connectDB();
@@ -20,7 +21,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/users", userRoute);
-app.use("/api/image", imageRoute);
+app.use("/api/images", imageRoute);
 app.use("/api/comments", commentRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/group-chats", groupChatRoute);
@@ -30,6 +31,7 @@ app.use("/api/likes", likeRoute);
 app.use("/api/messages", messageRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/shares", shareRoute);
+app.use("/api/auth", authRoute);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
