@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Image, Grid, SquareUser, Bookmark } from "lucide-react";
+import { Image, SquareUser, Bookmark } from "lucide-react";
+import PostGrid from "./PostGrid";
 
 const user = {
   username: "huydev",
@@ -14,15 +15,15 @@ const user = {
 };
 
 const posts = [
-  "https://source.unsplash.com/random/200x200?sig=1",
-  "https://source.unsplash.com/random/200x200?sig=2",
-  "https://source.unsplash.com/random/200x200?sig=3",
-  "https://source.unsplash.com/random/200x200?sig=4",
-  "https://source.unsplash.com/random/200x200?sig=5",
-  "https://source.unsplash.com/random/200x200?sig=6",
+  "/public/vite.svg",
+  "/public/vite.svg",
+  "/public/vite.svg",
+  "/public/vite.svg",
+  "/public/vite.svg",
+  "/public/vite.svg",
 ];
 
-export default function ProfilePage() {
+export default function ProfileComponent() {
   return (
     <div className="max-w-4xl mx-auto p-4">
       {/* Thông tin người dùng */}
@@ -52,42 +53,27 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Tabs: Bài viết, Đã lưu */}
       <Tabs defaultValue="posts" className="mt-6">
         <TabsList className="flex justify-center">
           <TabsTrigger value="posts">
-            <Image className="w-5 h-5" /> Bài viết
+            <Image className="w-5 h-5" />
           </TabsTrigger>
           <TabsTrigger value="saved">
-            <Bookmark className="w-5 h-5" /> Đã lưu
+            <Bookmark className="w-5 h-5" />
           </TabsTrigger>
           <TabsTrigger value="tagged">
-            <SquareUser className="w-5 h-5" /> Được gắn thẻ
+            <SquareUser className="w-5 h-5" />
           </TabsTrigger>
         </TabsList>
-
-        {/* Danh sách bài viết */}
         <TabsContent value="posts">
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            {posts.map((post, index) => (
-              <img
-                key={index}
-                src={post}
-                alt={`post-${index}`}
-                className="w-full h-full object-cover rounded-md"
-              />
-            ))}
-          </div>
+          <PostGrid />
         </TabsContent>
-
-        {/* Danh sách bài viết đã lưu */}
         <TabsContent value="saved">
           <p className="text-center mt-4 text-gray-500">
             Chưa có bài viết đã lưu.
           </p>
         </TabsContent>
 
-        {/* Danh sách bài viết được gắn thẻ */}
         <TabsContent value="tagged">
           <p className="text-center mt-4 text-gray-500">
             Chưa có bài viết được gắn thẻ.

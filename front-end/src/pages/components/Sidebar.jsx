@@ -31,7 +31,7 @@ const menuItems = [
 
 export default function Sidebar() {
   return (
-    <div className="h-screen w-64 bg-white border-r border-gray-200 flex flex-col p-4">
+    <div className="h-screen bg-white flex flex-col pb-9">
       {/* Logo Instagram */}
       <h1 className="text-2xl font-bold text-gray-900 mb-8">Instagram</h1>
 
@@ -49,7 +49,6 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Đăng xuất */}
       <Button variant="outline" className="mt-auto">
         Đăng xuất
       </Button>
