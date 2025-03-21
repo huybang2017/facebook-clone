@@ -1,53 +1,66 @@
 package com.instagram.server.controller;
 
+import com.instagram.server.dto.request.PostRequest;
+import com.instagram.server.dto.response.BaseResponse;
+import com.instagram.server.dto.response.PostResponse;
 import com.instagram.server.entity.Post;
 import com.instagram.server.service.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
 
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     @GetMapping
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    public BaseResponse<List<PostResponse>> getAllPosts() {
+        List<PostResponse> posts = postService.getAllPosts()
+                .stream()
+                .map(PostResponse::fromEntity)
+                .collect(Collectors.toList());
+        return new BaseResponse<>(HttpStatus.OK, "Lấy danh sách bài viết thành công", posts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable String id) {
-        Optional<Post> post = postService.getPostById(id);
-        return post.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public BaseResponse<PostResponse> getPostById(@PathVariable String id) {
+        Post post = postService.getPostById(id)
+                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại"));
+        return new BaseResponse<>(HttpStatus.OK, "Lấy bài viết thành công", PostResponse.fromEntity(post));
     }
 
     @PostMapping
-    public Post createPost(@RequestBody Post post) {
-        return postService.createPost(post);
+    public BaseResponse<PostResponse> createPost(@RequestBody PostRequest postRequest) {
+        Post createdPost = postService.createPost(postRequest);
+        return new BaseResponse<>(HttpStatus.CREATED, "Tạo bài viết thành công", PostResponse.fromEntity(createdPost));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable String id, @RequestBody Post postDetails) {
+    public BaseResponse<PostResponse> updatePost(@PathVariable String id, @RequestBody PostRequest postRequest) {
         try {
-            Post updatedPost = postService.updatePost(id, postDetails);
-            return ResponseEntity.ok(updatedPost);
+            Post updatedPost = postService.updatePost(id, postRequest);
+            return new BaseResponse<>(HttpStatus.OK, "Cập nhật bài viết thành công",
+                    PostResponse.fromEntity(updatedPost));
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            throw new RuntimeException("Bài viết không tồn tại");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable String id) {
+    public BaseResponse<String> deletePost(@PathVariable String id) {
         try {
             postService.deletePost(id);
-            return ResponseEntity.noContent().build();
+            return new BaseResponse<>(HttpStatus.OK, "Xóa bài viết thành công", "Post deleted successfully!");
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            throw new RuntimeException("Bài viết không tồn tại");
         }
     }
 }
