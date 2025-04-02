@@ -5,7 +5,7 @@ import PostGrid from "../components/PostGrid";
 const Profile = () => {
   return (
     <div className="flex bg-gray-100 min-h-screen">
-      <div className="w-64 hidden lg:block fixed top-0 left-0 h-full p-4 border-r bg-white">
+      <div className="w-[360px] hidden lg:block fixed top-0 left-0 h-full p-4 border-r bg-white">
         <Sidebar />
       </div>
 

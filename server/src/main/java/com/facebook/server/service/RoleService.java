@@ -1,6 +1,5 @@
 package com.facebook.server.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.facebook.server.entity.Role;
@@ -11,9 +10,11 @@ import java.util.Optional;
 
 @Service
 public class RoleService {
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    public RoleService(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
@@ -23,18 +24,29 @@ public class RoleService {
         return roleRepository.findById(id);
     }
 
-    public Role createRole(Role role) {
+    public Role createRole(String name) {
+        if (roleRepository.findByName(name).isPresent()) {
+            throw new RuntimeException("Role already exists");
+        }
+        Role role = new Role();
+        role.setName(name);
         return roleRepository.save(role);
     }
 
     public Role updateRole(String id, Role roleDetails) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role not found"));
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
         role.setName(roleDetails.getName());
         return roleRepository.save(role);
     }
 
     public void deleteRole(String id) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role not found"));
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
         roleRepository.delete(role);
+    }
+
+    public Optional<Role> getRoleByName(String name) {
+        return roleRepository.findByName(name);
     }
 }

@@ -1,5 +1,6 @@
 package com.facebook.server.controller;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,8 +12,6 @@ import com.facebook.server.dto.request.AuthRequest;
 import com.facebook.server.dto.response.AuthResponse;
 import com.facebook.server.dto.response.BaseResponse;
 import com.facebook.server.dto.response.UserResponse;
-import com.facebook.server.entity.User;
-import com.facebook.server.repository.UserRepository;
 import com.facebook.server.security.JwtUtil;
 import com.facebook.server.service.UserService;
 
@@ -24,13 +23,19 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService,
-            PasswordEncoder passwordEncoder) {
+    public AuthController(
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil,
+            UserService userService,
+            PasswordEncoder passwordEncoder,
+            ModelMapper modelMapper) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/login")
@@ -50,49 +55,33 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public BaseResponse<AuthResponse> refresh(@RequestParam String refreshToken) {
+    public AuthResponse refresh(@RequestParam String refreshToken) {
         String email = jwtUtil.extractEmail(refreshToken);
         if (email != null && jwtUtil.validateToken(refreshToken)) {
-            AuthResponse authData = new AuthResponse(jwtUtil.generateAccessToken(email), refreshToken);
-            return new BaseResponse<>(HttpStatus.OK, "Làm mới token thành công", authData);
+            return new AuthResponse(jwtUtil.generateAccessToken(email), refreshToken);
         }
         throw new RuntimeException("Token không hợp lệ!");
     }
 
     @PostMapping("/register")
     public BaseResponse<String> register(@RequestBody AuthRequest request) {
-        if (userService.findByEmail(request.getEmail()).isPresent()) { // Dùng userService.findByEmail()
+        if (userService.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email đã tồn tại!");
         }
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        userService.saveUser(user); // Dùng userService.saveUser()
+        userService.saveUser(request);
 
         return new BaseResponse<>(HttpStatus.CREATED, "Đăng ký thành công", "User registered successfully!");
     }
 
     @PostMapping("/verify")
-    public BaseResponse<UserResponse> verifyToken(@RequestParam String token) {
-        if (jwtUtil.validateToken(token)) {
-            String email = jwtUtil.extractEmail(token);
-            return userService.findByEmail(email)
-                    .map(user -> {
-                        UserResponse userResponse = new UserResponse(
-                                user.getId(),
-                                user.getEmail(),
-                                user.getName(),
-                                user.getBirthday(),
-                                user.getLinkSocialMedia(),
-                                user.getBio(),
-                                user.getImage() != null ? user.getImage().toString() : null,
-                                user.getCreatedAt(),
-                                user.getUpdatedAt());
-                        return new BaseResponse<>(HttpStatus.OK, "Token hợp lệ", userResponse);
-                    })
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
+    public UserResponse verifyToken(@RequestParam String token) {
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token không hợp lệ!");
         }
-        throw new RuntimeException("Token không hợp lệ!");
+
+        String email = jwtUtil.extractEmail(token);
+        return userService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
     }
 }

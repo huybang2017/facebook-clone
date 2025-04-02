@@ -1,13 +1,14 @@
 package com.facebook.server.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.facebook.server.entity.User;
+import com.facebook.server.dto.response.BaseResponse;
+import com.facebook.server.dto.response.UserResponse;
+import com.facebook.server.dto.request.UpdateUserRequest;
 import com.facebook.server.service.UserService;
-
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -18,35 +19,29 @@ public class UserController {
         this.userService = userService;
     }
 
-    // API GET: Lấy danh sách user
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<BaseResponse<List<UserResponse>>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers();
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK, "Lấy danh sách user thành công", users));
     }
 
-    // API GET: Lấy user theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable String id) {
-        Optional<User> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<BaseResponse<UserResponse>> getUserById(@PathVariable String id) {
+        UserResponse user = userService.getUserById(id);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK, "Lấy user thành công", user));
     }
 
-    // API POST: Thêm user mới
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.saveUser(user));
+    @PatchMapping("/{id}")
+    public ResponseEntity<BaseResponse<UserResponse>> updateUser(@PathVariable String id,
+            @Valid @RequestBody UpdateUserRequest userDetails) {
+        UserResponse updatedUser = userService.updateUser(id, userDetails);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK, "Cập nhật user thành công", updatedUser));
     }
 
-    // API PUT: Cập nhật user
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User userDetails) {
-        return ResponseEntity.ok(userService.updateUser(id, userDetails));
-    }
-
-    // API DELETE: Xóa user
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+    public ResponseEntity<BaseResponse<String>> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+                .ok(new BaseResponse<>(HttpStatus.OK, "Xóa user thành công", "User deleted successfully!"));
     }
 }
