@@ -1,23 +1,35 @@
 import { Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/auth/Login";
-import NotFound from "./NotFound";
-import Home from "./pages/social-media/Home";
-import Profile from "./pages/social-media/Profile";
-import Chats from "./pages/messager/chat";
+import { privateRoute } from "./routes";
+import DefaultLayout from "./pages/layouts/DefaultLayout";
+import { Fragment } from "react";
 
 const App = () => {
   return (
     <>
       <Routes>
-        <Route path="*" element={<NotFound />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/chats" element={<Chats />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<LoginPage />} />
-        <Route path="/forgot-password" element={<LoginPage />} />
-        <Route path="/reset-password" element={<LoginPage />} />
-        <Route path="/verify-email" element={<LoginPage />} />
+        {privateRoute.map((route, index) => {
+          const Page = route.element;
+
+          let Layout = DefaultLayout;
+
+          if (route.layout) {
+            Layout = route.layout;
+          } else if (route.layout === null) {
+            Layout = Fragment;
+          }
+
+          return (
+            <Route
+              key={index}
+              path={route.path}
+              element={
+                <Layout>
+                  <Page />
+                </Layout>
+              }
+            />
+          );
+        })}
       </Routes>
     </>
   );
