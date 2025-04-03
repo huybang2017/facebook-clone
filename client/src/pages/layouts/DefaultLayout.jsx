@@ -18,7 +18,7 @@ const DefaultLayout = ({ children }) => {
         {children}
       </div>
 
-      <div className="w-[360px] hidden xl:block fixed z-10 top-0 right-0 h-full p-4 mt-[81px] border-l bg-white overflow-y-auto scrollbar-hide">
+      <div className="w-[360px] hidden xl:block fixed top-0 right-0 h-full p-4 mt-[81px] border-l bg-white overflow-y-auto">
         <RightBar />
       </div>
     </div>

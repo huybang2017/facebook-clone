@@ -1,4 +1,8 @@
 const Register = () => {
-  return <div></div>;
+  return (
+    <div>
+      <h1>Trang đăng ký</h1>
+    </div>
+  );
 };
 export default Register;

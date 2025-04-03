@@ -60,7 +60,7 @@ export function LoginForm({ className, ...props }) {
         </button>
         <p className="mt-6 text-sm text-center">
           Bạn chưa có tài khoản?{" "}
-          <Link to="/signup" className="text-blue-500 mr-4">
+          <Link to="/register" className="text-blue-500 mr-4">
             Đăng ký
           </Link>
         </p>
