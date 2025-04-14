@@ -25,19 +25,27 @@ public class LikeService {
     }
 
     public Like createLike(Like like) {
-        like.setCreatedAt(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        like.setCreatedAt(now);
+        like.setUpdatedAt(now);
         return likeRepository.save(like);
     }
 
     public Like updateLike(String id, Like likeDetails) {
-        Like like = likeRepository.findById(id).orElseThrow(() -> new RuntimeException("Like not found"));
+        Like like = likeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Like not found"));
+
         like.setUser(likeDetails.getUser());
         like.setPost(likeDetails.getPost());
+        like.setIcon(likeDetails.getIcon());
+        like.setUpdatedAt(LocalDateTime.now());
+
         return likeRepository.save(like);
     }
 
     public void deleteLike(String id) {
-        Like like = likeRepository.findById(id).orElseThrow(() -> new RuntimeException("Like not found"));
+        Like like = likeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Like not found"));
         likeRepository.delete(like);
     }
 }
