@@ -1,11 +1,11 @@
 package com.facebook.server.controller;
 
+import com.facebook.server.entity.Like;
+import com.facebook.server.service.LikeService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.facebook.server.entity.Like;
-import com.facebook.server.service.LikeService;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,19 +25,20 @@ public class LikeController {
     @GetMapping("/{id}")
     public ResponseEntity<Like> getLikeById(@PathVariable String id) {
         Optional<Like> like = likeService.getLikeById(id);
-        return like.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return like.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Like createLike(@RequestBody Like like) {
-        return likeService.createLike(like);
+    public ResponseEntity<Like> createLike(@RequestBody Like like) {
+        Like saved = likeService.createLike(like);
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Like> updateLike(@PathVariable String id, @RequestBody Like likeDetails) {
         try {
-            Like updatedLike = likeService.updateLike(id, likeDetails);
-            return ResponseEntity.ok(updatedLike);
+            Like updated = likeService.updateLike(id, likeDetails);
+            return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

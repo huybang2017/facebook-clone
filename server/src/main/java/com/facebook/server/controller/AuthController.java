@@ -68,7 +68,8 @@ public class AuthController {
         if (userService.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email đã tồn tại!");
         }
-
+        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        request.setPassword(hashedPassword);
         userService.saveUser(request);
 
         return new BaseResponse<>(HttpStatus.CREATED, "Đăng ký thành công", "User registered successfully!");
