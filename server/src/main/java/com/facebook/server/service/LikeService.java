@@ -35,9 +35,18 @@ public class LikeService {
         Like like = likeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Like not found"));
 
-        like.setUser(likeDetails.getUser());
-        like.setPost(likeDetails.getPost());
-        like.setIcon(likeDetails.getIcon());
+        if (likeDetails.getUser() != null) {
+            like.setUser(likeDetails.getUser());
+        }
+
+        if (likeDetails.getPost() != null) {
+            like.setPost(likeDetails.getPost());
+        }
+
+        if (likeDetails.getIcon() != null) {
+            like.setIcon(likeDetails.getIcon());
+        }
+
         like.setUpdatedAt(LocalDateTime.now());
 
         return likeRepository.save(like);

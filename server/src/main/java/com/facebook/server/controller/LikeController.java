@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/likes")
@@ -18,23 +17,24 @@ public class LikeController {
     private LikeService likeService;
 
     @GetMapping
-    public List<Like> getAllLikes() {
-        return likeService.getAllLikes();
+    public ResponseEntity<List<Like>> getAllLikes() {
+        return ResponseEntity.ok(likeService.getAllLikes());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Like> getLikeById(@PathVariable String id) {
-        Optional<Like> like = likeService.getLikeById(id);
-        return like.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return likeService.getLikeById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<Like> createLike(@RequestBody Like like) {
         Like saved = likeService.createLike(like);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.status(201).body(saved);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Like> updateLike(@PathVariable String id, @RequestBody Like likeDetails) {
         try {
             Like updated = likeService.updateLike(id, likeDetails);
