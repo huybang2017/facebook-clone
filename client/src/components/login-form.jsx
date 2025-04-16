@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axiosInstances from "../utils/axiosInstances";
+import { login } from "@/apis/authService";
 import { Link } from "react-router-dom";
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState("");
@@ -8,13 +8,14 @@ export function LoginForm({ className, ...props }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstances.post("/api/auth/login", {
+      const response = await login({
         email,
         password,
       });
       if (response.data) {
-        localStorage.setItem("token", response.data.accessToken);
-        console.log(response.data.data.accessToken);
+        const res = response.data;
+        localStorage.setItem("token", res.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.refreshToken);
         window.location.href = "/";
         alert("Đăng nhập thành công!");
       }

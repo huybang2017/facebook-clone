@@ -7,10 +7,15 @@ import { Separator } from "@/components/ui/separator";
 import AccountItem from "@/components/AccountItem/AccountItem";
 import { CircleHelp, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const UserAction = () => {
   const [visible, setVisible] = useState(false);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
   return (
     <Tippy
       interactive
@@ -34,9 +39,9 @@ const UserAction = () => {
                 Đóng góp ý kiến
               </span>
             </div>
-            <Link
-              to={"/login"}
-              className="flex items-center p-2 my-2 hover:bg-gray-100 rounded-md transition ease-in duration-100 cursor-pointer"
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center p-2 my-2 hover:bg-gray-100 rounded-md transition ease-in duration-100 cursor-pointer"
             >
               <div className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-200">
                 <LogOut className="w-6 h-6" />
@@ -44,7 +49,7 @@ const UserAction = () => {
               <span className="text-md font-normal text-gray-500 ml-4">
                 Đăng xuất
               </span>
-            </Link>
+            </button>
           </TippyWrapper>
         </div>
       )}
