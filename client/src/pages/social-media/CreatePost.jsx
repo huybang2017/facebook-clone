@@ -1,7 +1,7 @@
 import axios from "axios";
 import { X } from "lucide-react";
 import { useState } from "react";
-
+import { createPost } from "@/apis/postService";
 const CreatePost = () => {
   const [caption, setCaption] = useState("");
   const [visibility, setVisibility] = useState("PUBLIC");
@@ -18,35 +18,40 @@ const CreatePost = () => {
 
   const uploadMedia = async (file) => {
     const formData = new FormData();
-    formData.append("file", file); // "file" đúng key backend yêu cầu
+    formData.append("file", file);
 
-    const res = await axios.post("http://localhost:8080/api/images", formData, {
+    const res = await axiosClient.post("/images", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
 
-    console.log(res.data.image); // có thể là url hoặc ID ảnh backend trả về
+    // Trả về đường dẫn ảnh hoặc ID tùy backend
+    return res.data.image;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // 1. Upload tất cả ảnh/video trước
-      const images = [];
-      await Promise.all(mediaFiles.map((file) => uploadMedia(file)));
+      // Upload ảnh/video
+      const uploadedMedia = await Promise.all(mediaFiles.map(uploadMedia));
 
-      // 2. Gửi bài viết (có thể đính kèm ID hoặc URL ảnh/video)
-      const res = await axios.post("http://localhost:8080/api/posts", {
+      // Tạo bài viết
+      const res = await axiosClient.post("/posts", {
         caption,
         statusPost: "ACTIVE",
         statusShow: visibility,
         userId: "ec61d582-ea1c-4a88-9472-2a6437496910",
+        media: uploadedMedia, // tuỳ backend, có thể là "media", "images", v.v.
       });
 
       alert("Đăng bài thành công!");
-      console.log(res.data.data, images);
+      console.log(res.data.data);
+      // Reset
+      setCaption("");
+      setVisibility("PUBLIC");
+      setMediaFiles([]);
     } catch (err) {
       alert("Lỗi khi gửi bài viết");
       console.error(err);

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Tippy from "@tippyjs/react/headless";
 import "tippy.js/dist/tippy.css";
 import TippyWrapper from "@/components/Wrapper/TippyWrapper";
 import { Separator } from "@/components/ui/separator";
-
+import { StoreContext } from "@/contexts/StoreProvider";
 import AccountItem from "@/components/AccountItem/AccountItem";
 import { CircleHelp, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,11 @@ import { Link, useNavigate } from "react-router-dom";
 
 const UserAction = () => {
   const [visible, setVisible] = useState(false);
+  const { userInfo } = useContext(StoreContext);
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     navigate("/login");
   };
   return (
@@ -60,7 +62,7 @@ const UserAction = () => {
           onClick={() => setVisible(!visible)}
         >
           <img
-            src="https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg"
+            src={userInfo?.image}
             alt="user-avatar"
             className="w-10 h-10 rounded-full"
           />

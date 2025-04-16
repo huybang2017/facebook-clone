@@ -28,7 +28,7 @@ axiosClient.interceptors.response.use(
   async (err) => {
     const originalRequest = err.config;
     if (err.response.status == 500 && !originalRequest._retry) {
-      originalToken._retry = true;
+      originalRequest._retry = true;
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) return Promise.reject(err);
       try {
