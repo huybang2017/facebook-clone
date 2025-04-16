@@ -23,9 +23,7 @@ public class Like {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "icon_id", nullable = false)
-    private Icon icon;
+    private Boolean icon;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
