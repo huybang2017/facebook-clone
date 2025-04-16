@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.facebook.server.utils.Enum.GenderEnum;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -27,10 +29,9 @@ public class User {
 
     private LocalDateTime birthday;
 
-    private String linkSocialMedia;
-
-    @Lob
-    private String bio;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private GenderEnum gender;
 
     @ManyToOne
     @JoinColumn(name = "image_id")
