@@ -1,4 +1,4 @@
-import { Separator } from "@/components/ui/separator";
+import Separator from "@/components/Separator/Separator";
 import React from "react";
 import Advertisement from "./Advertisement";
 import { Ellipsis, Option } from "lucide-react";

@@ -1,14 +1,23 @@
+import Tippy from "@tippyjs/react/headless";
 import {
   Ellipsis,
-  Laugh,
   ThumbsUp,
   MessageCircle,
   Share,
-  Send,
+  Pencil,
+  Trash,
+  BellOff,
+  CircleMinus,
+  CircleX,
 } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import TippyWrapper from "../Wrapper/TippyWrapper";
+import ActionMenuItem from "../ActionMenu/ActionMenuItem";
+import { StoreContext } from "@/contexts/StoreProvider";
 
-const PostContent = ({ fullname = "Test User", hidden, comments }) => {
+const PostContent = ({ data, hidden, comments }) => {
+  const { userInfo } = useContext(StoreContext);
+  const [visible, setVisible] = useState(false);
   return (
     <>
       {/* Header */}
@@ -22,29 +31,72 @@ const PostContent = ({ fullname = "Test User", hidden, comments }) => {
           <div>
             <div className="flex items-center gap-1">
               <span className="font-semibold text-zinc-800 dark:text-white">
-                {fullname}
+                'Người dùng'
               </span>
             </div>
-            <p className="text-zinc-500 text-xs">Hôm qua lúc 01:31</p>
+            <p className="text-zinc-500 text-xs">{data?.createdAt}</p>
           </div>
         </div>
-        <Ellipsis className="text-zinc-500 hover:text-zinc-700 cursor-pointer" />
+        <Tippy
+          interactive
+          visible={visible}
+          onClickOutside={() => setVisible(false)}
+          placement="bottom-end"
+          render={(attrs) => (
+            <div className="w-[280px] max-h-[calc(100vh-80px)] rounded-lg bg-white shadow-[-6px_5px_16px_7px_rgba(0,_0,_0,_0.2)]">
+              <TippyWrapper {...attrs}>
+                {userInfo.id === data.userId ? (
+                  <>
+                    <ActionMenuItem
+                      icon={<Pencil className="w-5 h-5" />}
+                      text={"Chỉnh sửa bài viết"}
+                    />
+                    <ActionMenuItem
+                      icon={<Trash className="w-5 h-5" />}
+                      text={"Xóa bài viết"}
+                    />
+                    <ActionMenuItem
+                      icon={<BellOff className="w-5 h-5" />}
+                      text={"Tắt thông báo bài viết này"}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <ActionMenuItem
+                      icon={<CircleX className="w-5 h-5" />}
+                      text={"Ẩn bài viết"}
+                    />
+                    <ActionMenuItem
+                      icon={<CircleMinus className="w-5 h-5" />}
+                      text={"Báo cáo bài viết"}
+                    />
+                  </>
+                )}
+              </TippyWrapper>
+            </div>
+          )}
+        >
+          <button onClick={() => setVisible(!visible)}>
+            <Ellipsis className="text-zinc-500 hover:text-zinc-700 cursor-pointer" />
+          </button>
+        </Tippy>
       </div>
 
       {/* Caption */}
       <p className="mt-3 text-sm text-zinc-700 dark:text-zinc-200">
-        It is a long established fact that a reader will be distracted by the
-        readable content of a page when looking at its layout.
+        {data?.caption}
       </p>
 
       {/* Image */}
-      <div className="mt-3">
-        <img
-          src="https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg"
-          alt="post"
-          className="w-full rounded-lg"
-        />
-      </div>
+      {data?.image && (
+        <div className="mt-3">
+          <img
+            src="https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg"
+            alt="post"
+            className="w-full rounded-lg"
+          />
+        </div>
+      )}
 
       {/* Reactions */}
       <div className="mt-3 flex justify-between text-sm text-zinc-600 dark:text-zinc-400">

@@ -3,7 +3,7 @@ import { ThumbsUp, MessageCircle, Share, Send } from "lucide-react";
 import MyModal from "../Modal/MyModal";
 import PostContent from "../PostContent/PostContent";
 
-const Post = ({ fullname }) => {
+const Post = ({ data }) => {
   const [openModal, setOpenModal] = useState(false);
   const onCloseModal = () => setOpenModal(false);
 
@@ -38,18 +38,19 @@ const Post = ({ fullname }) => {
     <>
       <MyModal
         open={openModal}
+        setOpen={setOpenModal}
         onClose={onCloseModal}
         data={comments}
         setComments={setComments}
       >
         <h1 className="text-center text-xl mb-4 font-bold">
-          Bài viết của {fullname}
+          Bài viết của {data?.name}
         </h1>
-        <PostContent comments={comments} fullname={fullname} />
+        <PostContent comments={comments} data={data} />
       </MyModal>
 
       <div className="bg-white dark:bg-zinc-900 shadow-md rounded-xl p-4 mx-auto my-6">
-        <PostContent hidden fullname={fullname} comments={comments} />
+        <PostContent hidden data={data} comments={comments} />
 
         {/* Divider */}
         <hr className="my-3 border-zinc-300 dark:border-zinc-700" />

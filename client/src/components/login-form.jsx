@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { login } from "@/apis/authService";
 import { Link } from "react-router-dom";
+import { ToastContext } from "@/contexts/ToastProvider";
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { toast } = useContext(ToastContext);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -16,8 +18,8 @@ export function LoginForm({ className, ...props }) {
         const res = response.data;
         localStorage.setItem("token", res.data.accessToken);
         localStorage.setItem("refreshToken", res.data.refreshToken);
-        window.location.href = "/";
-        alert("Đăng nhập thành công!");
+        toast.success(response.data.message);
+        setTimeout(() => (window.location.href = "/"), 2000);
       }
     } catch (error) {
       if (
@@ -25,9 +27,9 @@ export function LoginForm({ className, ...props }) {
         error.response.data &&
         error.response.data.message
       ) {
-        setError(error.response.data.message);
+        toast.error(error.response.data.message);
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       }
     }
   };

@@ -1,6 +1,6 @@
-import { Box, Modal, Typography } from "@mui/material";
-import { Send } from "lucide-react";
+import { Box, Modal } from "@mui/material";
 import CommentInput from "../CommentInput/CommentInput";
+import { CircleX, X } from "lucide-react";
 
 const style = {
   position: "absolute",
@@ -19,6 +19,7 @@ const style = {
 
 const MyModal = ({
   open,
+  setOpen,
   onClose,
   children,
   type = "post",
@@ -28,7 +29,13 @@ const MyModal = ({
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
-        <div className="max-h-[calc(80vh-64px)] overflow-y-auto px-4 pt-4 pb-2">
+        <div className="relative max-h-[calc(80vh-64px)] overflow-y-auto px-4 pt-4 pb-2">
+          <button
+            onClick={() => setOpen(false)}
+            className="absolute top-0 right-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 group hover:bg-gray-200 cursor-pointer"
+          >
+            <X className="w-6 h-6 text-gray-400 group-hover:text-gray-500" />
+          </button>
           {children}
         </div>
 
@@ -41,7 +48,7 @@ const MyModal = ({
                 </div>
               );
             default:
-              return null;
+              return <></>;
           }
         })()}
       </Box>

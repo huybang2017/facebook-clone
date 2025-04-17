@@ -1,12 +1,20 @@
 import axios from "axios";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { createPost } from "@/apis/postService";
+import { StoreContext } from "@/contexts/StoreProvider";
+import axiosClient from "@/apis/axiosClient";
+import { ToastContext } from "@/contexts/ToastProvider";
+import { useNavigate } from "react-router-dom";
 const CreatePost = () => {
   const [caption, setCaption] = useState("");
   const [visibility, setVisibility] = useState("PUBLIC");
   const [mediaFiles, setMediaFiles] = useState([]);
-
+  // navigate
+  const navigate = useNavigate();
+  // Context
+  const { userInfo } = useContext(StoreContext);
+  const { toast } = useContext(ToastContext);
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     setMediaFiles((prev) => [...prev, ...files]);
@@ -38,22 +46,25 @@ const CreatePost = () => {
       const uploadedMedia = await Promise.all(mediaFiles.map(uploadMedia));
 
       // Tạo bài viết
-      const res = await axiosClient.post("/posts", {
+      const res = await createPost({
         caption,
         statusPost: "ACTIVE",
         statusShow: visibility,
-        userId: "ec61d582-ea1c-4a88-9472-2a6437496910",
-        media: uploadedMedia, // tuỳ backend, có thể là "media", "images", v.v.
+        userId: userInfo.id,
+        mediaFiles: uploadedMedia,
       });
 
-      alert("Đăng bài thành công!");
-      console.log(res.data.data);
-      // Reset
-      setCaption("");
-      setVisibility("PUBLIC");
-      setMediaFiles([]);
+      if (res.status == 200 && res.data?.data) {
+        toast.success("Đăng bài viết thành công!");
+        // Reset
+        setCaption("");
+        setVisibility("PUBLIC");
+        setMediaFiles([]);
+        // Điều hướng về trang chủ sau khi tạo bài viết thành công
+        navigate("/");
+      }
     } catch (err) {
-      alert("Lỗi khi gửi bài viết");
+      toast.error("Đã xảy ra lỗi. Vui lòng kiểm tra lại.");
       console.error(err);
     }
   };
