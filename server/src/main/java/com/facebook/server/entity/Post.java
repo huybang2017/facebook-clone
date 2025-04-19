@@ -11,6 +11,8 @@ import com.facebook.server.utils.Enum.StatusShow;
 
 @Entity
 @Table(name = "posts")
+@Getter
+@Setter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,9 +32,13 @@ public class Post {
   @Column(name = "status_show")
   private StatusShow statusShow;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "post_image", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "image_id"))
+  @ManyToMany()
+  @JoinTable(name = "post_image", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "image_id", referencedColumnName = "id"))
   private Set<Image> images = new HashSet<>();
+
+  @ManyToMany()
+  @JoinTable(name = "post_video", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "video_id", referencedColumnName = "id"))
+  private Set<Video> videos = new HashSet<>();
 
   @ManyToOne
   @JoinColumn(name = "user_id")
