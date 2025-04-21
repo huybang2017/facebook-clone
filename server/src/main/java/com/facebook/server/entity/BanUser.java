@@ -29,10 +29,6 @@ public class BanUser {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String reason;
 
-    @ManyToOne
-    @JoinColumn(name = "banned_by", nullable = false)
-    private User bannedBy;
-
     @Column(name = "banned_at", nullable = false)
     private LocalDateTime bannedAt;
 
