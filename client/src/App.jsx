@@ -1,25 +1,67 @@
 import { Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/auth/Login";
-import NotFound from "./NotFound";
-import Home from "./pages/social-media/Home";
-import Profile from "./pages/social-media/Profile";
-import Chats from "./pages/messager/chat";
+import { privateRoute, publicRoute } from "./routes";
+import DefaultLayout from "./pages/layouts/DefaultLayout";
+import { Fragment } from "react";
+import StoreProvider from "./contexts/StoreProvider";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import GuestRoute from "./routes/GuestRoute";
+import ToastProvider from "./contexts/ToastProvider";
 
 const App = () => {
   return (
-    <>
-      <Routes>
-        <Route path="*" element={<NotFound />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/chats" element={<Chats />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<LoginPage />} />
-        <Route path="/forgot-password" element={<LoginPage />} />
-        <Route path="/reset-password" element={<LoginPage />} />
-        <Route path="/verify-email" element={<LoginPage />} />
-      </Routes>
-    </>
+    <StoreProvider>
+      <ToastProvider>
+        <Routes>
+          {/* Đây là các route không cần phải đăng nhập mà vẫn có quyền truy cập */}
+          {publicRoute.map((route, index) => {
+            const Page = route.element;
+            let Layout = route.layout ?? DefaultLayout;
+            if (route.layout === null) Layout = Fragment;
+
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <GuestRoute>
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  </GuestRoute>
+                }
+              />
+            );
+          })}
+
+          {/* Đây là các route cần phải đăng nhập/xác thực thì mới có quyền truy cập */}
+          {privateRoute.map((route, index) => {
+            const Page = route.element;
+
+            let Layout = DefaultLayout;
+
+            if (route.layout) {
+              Layout = route.layout;
+            } else if (route.layout === null) {
+              Layout = Fragment;
+            }
+
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+            );
+          })}
+        </Routes>
+      </ToastProvider>
+    </StoreProvider>
   );
 };
 export default App;
