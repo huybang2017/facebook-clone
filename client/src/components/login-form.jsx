@@ -1,22 +1,25 @@
-import { useState } from "react";
-import axiosInstances from "../utils/axiosInstances";
+import { useContext, useState } from "react";
+import { login } from "@/apis/authService";
 import { Link } from "react-router-dom";
+import { ToastContext } from "@/contexts/ToastProvider";
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { toast } = useContext(ToastContext);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstances.post("/api/auth/login", {
+      const response = await login({
         email,
         password,
       });
       if (response.data) {
-        localStorage.setItem("token", response.data.accessToken);
-        console.log(response.data.data.accessToken);
-        window.location.href = "/";
-        alert("Đăng nhập thành công!");
+        const res = response.data;
+        localStorage.setItem("token", res.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.refreshToken);
+        toast.success(response.data.message);
+        setTimeout(() => (window.location.href = "/"), 2000);
       }
     } catch (error) {
       if (
@@ -24,9 +27,9 @@ export function LoginForm({ className, ...props }) {
         error.response.data &&
         error.response.data.message
       ) {
-        setError(error.response.data.message);
+        toast.error(error.response.data.message);
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       }
     }
   };
@@ -60,7 +63,7 @@ export function LoginForm({ className, ...props }) {
         </button>
         <p className="mt-6 text-sm text-center">
           Bạn chưa có tài khoản?{" "}
-          <Link to="/signup" className="text-blue-500 mr-4">
+          <Link to="/register" className="text-blue-500 mr-4">
             Đăng ký
           </Link>
         </p>

@@ -1,27 +1,58 @@
-import { Link } from "react-router-dom";
-import { Home, Search, PlusCircle, Heart, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Home, Users, Box, Gamepad2, MonitorPlay } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
+
+const navbarItems = [
+  {
+    id: 1,
+    name: "Trang chủ",
+    icon: <Home className="w-6 h-6 text-gray-700 hover:text-black" />,
+    link: "/",
+  },
+  {
+    id: 2,
+    name: "Bạn bè",
+    icon: <Users className="w-6 h-6 text-gray-700 hover:text-black" />,
+    link: "/friends",
+  },
+  {
+    id: 3,
+    name: "Video",
+    icon: <MonitorPlay className="w-6 h-6 text-gray-700 hover:text-black" />,
+    link: "/video",
+  },
+  {
+    id: 4,
+    name: "Marketplace",
+    icon: <Box className="w-6 h-6 text-gray-700 hover:text-black" />,
+    link: "/market",
+  },
+  {
+    id: 5,
+    name: "Trò chơi",
+    icon: <Gamepad2 className="w-6 h-6 text-gray-700 hover:text-black" />,
+    link: "/game",
+  },
+];
 
 export default function Navbar() {
   return (
-    <nav className="flex item-center justify-around w-full bg-white py-3">
-      <Link to="/">
-        <Home className="w-6 h-6 text-gray-700 hover:text-black" />
-      </Link>
-      <Link to="/search">
-        <Search className="w-6 h-6 text-gray-700 hover:text-black" />
-      </Link>
-      <Link to="/create">
-        <Button variant="outline" className="rounded-full p-2">
-          <PlusCircle className="w-6 h-6" />
-        </Button>
-      </Link>
-      <Link to="/notifications">
-        <Heart className="w-6 h-6 text-gray-700 hover:text-black" />
-      </Link>
-      <Link to="/profile">
-        <User className="w-6 h-6 text-gray-700 hover:text-black" />
-      </Link>
+    <nav className="flex items-center fixed top-[14px] left-1/2 -translate-x-1/2 px-5 z-50">
+      {navbarItems.map((item) => (
+        <Tippy key={item.id} content={item.name}>
+          <NavLink
+            to={item.link}
+            variant="ghost"
+            className="relative mx-2 py-4 px-10 hover:bg-gray-50 rounded-xs transition ease-in-out"
+            style={({ isActive }) =>
+              isActive ? { borderBottom: "4px solid blue" } : {}
+            }
+          >
+            {item.icon}
+          </NavLink>
+        </Tippy>
+      ))}
     </nav>
   );
 }
