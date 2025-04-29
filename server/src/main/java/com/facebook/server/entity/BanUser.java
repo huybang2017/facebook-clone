@@ -9,12 +9,10 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@Entity
 @Table(name = "ban_user")
 public class BanUser {
 
@@ -23,22 +21,20 @@ public class BanUser {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(nullable = false)
     private User user;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String reason;
 
-    @Column(name = "banned_at", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime bannedAt;
 
-    @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist

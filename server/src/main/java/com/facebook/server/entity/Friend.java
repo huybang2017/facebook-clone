@@ -16,25 +16,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "shares")
+@Table(name = "friends")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Share {
-
+public class Friend {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private Post post;
+    @JoinColumn(name = "suggested_friend_id", referencedColumnName = "id")
+    private User suggestedFriend;
 
-    @Column()
+    @Column(columnDefinition = "TEXT")
+    private String reason;
+
     private LocalDateTime createdAt;
 
     @PrePersist

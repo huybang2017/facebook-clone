@@ -53,8 +53,6 @@ public class PostService {
         post.setStatusPost(postRequest.getStatusPost());
         post.setStatusShow(postRequest.getStatusShow());
         post.setUser(user);
-        post.setCreatedAt(LocalDateTime.now());
-        post.setUpdatedAt(LocalDateTime.now());
 
         if (postRequest.getImageIds() != null && !postRequest.getImageIds().isEmpty()) {
             Set<Image> images = new HashSet<>(imageRepository.findAllById(postRequest.getImageIds()));
@@ -76,7 +74,6 @@ public class PostService {
         post.setCaption(postRequest.getCaption());
         post.setStatusPost(postRequest.getStatusPost());
         post.setStatusShow(postRequest.getStatusShow());
-        post.setUpdatedAt(LocalDateTime.now());
 
         if (postRequest.getImageIds() != null) {
             Set<Image> images = new HashSet<>(imageRepository.findAllById(postRequest.getImageIds()));

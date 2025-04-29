@@ -11,8 +11,6 @@ import com.facebook.server.utils.Enum.StatusShow;
 
 @Entity
 @Table(name = "posts")
-@Getter
-@Setter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,11 +23,11 @@ public class Post {
   private String caption;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "status_post")
+  @Column()
   private StatusPost statusPost;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "status_show")
+  @Column()
   private StatusShow statusShow;
 
   @ManyToMany()
@@ -41,13 +39,13 @@ public class Post {
   private Set<Video> videos = new HashSet<>();
 
   @ManyToOne
-  @JoinColumn(name = "user_id")
+  @JoinColumn()
   private User user;
 
-  @Column(name = "created_at", updatable = false)
+  @Column(updatable = false)
   private LocalDateTime createdAt;
 
-  @Column(name = "updated_at")
+  @Column()
   private LocalDateTime updatedAt;
 
   @PrePersist
