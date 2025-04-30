@@ -1,9 +1,9 @@
 package com.facebook.server.service;
 
+import com.facebook.server.dto.request.ToxicPostRequest;
+import com.facebook.server.dto.response.ToxicPostResponse;
 import com.facebook.server.entity.AiModerationToxicPostLog;
 import com.facebook.server.entity.Post;
-import com.facebook.server.entity.dto.request.ToxicPostRequest;
-import com.facebook.server.entity.dto.response.ToxicPostResponse;
 import com.facebook.server.repository.AiModerationToxicPostLogRepository;
 import com.facebook.server.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,33 +19,33 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AiModerationPostService {
 
-    private final AiModerationToxicPostLogRepository logRepository;
-    private final PostRepository postRepository;
+        private final AiModerationToxicPostLogRepository logRepository;
+        private final PostRepository postRepository;
 
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("http://127.0.0.1:8000")
-            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .build();
+        private final WebClient webClient = WebClient.builder()
+                        .baseUrl("http://127.0.0.1:8000")
+                        .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .build();
 
-    public ToxicPostResponse moderate(ToxicPostRequest request) {
-        // Lấy post từ DB
-        Post post = postRepository.findById(request.getPostId())
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        public ToxicPostResponse moderate(ToxicPostRequest request) {
+                // Lấy post từ DB
+                Post post = postRepository.findById(request.getPostId())
+                                .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // Gửi request đến FastAPI
-        ToxicPostResponse response = webClient.post()
-                .uri("/predict")
-                .bodyValue(Map.of("text", post.getCaption()))
-                .retrieve()
-                .bodyToMono(ToxicPostResponse.class)
-                .block();
+                // Gửi request đến FastAPI
+                ToxicPostResponse response = webClient.post()
+                                .uri("/predict")
+                                .bodyValue(Map.of("text", post.getCaption()))
+                                .retrieve()
+                                .bodyToMono(ToxicPostResponse.class)
+                                .block();
 
-        AiModerationToxicPostLog log = new AiModerationToxicPostLog();
-        log.setId(UUID.randomUUID().toString());
-        log.setPost(post);
-        log.setCreatedAt(LocalDateTime.now());
-        logRepository.save(log);
+                AiModerationToxicPostLog log = new AiModerationToxicPostLog();
+                log.setId(UUID.randomUUID().toString());
+                log.setPost(post);
+                log.setCreatedAt(LocalDateTime.now());
+                logRepository.save(log);
 
-        return response;
-    }
+                return response;
+        }
 }

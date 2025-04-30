@@ -1,4 +1,4 @@
-package com.facebook.server.entity.dto.request;
+package com.facebook.server.dto.request;
 
 import lombok.Data;
 

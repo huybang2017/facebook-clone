@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.facebook.server.entity.dto.request.ToxicCommentRequest;
-import com.facebook.server.entity.dto.response.ToxicCommentResponse;
+import com.facebook.server.dto.request.ToxicCommentRequest;
+import com.facebook.server.dto.response.ToxicCommentResponse;
 import com.facebook.server.service.AiModerationService;
 
 @RestController

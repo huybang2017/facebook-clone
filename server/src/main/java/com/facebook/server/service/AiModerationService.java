@@ -1,9 +1,9 @@
 package com.facebook.server.service;
 
+import com.facebook.server.dto.request.ToxicCommentRequest;
+import com.facebook.server.dto.response.ToxicCommentResponse;
 import com.facebook.server.entity.AiModerationToxicCommentLog;
 import com.facebook.server.entity.Comment;
-import com.facebook.server.entity.dto.request.ToxicCommentRequest;
-import com.facebook.server.entity.dto.response.ToxicCommentResponse;
 import com.facebook.server.repository.AiModerationToxicCommentLogRepository;
 import com.facebook.server.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,34 +19,34 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AiModerationService {
 
-    private final AiModerationToxicCommentLogRepository logRepository;
-    private final CommentRepository commentRepository;
+        private final AiModerationToxicCommentLogRepository logRepository;
+        private final CommentRepository commentRepository;
 
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("http://127.0.0.1:8000")
-            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .build();
+        private final WebClient webClient = WebClient.builder()
+                        .baseUrl("http://127.0.0.1:8000")
+                        .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .build();
 
-    public ToxicCommentResponse moderate(ToxicCommentRequest request) {
-        // Lấy comment từ DB
-        Comment comment = commentRepository.findById(request.getCommentId())
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        public ToxicCommentResponse moderate(ToxicCommentRequest request) {
+                // Lấy comment từ DB
+                Comment comment = commentRepository.findById(request.getCommentId())
+                                .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        // Gửi request đến FastAPI
-        ToxicCommentResponse response = webClient.post()
-                .uri("/predict")
-                .bodyValue(Map.of("text", comment.getDescription()))
-                .retrieve()
-                .bodyToMono(ToxicCommentResponse.class)
-                .block();
+                // Gửi request đến FastAPI
+                ToxicCommentResponse response = webClient.post()
+                                .uri("/predict")
+                                .bodyValue(Map.of("text", comment.getDescription()))
+                                .retrieve()
+                                .bodyToMono(ToxicCommentResponse.class)
+                                .block();
 
-        // Ghi log kết quả
-        AiModerationToxicCommentLog log = new AiModerationToxicCommentLog();
-        log.setId(UUID.randomUUID().toString());
-        log.setComment(comment);
-        log.setCreatedAt(LocalDateTime.now());
-        logRepository.save(log);
+                // Ghi log kết quả
+                AiModerationToxicCommentLog log = new AiModerationToxicCommentLog();
+                log.setId(UUID.randomUUID().toString());
+                log.setComment(comment);
+                log.setCreatedAt(LocalDateTime.now());
+                logRepository.save(log);
 
-        return response;
-    }
+                return response;
+        }
 }

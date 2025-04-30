@@ -46,10 +46,14 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        // .requestMatchers(HttpMethod.POST, "/posts").hasAnyAuthority("ADMIN")
-                        .anyRequest().permitAll())
+                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/roles/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/roles").hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/roles/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/roles/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/ai/moderation").hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/ai/moderation-post").hasAnyAuthority("ADMIN")
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
