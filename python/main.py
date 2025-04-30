@@ -13,7 +13,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 # Define labels
-labels = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+labels = ["toxic", "severeToxic", "obscene", "threat", "insult", "identityHate"]
 
 # Request body model
 class TextRequest(BaseModel):
@@ -38,5 +38,5 @@ def predict_text(request: TextRequest):
     return {
         "text": request.text,
         "scores": results,
-        "average_score": avg_score
+        "averageScore": avg_score
     }
