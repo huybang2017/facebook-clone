@@ -7,4 +7,5 @@ import com.facebook.server.entity.Like;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, String> {
+    boolean existsByUserIdAndPostId(String userId, String postId);
 }

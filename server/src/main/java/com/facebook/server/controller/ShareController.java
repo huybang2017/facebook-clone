@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.facebook.server.dto.request.ShareRequest;
 import com.facebook.server.entity.Share;
 import com.facebook.server.service.ShareService;
 
@@ -33,8 +34,8 @@ public class ShareController {
     }
 
     @PostMapping
-    public ResponseEntity<Share> createShare(@RequestBody Share share) {
-        return ResponseEntity.ok(shareService.createShare(share));
+    public ResponseEntity<Share> createShare(@RequestBody ShareRequest shareRequest) {
+        return ResponseEntity.ok(shareService.createShare(shareRequest));
     }
 
     @PutMapping("/{id}")

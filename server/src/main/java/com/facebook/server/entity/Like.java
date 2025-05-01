@@ -16,15 +16,26 @@ public class Like {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn()
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
+    @JoinColumn()
     private Post post;
 
     private Boolean icon;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
