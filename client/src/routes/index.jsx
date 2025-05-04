@@ -1,13 +1,18 @@
 import Home from "../pages/social-media/Home";
 import CreatePost from "../pages/social-media/CreatePost";
 import Profile from "../pages/social-media/Profile";
-import Friends from "../pages/social-media/Friends";
+import {
+  Friends,
+  FriendRequest,
+  FriendInvitation,
+} from "../pages/social-media/Friends";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import OnlyHeader from "@/pages/layouts/OnlyHeader";
 import NotFound from "@/pages/exception/NotFound";
 import CommingSoon from "@/pages/exception/CommingSoon";
 import HeaderSidebar from "@/pages/layouts/HeaderSidebar";
+import FriendPage from "@/pages/layouts/FriendPage";
 
 const publicRoute = [
   { path: "/login", element: Login, layout: null },
@@ -18,7 +23,9 @@ const privateRoute = [
   { path: "/", element: Home },
   { path: "/create-post", element: CreatePost, layout: OnlyHeader },
   { path: "/profile", element: Profile, layout: OnlyHeader },
-  { path: "/friends", element: Friends, layout: HeaderSidebar },
+  { path: "/friends", element: Friends, layout: FriendPage },
+  { path: "friend-request", element: FriendRequest, layout: FriendPage },
+  { path: "friend-invitation", element: FriendInvitation, layout: FriendPage },
   { path: "/video", element: CommingSoon, layout: null },
   { path: "/market", element: CommingSoon, layout: null },
   { path: "/game", element: CommingSoon, layout: null },
