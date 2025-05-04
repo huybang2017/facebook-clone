@@ -26,7 +26,7 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(String email) {
-        return generateToken(email, 1000 * 60 * 1);
+        return generateToken(email, 1000 * 60 * 60);
     }
 
     public String generateRefreshToken(String email) {
