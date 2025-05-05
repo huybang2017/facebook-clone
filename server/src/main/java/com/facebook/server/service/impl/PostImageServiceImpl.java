@@ -18,11 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,57 +32,57 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostImageServiceImpl implements PostImageService {
 
-    private final PostRepository postRepository;
-    private final PostImageRepository postImageRepository;
-    private final Pagination pagination;
-    private final CloudinaryService cloudinaryService;
+  private final PostRepository postRepository;
+  private final PostImageRepository postImageRepository;
+  private final Pagination pagination;
+  private final CloudinaryService cloudinaryService;
 
-    @Override
-    public void uploadPostImages(Long postId, MultipartFile[] files) {
-        Optional<Post> post = postRepository.findById(postId);
+  @Override
+  public void uploadPostImages(Long postId, MultipartFile[] files) {
+    Optional<Post> post = postRepository.findById(postId);
 
-        if (post.isPresent()) {
-            for (MultipartFile file : files) {
-                String uploadedUrl = cloudinaryService.uploadFile(file);
+    if (post.isPresent()) {
+      for (MultipartFile file : files) {
+        String uploadedUrl = cloudinaryService.uploadFile(file);
 
-                PostImage postImage = new PostImage();
-                postImage.setPost(post.get());
-                postImage.setPostImageUrl(uploadedUrl);
-                postImage.setTimestamp(LocalDateTime.now());
-                postImageRepository.save(postImage);
-            }
-        }
+        PostImage postImage = new PostImage();
+        postImage.setPost(post.get());
+        postImage.setPostImageUrl(uploadedUrl);
+        postImage.setTimestamp(LocalDateTime.now());
+        postImageRepository.save(postImage);
+      }
+    }
+  }
+
+  @Override
+  public byte[] getImages(String filename) throws IOException {
+    return Files.readAllBytes(Paths.get(filename));
+  }
+
+  @Override
+  public PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+    Page<PostImage> postImages = postImageRepository.findAllPostImagesByUserId(userId, pageable);
+    PageResponse pageResponse = pagination.getPagination(postImages);
+
+    List<PostImageResponse> postImageResponses = new ArrayList<>();
+
+    for (PostImage postImage : postImages) {
+      PostImageResponse postImageResponse = new PostImageResponse();
+      postImageResponse.setPostImageId(postImage.getPostImageId());
+      postImageResponse.setPostImageUrl(postImage.getPostImageUrl());
+      postImageResponse.setTimestamp(postImage.getTimestamp());
+      postImageResponse.setPostId(postImage.getPost().getPostId());
+
+      postImageResponses.add(postImageResponse);
     }
 
-    @Override
-    public byte[] getImages(String filename) throws IOException {
-        return Files.readAllBytes(Paths.get(StringUtil.PHOTO_DIRECTORY + filename));
-    }
+    return new PhotoListResponse(postImageResponses, pageResponse);
+  }
 
-    @Override
-    public PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
-        Page<PostImage> postImages = postImageRepository.findAllPostImagesByUserId(userId, pageable);
-        PageResponse pageResponse = pagination.getPagination(postImages);
-
-        List<PostImageResponse> postImageResponses = new ArrayList<>();
-
-        for (PostImage postImage : postImages) {
-            PostImageResponse postImageResponse = new PostImageResponse();
-            postImageResponse.setPostImageId(postImage.getPostImageId());
-            postImageResponse.setPostImageUrl(postImage.getPostImageUrl());
-            postImageResponse.setTimestamp(postImage.getTimestamp());
-            postImageResponse.setPostId(postImage.getPost().getPostId());
-
-            postImageResponses.add(postImageResponse);
-        }
-
-        return new PhotoListResponse(postImageResponses, pageResponse);
-    }
-
-    @Override
-    public PostImage getPostImage(Long postImageId) {
-        return postImageRepository.findById(postImageId)
-                .orElseThrow(() -> new NoSuchElementException("Post image not found with id: " + postImageId));
-    }
+  @Override
+  public PostImage getPostImage(Long postImageId) {
+    return postImageRepository.findById(postImageId)
+        .orElseThrow(() -> new NoSuchElementException("Post image not found with id: " + postImageId));
+  }
 }

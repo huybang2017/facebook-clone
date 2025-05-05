@@ -107,11 +107,14 @@ const LoginPage = () => {
 
   const { authStore } = useAuthQueryStore();
   const jwtToken = authStore.jwtToken;
+  const role = authStore.role;
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (jwtToken) {
+    if (role === "USER") {
       navigate("/home");
+    } else if (role === "ADMIN") {
+      navigate("/admin");
     }
   }, [jwtToken, navigate]);
 

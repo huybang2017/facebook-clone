@@ -25,6 +25,7 @@ const useLogin = () => {
       apiClient.post("/user/login", data).then((res) => res.data),
 
     onSuccess: (response) => {
+
       queryClient.invalidateQueries(["user"]);
       queryClient.invalidateQueries(["allPostList"]);
       queryClient.invalidateQueries(["userPostList"]);
@@ -32,14 +33,26 @@ const useLogin = () => {
       queryClient.invalidateQueries(["messages"]);
       queryClient.invalidateQueries(["userChatList"]);
       queryClient.invalidateQueries(["stories"]);
-      const jwtToken = response.jwtToken;
-      setJwtToken(jwtToken);
+      const baned = response.baned;
+      if (baned) {
+        setError("password", {
+          type: "server",
+          message: "Your account has been banned.",
+        });
+        setLoading(false);
+        return;
+      }
       const role = response.role;
       setRole(role);
-      setLoading(false);
       if (role === "USER") {
-        navigate("/home");
+        navigate("/user");
       }
+      if (role === "ADMIN") {
+        navigate("/admin");
+      }
+      const jwtToken = response.jwtToken;
+      setJwtToken(jwtToken);
+      setLoading(false);
     },
     onError: (error: any) => {
       setLoading(false);

@@ -18,29 +18,29 @@ import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { useState } from "react";
 import useFetchAllPostsAdmin from "../../hooks/admin/useFetchAllPostsAdmin";
 import { FaBan } from "react-icons/fa6";
+import useBanUser from "../../hooks/admin/useBanedAccount";
 
 const PostTable = () => {
   const [page, setPage] = useState(0);
   const pageSize = 5;
 
   const { data, isLoading } = useFetchAllPostsAdmin({ page, pageSize });
+  console.log("data", data);
 
-  const posts = data?.postWithToxicResponseList
+  const postWithToxicResponseList = data?.postWithToxicResponseList
   const totalPages = data?.pageResponse?.totalPages ?? 0;
-
+  const { mutate: banUser, isSuccess } = useBanUser();
   const handleChangePage = (newPage: number) => {
     if (newPage >= 0 && newPage < totalPages) {
       setPage(newPage);
     }
   };
 
-  const handleDeletePost = (postId: number) => {
-    console.log("Xóa bài viết với ID:", postId);
+  const handleDeletePost = (userId: number) => {
+    banUser({ userId, baned: true });
   };
 
-  const handleEditPost = (postId: number) => {
-    console.log("Chỉnh sửa bài viết với ID:", postId);
-  };
+
 
   return (
     <Box overflowX="auto">
@@ -61,14 +61,14 @@ const PostTable = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {posts?.length === 0 ? (
+              {postWithToxicResponseList?.length === 0 ? (
                 <Tr>
                   <Td colSpan={5} textAlign="center">
                     Không có bài viết nào.
                   </Td>
                 </Tr>
               ) : (
-                posts.map((postWrapper: any) => {
+                postWithToxicResponseList.map((postWrapper) => {
                   const post = postWrapper.postModel;
                   const toxic = postWrapper.toxicPostResponse;
 
@@ -85,7 +85,7 @@ const PostTable = () => {
                               icon={<FaBan />}
                               aria-label="Ban account"
                               colorScheme="red"
-                              onClick={() => handleDeletePost(post.postId)}
+                              onClick={() => handleDeletePost(post.userId)}
                             />
                           </Tooltip>
                         </ButtonGroup>

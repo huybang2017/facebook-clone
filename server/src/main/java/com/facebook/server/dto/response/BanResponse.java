@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponse {
-  private String jwtToken;
-  private String role;
-  private boolean baned;
+public class BanResponse {
+  private String message;
 }

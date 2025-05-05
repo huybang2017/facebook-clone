@@ -3,6 +3,7 @@ package com.facebook.server.service;
 import com.facebook.server.dto.model.UserDataModel;
 import com.facebook.server.dto.model.UserModel;
 import com.facebook.server.dto.request.LoginRequest;
+import com.facebook.server.dto.response.BanResponse;
 import com.facebook.server.dto.response.LoginResponse;
 import com.facebook.server.dto.response.PageResponse;
 import com.facebook.server.dto.response.UserListResponse;
@@ -27,6 +28,8 @@ public interface UserService {
   UserListResponse searchUser(String search, int pageNo, int pageSize);
 
   PageResponse getUserPagination(Page<User> users);
+
+  BanResponse banUser(Long userId, Boolean baned);
 
   List<UserDataModel> getUserDataModels(Page<User> users);
 

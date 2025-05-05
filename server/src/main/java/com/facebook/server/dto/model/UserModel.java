@@ -26,35 +26,36 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 @ConfirmPasswordValid
 @JsonInclude(NON_DEFAULT)
 public class UserModel {
-    private Long userId;
-    @NotBlank(message = "{first.name.required}")
-    private String firstName;
+  private Long userId;
+  @NotBlank(message = "{first.name.required}")
+  private String firstName;
 
-    @NotBlank(message = "{last.name.required}")
-    private String lastName;
+  @NotBlank(message = "{last.name.required}")
+  private String lastName;
 
-    @UniqueEmailValid
-    @NotBlank(message = "{email.required}")
-    private String email;
+  @UniqueEmailValid
+  @NotBlank(message = "{email.required}")
+  private String email;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @PasswordLengthValid
-    @NotBlank(message = "{password.not.null}")
-    private String password;
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @PasswordLengthValid
+  @NotBlank(message = "{password.not.null}")
+  private String password;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotBlank(message = "{confirm.password.required}")
-    private String confirmPassword;
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @NotBlank(message = "{confirm.password.required}")
+  private String confirmPassword;
 
-    @NotNull(message = "{birth.date.required}")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfBirth;
-    private String profilePicture;
-    private String coverPhoto;
+  @NotNull(message = "{birth.date.required}")
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private LocalDate dateOfBirth;
+  private String profilePicture;
+  private String coverPhoto;
+  private Boolean baned;
 
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Enumerated(EnumType.STRING)
-    private Role role;
+  @Enumerated(EnumType.STRING)
+  private Gender gender;
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @Enumerated(EnumType.STRING)
+  private Role role;
 }

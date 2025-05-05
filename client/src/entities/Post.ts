@@ -23,3 +23,19 @@ export default interface PostListResponse {
   postList: Post[];
   pageResponse: PageResponse;
 }
+
+export interface ToxicPostResponse {
+  text: string;
+  scores: Record<string, string>;
+  averageScore: string;
+}
+
+export interface PostWithToxicResponse {
+  postModel: Post;
+  toxicPostResponse: ToxicPostResponse;
+}
+
+export default interface PostListResponseAdmin {
+  postWithToxicResponseList: PostWithToxicResponse[];
+  pageResponse: PageResponse;
+}

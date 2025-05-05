@@ -1,7 +1,9 @@
 package com.facebook.server.controller;
 
 import com.facebook.server.dto.model.UserModel;
+import com.facebook.server.dto.request.BanUserRequest;
 import com.facebook.server.dto.request.LoginRequest;
+import com.facebook.server.dto.response.BanResponse;
 import com.facebook.server.dto.response.ErrorResponse;
 import com.facebook.server.dto.response.LoginResponse;
 import com.facebook.server.dto.response.UserListResponse;
@@ -27,52 +29,65 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
-    private final PostImageService postImageService;
+  private final UserService userService;
+  private final PostImageService postImageService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            LoginResponse loginResponse = userService.login(loginRequest);
-            return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-        } catch (BadCredentialsException e) {
-            ErrorResponse errorResponse = new ErrorResponse(StringUtil.INVALID_CREDENTIALS);
-            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-        }
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    try {
+      LoginResponse loginResponse = userService.login(loginRequest);
+      return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+    } catch (BadCredentialsException e) {
+      ErrorResponse errorResponse = new ErrorResponse(StringUtil.INVALID_CREDENTIALS);
+      return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
+  }
 
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public LoginResponse register(@RequestBody @Valid UserModel userModel) {
-        return userService.register(userModel);
-    }
+  @PostMapping("/register")
+  @ResponseStatus(HttpStatus.CREATED)
+  public LoginResponse register(@RequestBody @Valid UserModel userModel) {
+    return userService.register(userModel);
+  }
 
-    @GetMapping
-    public UserModel getCurrentUserInfo() {
-        return userService.getCurrentUserInfo();
+  @PostMapping("/{id}/ban")
+  public ResponseEntity<?> banUser(
+      @PathVariable("id") Long userId,
+      @RequestBody BanUserRequest request) {
+    try {
+      BanResponse response = userService.banUser(userId, request.getBaned());
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+      ErrorResponse errorResponse = new ErrorResponse(StringUtil.BAN_STRING);
+      return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+  }
 
-    @GetMapping("/profile/{userId}")
-    public UserModel getUserProfileInfo(@PathVariable Long userId) {
-        return userService.getUserProfileInfo(userId);
-    }
+  @GetMapping
+  public UserModel getCurrentUserInfo() {
+    return userService.getCurrentUserInfo();
+  }
 
-    @PostMapping("/profile/picture/upload/{imageType}")
-    public void uploadUserImage(@PathVariable(value = "imageType") ImageType imageType,
-            @RequestPart(value = "file") MultipartFile file,
-            @RequestPart(value = "description", required = false) String description) {
-        userService.uploadUserImage(file, imageType, description);
-    }
+  @GetMapping("/profile/{userId}")
+  public UserModel getUserProfileInfo(@PathVariable Long userId) {
+    return userService.getUserProfileInfo(userId);
+  }
 
-    @GetMapping(path = "/image/{filename}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })
-    public byte[] getUserPhoto(@PathVariable("filename") String filename) throws IOException {
-        return postImageService.getImages(filename);
-    }
+  @PostMapping("/profile/picture/upload/{imageType}")
+  public void uploadUserImage(@PathVariable(value = "imageType") ImageType imageType,
+      @RequestPart(value = "file") MultipartFile file,
+      @RequestPart(value = "description", required = false) String description) {
+    userService.uploadUserImage(file, imageType, description);
+  }
 
-    @GetMapping("/search")
-    public UserListResponse searchUser(@RequestParam(value = "keyword") String search,
-            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-        return userService.searchUser(search, pageNo, pageSize);
-    }
+  @GetMapping(path = "/image/{filename}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })
+  public byte[] getUserPhoto(@PathVariable("filename") String filename) throws IOException {
+    return postImageService.getImages(filename);
+  }
+
+  @GetMapping("/search")
+  public UserListResponse searchUser(@RequestParam(value = "keyword") String search,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+    return userService.searchUser(search, pageNo, pageSize);
+  }
 }
