@@ -3,6 +3,7 @@ package com.facebook.server.service;
 import com.facebook.server.dto.model.PostModel;
 import com.facebook.server.dto.request.SharePostRequest;
 import com.facebook.server.dto.response.PostListResponse;
+import com.facebook.server.dto.response.PostListResponseAdmin;
 import com.facebook.server.dto.response.PostResponse;
 import com.facebook.server.dto.response.SharedPostCountResponse;
 import com.facebook.server.entity.Post;
@@ -10,25 +11,27 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface PostService {
 
-    void createPost(Long userId, String content, MultipartFile[] files);
+  void createPost(Long userId, String content, MultipartFile[] files);
 
-    PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize);
+  PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize);
 
-    PostListResponse fetchAllPosts(int pageNo, int pageSize);
+  PostListResponse fetchAllPosts(int pageNo, int pageSize);
 
-    void sharePost(Long postId, SharePostRequest request);
+  PostListResponseAdmin fetchAllPostHaveContent(int pageNo, int pageSize);
 
-    void sharePostImage(Long postImageId, Long postId, SharePostRequest request);
+  void sharePost(Long postId, SharePostRequest request);
 
-    SharedPostCountResponse getSharedPostImageCount(Long postImageId);
+  void sharePostImage(Long postImageId, Long postId, SharePostRequest request);
 
-    SharedPostCountResponse getSharedPostCount(Long postId);
+  SharedPostCountResponse getSharedPostImageCount(Long postImageId);
 
-    void deletePost(Long postId);
+  SharedPostCountResponse getSharedPostCount(Long postId);
 
-    PostResponse findPostCreatorById(Long postId);
+  void deletePost(Long postId);
 
-    PostModel getPostById(Long postId);
+  PostResponse findPostCreatorById(Long postId);
 
-    Post getPost(Long postId);
+  PostModel getPostById(Long postId);
+
+  Post getPost(Long postId);
 }

@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.facebook.server.entity.constants.Role.ADMIN;
 import static com.facebook.server.entity.constants.Role.USER;
 
 @EnableWebSecurity
@@ -23,29 +24,29 @@ import static com.facebook.server.entity.constants.Role.USER;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final AuthenticationProvider authenticationProvider;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final AuthenticationProvider authenticationProvider;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/post/image/**").permitAll()
-                        .requestMatchers("/api/user/**").permitAll()
-                        .requestMatchers("/api/post/**").hasAuthority(USER.name())
-                        .requestMatchers("/api/friends/**").hasAuthority(USER.name())
-                        .requestMatchers("/api/notifications/**").hasAuthority(USER.name())
-                        .requestMatchers("/api/chat/**").hasAuthority(USER.name())
-                        .requestMatchers("/api/product/**").hasAuthority(USER.name())
-                        .anyRequest().authenticated());
-        httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        httpSecurity.authenticationProvider(authenticationProvider);
-        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return httpSecurity.build();
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity
+        .cors(Customizer.withDefaults())
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("/ws/**").permitAll()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/post/image/**").permitAll()
+            .requestMatchers("/api/user/**").permitAll()
+            .requestMatchers("/api/post/**").hasAnyAuthority(USER.name(), ADMIN.name())
+            .requestMatchers("/api/friends/**").hasAuthority(USER.name())
+            .requestMatchers("/api/notifications/**").hasAuthority(USER.name())
+            .requestMatchers("/api/chat/**").hasAuthority(USER.name())
+            .requestMatchers("/api/product/**").hasAuthority(USER.name())
+            .anyRequest().authenticated());
+    httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    httpSecurity.authenticationProvider(authenticationProvider);
+    httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    return httpSecurity.build();
+  }
 
 }

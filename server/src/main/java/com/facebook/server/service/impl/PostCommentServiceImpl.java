@@ -8,6 +8,7 @@ import com.facebook.server.entity.Post;
 import com.facebook.server.entity.PostComment;
 import com.facebook.server.entity.User;
 import com.facebook.server.repository.PostCommentRepository;
+import com.facebook.server.service.CloudinaryService;
 import com.facebook.server.service.PostCommentService;
 import com.facebook.server.service.PostService;
 import com.facebook.server.service.UserService;
@@ -31,6 +32,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     private final UserService userService;
     private final Pagination pagination;
     private final PostService postService;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public void writePostComment(Long postId, String comment, MultipartFile file) {
@@ -40,7 +42,8 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment postComment = new PostComment();
         postComment.setComment(comment);
         if (file != null) {
-            postComment.setCommentImage(userService.processImage(file));
+            String uploadedUrl = cloudinaryService.uploadFile(file);
+            postComment.setCommentImage(uploadedUrl);
         }
         postComment.setUser(user);
         postComment.setPost(post);

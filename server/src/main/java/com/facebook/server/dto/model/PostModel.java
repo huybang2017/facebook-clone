@@ -18,18 +18,17 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 @NoArgsConstructor
 @JsonInclude(NON_DEFAULT)
 public class PostModel {
-
-    private Long postId;
-    private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
-    private Long userId;
-    private String firstName;
-    private String lastName;
-    private String profilePicture;
-    List<PostImageModel> postImages = new ArrayList<>();
-    private UserDataModel guestPoster;
-    private SharedPostResponse sharedPost;
-    private PostImageModel sharedImage;
+  private Long postId;
+  private String content;
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  private LocalDateTime timestamp;
+  private Long userId;
+  private String firstName;
+  private String lastName;
+  private String profilePicture;
+  List<PostImageModel> postImages = new ArrayList<>();
+  private UserDataModel guestPoster;
+  private SharedPostResponse sharedPost;
+  private PostImageModel sharedImage;
 
 }

@@ -14,26 +14,24 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface UserService {
-    LoginResponse login(LoginRequest loginRequest);
+  LoginResponse login(LoginRequest loginRequest);
 
-    LoginResponse register(UserModel userModel);
+  LoginResponse register(UserModel userModel);
 
-    UserModel getCurrentUserInfo();
+  UserModel getCurrentUserInfo();
 
-    UserModel getUserProfileInfo(Long userId);
+  UserModel getUserProfileInfo(Long userId);
 
-    void uploadUserImage(MultipartFile file, ImageType imageType, String description);
+  void uploadUserImage(MultipartFile file, ImageType imageType, String description);
 
-    String processImage(MultipartFile image);
+  UserListResponse searchUser(String search, int pageNo, int pageSize);
 
-    UserListResponse searchUser(String search, int pageNo, int pageSize);
+  PageResponse getUserPagination(Page<User> users);
 
-    PageResponse getUserPagination(Page<User> users);
+  List<UserDataModel> getUserDataModels(Page<User> users);
 
-    List<UserDataModel> getUserDataModels(Page<User> users);
+  User getUserByUserId(Long userId);
 
-    User getUserByUserId(Long userId);
-
-    User getCurrentAuthenticatedUser();
+  User getCurrentAuthenticatedUser();
 
 }

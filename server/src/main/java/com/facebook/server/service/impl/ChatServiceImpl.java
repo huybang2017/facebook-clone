@@ -18,6 +18,7 @@ import com.facebook.server.repository.ChatRepository;
 import com.facebook.server.repository.MessageRepository;
 import com.facebook.server.repository.UserRepository;
 import com.facebook.server.service.ChatService;
+import com.facebook.server.service.CloudinaryService;
 import com.facebook.server.service.MessageService;
 import com.facebook.server.service.UserService;
 import com.facebook.server.utils.Pagination;
@@ -51,6 +52,7 @@ public class ChatServiceImpl implements ChatService {
     private final UserService userService;
     private final MessageService messageService;
     private final MessageMapper messageMapper;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public ChatIdResponse chatUser(Long friendId) {
@@ -146,8 +148,8 @@ public class ChatServiceImpl implements ChatService {
         if (chat.getChatType() != ChatType.GROUP_CHAT) {
             throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
         }
-
-        chat.setGroupChatImage(userService.processImage(file));
+        String uploadedUrl = cloudinaryService.uploadFile(file);
+        chat.setGroupChatImage(uploadedUrl);
         chatRepository.save(chat);
 
     }

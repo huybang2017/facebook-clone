@@ -8,6 +8,7 @@ import com.facebook.server.entity.User;
 import com.facebook.server.entity.constants.FriendshipStatus;
 import com.facebook.server.repository.StoryRepository;
 import com.facebook.server.repository.UserRepository;
+import com.facebook.server.service.CloudinaryService;
 import com.facebook.server.service.StoryService;
 import com.facebook.server.service.UserService;
 import com.facebook.server.utils.mapper.StoryMapper;
@@ -28,6 +29,7 @@ public class StoryServiceImpl implements StoryService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final StoryMapper storyMapper;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public void createStory(String text, MultipartFile file) {
@@ -37,7 +39,8 @@ public class StoryServiceImpl implements StoryService {
         story.setText(text);
         story.setUser(user);
         if (file != null) {
-            story.setStoryImage(userService.processImage(file));
+            String uploadedUrl = cloudinaryService.uploadFile(file);
+            story.setStoryImage(uploadedUrl);
         }
         story.setTimestamp(LocalDateTime.now());
 

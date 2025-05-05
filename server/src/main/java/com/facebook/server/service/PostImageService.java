@@ -12,8 +12,6 @@ public interface PostImageService {
 
     byte[] getImages(String filename) throws IOException;
 
-    String processPostImages(Long postId, MultipartFile image);
-
     PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize);
 
     PostImage getPostImage(Long postImageId);

@@ -20,6 +20,7 @@ public class PostImage extends Timestamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postImageId;
+
     private String postImageUrl;
 
     @ManyToOne

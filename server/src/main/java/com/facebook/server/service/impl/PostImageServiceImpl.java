@@ -7,6 +7,7 @@ import com.facebook.server.entity.Post;
 import com.facebook.server.entity.PostImage;
 import com.facebook.server.repository.PostImageRepository;
 import com.facebook.server.repository.PostRepository;
+import com.facebook.server.service.CloudinaryService;
 import com.facebook.server.service.PostImageService;
 import com.facebook.server.utils.Pagination;
 import com.facebook.server.utils.StringUtil;
@@ -36,6 +37,7 @@ public class PostImageServiceImpl implements PostImageService {
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
     private final Pagination pagination;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public void uploadPostImages(Long postId, MultipartFile[] files) {
@@ -43,9 +45,11 @@ public class PostImageServiceImpl implements PostImageService {
 
         if (post.isPresent()) {
             for (MultipartFile file : files) {
+                String uploadedUrl = cloudinaryService.uploadFile(file);
+
                 PostImage postImage = new PostImage();
                 postImage.setPost(post.get());
-                postImage.setPostImageUrl(this.processPostImages(postId, file));
+                postImage.setPostImageUrl(uploadedUrl);
                 postImage.setTimestamp(LocalDateTime.now());
                 postImageRepository.save(postImage);
             }
@@ -55,29 +59,6 @@ public class PostImageServiceImpl implements PostImageService {
     @Override
     public byte[] getImages(String filename) throws IOException {
         return Files.readAllBytes(Paths.get(StringUtil.PHOTO_DIRECTORY + filename));
-    }
-
-    @Override
-    public String processPostImages(Long postId, MultipartFile image) {
-
-        String filename = postId + "_" + System.currentTimeMillis() + "_" + image.getOriginalFilename();
-
-        try {
-            Path fileStorageLocation = Paths.get(StringUtil.PHOTO_DIRECTORY).toAbsolutePath().normalize();
-
-            if (!Files.exists(fileStorageLocation)) {
-                Files.createDirectories(fileStorageLocation);
-            }
-
-            Files.copy(image.getInputStream(), fileStorageLocation.resolve(filename));
-
-            return ServletUriComponentsBuilder
-                    .fromCurrentContextPath()
-                    .path("/api/post/image/" + filename).toUriString();
-
-        } catch (Exception exception) {
-            throw new RuntimeException("Unable to save image");
-        }
     }
 
     @Override

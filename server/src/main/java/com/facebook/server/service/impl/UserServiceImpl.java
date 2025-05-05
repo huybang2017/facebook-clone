@@ -14,6 +14,7 @@ import com.facebook.server.repository.PostImageRepository;
 import com.facebook.server.repository.PostRepository;
 import com.facebook.server.repository.UserRepository;
 import com.facebook.server.security.JwtService;
+import com.facebook.server.service.CloudinaryService;
 import com.facebook.server.service.UserService;
 import com.facebook.server.utils.StringUtil;
 import com.facebook.server.utils.mapper.UserMapper;
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper mapper;
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
@@ -124,10 +126,11 @@ public class UserServiceImpl implements UserService {
     public void uploadUserImage(MultipartFile file, ImageType imageType, String description) {
         User user = this.getCurrentAuthenticatedUser();
         if (file != null) {
+            String uploadedUrl = cloudinaryService.uploadFile(file);
             if (imageType.equals(ImageType.PROFILE_PICTURE)) {
-                user.setProfilePicture(processImage(file));
+                user.setProfilePicture(uploadedUrl);
             } else if (imageType.equals(ImageType.COVER_PHOTO)) {
-                user.setCoverPhoto(processImage(file));
+                user.setCoverPhoto(uploadedUrl);
             }
             User savedUser = userRepository.save(user);
 
@@ -139,33 +142,36 @@ public class UserServiceImpl implements UserService {
 
             PostImage postImage = new PostImage();
             postImage.setPost(savedPost);
-            postImage.setPostImageUrl(processImage(file));
+            postImage.setPostImageUrl(uploadedUrl);
             postImage.setTimestamp(LocalDateTime.now());
             postImageRepository.save(postImage);
         }
     }
 
-    @Override
-    public String processImage(MultipartFile image) {
-        String filename = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+    // @Override
+    // public String processImage(MultipartFile image) {
+    // String filename = System.currentTimeMillis() + "_" +
+    // image.getOriginalFilename();
 
-        try {
-            Path fileStorageLocation = Paths.get(StringUtil.PHOTO_DIRECTORY).toAbsolutePath().normalize();
+    // try {
+    // Path fileStorageLocation =
+    // Paths.get(StringUtil.PHOTO_DIRECTORY).toAbsolutePath().normalize();
 
-            if (!Files.exists(fileStorageLocation)) {
-                Files.createDirectories(fileStorageLocation);
-            }
+    // if (!Files.exists(fileStorageLocation)) {
+    // Files.createDirectories(fileStorageLocation);
+    // }
 
-            Files.copy(image.getInputStream(), fileStorageLocation.resolve(filename), REPLACE_EXISTING);
+    // Files.copy(image.getInputStream(), fileStorageLocation.resolve(filename),
+    // REPLACE_EXISTING);
 
-            return ServletUriComponentsBuilder
-                    .fromCurrentContextPath()
-                    .path("/api/user/image/" + filename).toUriString();
+    // return ServletUriComponentsBuilder
+    // .fromCurrentContextPath()
+    // .path("/api/user/image/" + filename).toUriString();
 
-        } catch (Exception exception) {
-            throw new RuntimeException("Unable to save image");
-        }
-    }
+    // } catch (Exception exception) {
+    // throw new RuntimeException("Unable to save image");
+    // }
+    // }
 
     @Override
     public UserListResponse searchUser(String search, int pageNo, int pageSize) {

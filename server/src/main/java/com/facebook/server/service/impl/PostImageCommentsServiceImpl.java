@@ -8,6 +8,7 @@ import com.facebook.server.entity.PostImage;
 import com.facebook.server.entity.PostImageComments;
 import com.facebook.server.entity.User;
 import com.facebook.server.repository.PostImageCommentsRepository;
+import com.facebook.server.service.CloudinaryService;
 import com.facebook.server.service.PostImageCommentsService;
 import com.facebook.server.service.PostImageService;
 import com.facebook.server.service.UserService;
@@ -31,6 +32,7 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
     private final UserService userService;
     private final Pagination pagination;
     private final PostImageService postImageService;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public void writePostImageComment(Long postImageId, String comment, MultipartFile file) {
@@ -40,7 +42,8 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
         PostImageComments postImageComments = new PostImageComments();
         postImageComments.setComment(comment);
         if (file != null) {
-            postImageComments.setCommentImage(userService.processImage(file));
+            String uploadedUrl = cloudinaryService.uploadFile(file);
+            postImageComments.setCommentImage(uploadedUrl);
         }
         postImageComments.setUser(user);
         postImageComments.setPostImage(postImage);
