@@ -1,6 +1,17 @@
-import { AspectRatio, Box, Card, Grid, GridItem, Text } from "@chakra-ui/react";
+import { AspectRatio, Box, Card, Grid, GridItem, Skeleton, Spinner, Text } from "@chakra-ui/react";
+import useFetchAllPosts from "../../hooks/user/useFetchAllPosts";
+import InfiniteScroll from "react-infinite-scroll-component";
+import NoAvailablePost from "../../components/user/ProfilePage/NoAvailablePost";
+import Posts from "../../components/user/Post/Posts";
 
 const WatchPage = () => {
+  const { data, fetchNextPage, hasNextPage, isLoading } = useFetchAllPosts({
+    pageSize: 5,
+  });
+  const postLength = data?.pages.flatMap((list) => list.postList).length || 0;
+  const fetchedPostData =
+    data?.pages.reduce((total, page) => total + page.postList.length, 0) || 0;
+  const array = [1, 2, 3];
   return (
     <Grid
       templateColumns={{
@@ -17,30 +28,36 @@ const WatchPage = () => {
       padding={{ base: 3, md: 7, lg: 2 }}
     >
       <GridItem area="section">
-        <Card alignItems="center" mb="20px" padding={3}>
-          <Text fontSize="x-large" fontWeight="semibold" textAlign="center">
-            Featured Projects
-          </Text>
-        </Card>
-        <Text fontWeight="semibold">My youtube youngwold huybang2017</Text>
-        <AspectRatio ratio={16 / 9}>
-          <iframe
-            src="https://www.youtube.com"
-            title="YouTube video player"
-            allowFullScreen
-          />
-        </AspectRatio>
+        <InfiniteScroll
+          dataLength={fetchedPostData}
+          next={fetchNextPage}
+          hasMore={!!hasNextPage}
+          loader={<Spinner />}
+        >
+          {isLoading ? (
+            <>
+              {array.map((skeleton) => (
+                <Skeleton height="300px" mt="10px" key={skeleton} />
+              ))}
+            </>
+          ) : postLength < 1 ? (
+            <NoAvailablePost />
+          ) : (
+            <>
+              {data?.pages.map((page) =>
+                page.postList.map((posts) => {
+                  const hasVideo = posts.postImages?.some((img) =>
+                    img.postImageUrl?.match(/\.(mp4|webm|ogg|mov|mkv)$/i)
+                  );
 
-        {/* <Box mt="20px" mb="50px">
-          <Text fontWeight="semibold">Fullstack Responsive Facebook Clone</Text>
-          <AspectRatio ratio={16 / 9}>
-            <iframe
-              src="https://www.youtube.com/embed/pnD32jIq0Us?si=kJ-XUXAy-ZckXWla"
-              title="YouTube video player"
-              allowFullScreen
-            />
-          </AspectRatio>
-        </Box> */}
+                  if (!hasVideo) return null; // ❌ Bỏ qua nếu không có video
+
+                  return <Posts key={posts.postId} posts={posts} />; // ✅ Render nếu có video
+                })
+              )}
+            </>
+          )}
+        </InfiniteScroll>
       </GridItem>
     </Grid>
   );

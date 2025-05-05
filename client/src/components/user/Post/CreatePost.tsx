@@ -295,7 +295,7 @@ const CreatePost = ({ firstName }: Props) => {
                       width="42px"
                     />
                     <Text fontWeight="semibold" mt="5px">
-                      Add Photos
+                      Add Photos and Video
                     </Text>
                     <Text color="gray.500">or drag and drop</Text>
                   </Box>

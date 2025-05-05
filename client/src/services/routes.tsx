@@ -22,6 +22,10 @@ import SearchMarketPage from "../pages/user/SearchMarketPage";
 import SearchPage from "../pages/user/SearchPage";
 import StoryPage from "../pages/user/StoryPage";
 import WatchPage from "../pages/user/WatchPage";
+import AdminRoute from "../components/ProtectedRoute/AdminRoute";
+import PostTable from "../components/admin/PostTable";
+import CommentTable from "../components/admin/CommentTable";
+import AdminLayout from "../pages/admin/Layout";
 
 const router = createBrowserRouter([
   {
@@ -149,6 +153,25 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/admin",
+    element: (
+      <AdminRoute>
+        <AdminLayout />
+      </AdminRoute>
+    ),
+    children: [
+      {
+        index: true,
+        path: "Post",
+        element: <PostTable />,
+      },
+      {
+        path: "Comment",
+        element: <CommentTable />,
+      },
+    ],
+  }
 ]);
 
 export default router;

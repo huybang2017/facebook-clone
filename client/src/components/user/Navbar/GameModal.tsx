@@ -1,11 +1,10 @@
 import {
-  Box,
-  Divider,
-  Image,
+  Button,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
@@ -18,30 +17,19 @@ const GameModal = () => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="sm" isCentered>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="sm">
         <ModalOverlay />
-
-        <ModalContent height="300px">
-          <ModalHeader textAlign="center">Games</ModalHeader>
+        <ModalContent>
+          <ModalHeader>Notice</ModalHeader>
           <ModalCloseButton />
-          <Divider />
           <ModalBody>
-            <Box width="60px" height="60px" cursor="pointer">
-              <Box
-                overflow="hidden"
-                borderRadius="4px"
-                _hover={{
-                  transform: "scale(1.03)",
-                  transition: "transform .15s ease-in",
-                }}
-              >
-                <Image src={tictactoe} />
-              </Box>
-              <Text fontSize="xs" ml="2px">
-                Tic Tac Toe
-              </Text>
-            </Box>
+            <Text>This feature is currently under development and not yet available.</Text>
           </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" onClick={onClose}>
+              Got it
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

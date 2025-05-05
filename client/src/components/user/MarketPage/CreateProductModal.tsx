@@ -445,7 +445,7 @@ const CreateProductModal = () => {
                       imageFile && productName && price ? false : true
                     }
                   >
-                    Publish
+                    Submit
                   </Button>
                 </Box>
               </form>

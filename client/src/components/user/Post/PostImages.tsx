@@ -6,14 +6,21 @@ import { getFlexBasis } from "../../../utilities/flexBasis";
 import PostImagesModal from "./PostImagesModal";
 import { PostProps } from "./Posts";
 
+const isVideo = (url: string) => {
+  const videoExtensions = [".mp4", ".webm", ".ogg", ".mov", ".mkv"];
+  return videoExtensions.some((ext) => url.toLowerCase().includes(ext));
+};
+
 const PostImages = ({ posts }: PostProps) => {
   if (!posts.postImages || posts.postImages.length === 0) {
     return null;
   }
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [images, setImages] = useState<PostImage[]>(posts.postImages);
   const [activeImage, setActiveImage] = useState<PostImage | null>(null);
   const { setIsPostImageModalOpen } = usePostStore();
+
   useEffect(() => {
     if (posts.postImages && posts.postImages.length > 0) {
       setImages(posts.postImages);
@@ -21,8 +28,8 @@ const PostImages = ({ posts }: PostProps) => {
     }
   }, [posts.postImages]);
 
-  const handleImageClick = (images: PostImage) => {
-    setActiveImage(images);
+  const handleImageClick = (image: PostImage) => {
+    setActiveImage(image);
     onOpen();
     setIsPostImageModalOpen(true);
   };
@@ -52,41 +59,71 @@ const PostImages = ({ posts }: PostProps) => {
   return (
     <>
       <Box display="flex" flexWrap="wrap" gap={1}>
-        {images.slice(0, 6).map((image, index) => (
-          <Box
-            key={image.postImageId}
-            flexBasis={getFlexBasis(index, posts.postImages.length)}
-            flexGrow={1}
-            position="relative"
-            cursor="pointer"
-            onClick={() => handleImageClick(image)}
-          >
-            <Image
-              src={image.postImageUrl}
-              width="100%"
-              minHeight="100%"
-              height="auto"
-              filter={
-                posts.postImages.length > 6 && index === 5
-                  ? "brightness(0.3)"
-                  : "none"
-              }
-            />
-            {posts.postImages.length > 6 && index === 5 && (
-              <Text
-                position="absolute"
-                top="50%"
-                left="50%"
-                transform="translate(-50%, -50%)"
-                color="white"
-                fontSize={{ base: "x-large", md: "xx-large", lg: "xxx-large" }}
-                fontWeight="semibold"
-              >
-                +{gap}
-              </Text>
-            )}
-          </Box>
-        ))}
+        {images.slice(0, 6).map((image, index) => {
+          const isVideoFile = image.postImageUrl
+            ? isVideo(image.postImageUrl)
+            : false;
+
+          return (
+            <Box
+              key={image.postImageId}
+              flexBasis={getFlexBasis(index, posts.postImages.length)}
+              flexGrow={1}
+              position="relative"
+              cursor="pointer"
+              onClick={() => handleImageClick(image)}
+            >
+              {isVideoFile ? (
+                <video
+                  src={image.postImageUrl}
+                  width="100%"
+                  height="auto"
+                  loop
+                  autoPlay
+                  muted
+                  playsInline
+                  style={{
+                    objectFit: "cover",
+                    filter:
+                      posts.postImages.length > 6 && index === 5
+                        ? "brightness(0.3)"
+                        : "none",
+                  }}
+                />
+              ) : (
+                <Image
+                  src={image.postImageUrl}
+                  width="100%"
+                  minHeight="100%"
+                  height="auto"
+                  filter={
+                    posts.postImages.length > 6 && index === 5
+                      ? "brightness(0.3)"
+                      : "none"
+                  }
+                />
+              )}
+
+              {posts.postImages.length > 6 && index === 5 && (
+                <Text
+                  position="absolute"
+                  top="50%"
+                  left="50%"
+                  transform="translate(-50%, -50%)"
+                  color="white"
+                  fontSize={{
+                    base: "x-large",
+                    md: "xx-large",
+                    lg: "xxx-large",
+                  }}
+                  fontWeight="semibold"
+                >
+                  +{gap}
+                </Text>
+              )}
+            </Box>
+          );
+        })}
         <PostImagesModal
           isOpen={isOpen}
           onClose={onClose}
