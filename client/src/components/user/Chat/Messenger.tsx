@@ -78,21 +78,7 @@ const Messenger = ({ fetchAllChat, fetchNextPage, hasNextPage }: Props) => {
               </Text>
             </Box>
             {fetchAllChatLength < 1 ? (
-              <>
-                <Box
-                  height="150px"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  width="250px"
-                >
-                  <Flex flexDirection="column" alignItems="center">
-                    <Text mt="10px" fontSize="x-large">
-                      No chats yet
-                    </Text>
-                  </Flex>
-                </Box>
-              </>
+              <></>
             ) : (
               <>
                 <Box
@@ -138,24 +124,7 @@ const Messenger = ({ fetchAllChat, fetchNextPage, hasNextPage }: Props) => {
             )}
           </MenuList>
         </Menu>
-        {/* <Box
-          h="22px"
-          w="22px"
-          bg="red"
-          borderRadius="full"
-          position="absolute"
-          top="7px"
-          right="103px"
-        >
-          <Text
-            textAlign="center"
-            color="white"
-            fontSize="sm"
-            fontWeight="semibold"
-          >
-            1
-          </Text>
-        </Box> */}
+
       </Flex>
 
       <Box position="fixed" bottom="0" zIndex={100}>
@@ -171,47 +140,24 @@ const Messenger = ({ fetchAllChat, fetchNextPage, hasNextPage }: Props) => {
       </Box>
       {(!isPostImageModalOpen ||
         (isPostImageModalOpen && chatArray.length >= 1)) && (
-        <Box position="fixed" bottom="15px" right="20px">
-          <IconButton
-            aria-label="message"
-            icon={<AiOutlineEdit size="25px" />}
-            bg={colorMode === "dark" ? "#303030" : "gray.200"}
-            _hover={{
-              bg: colorMode === "dark" ? "#484848" : "gray.300",
-            }}
-            isRound
-            size="lg"
-            onMouseEnter={() => setIsHover(true)}
-            onMouseLeave={() => setIsHover(false)}
-            onClick={() => setIsNewMessageMaximized(!isNewMessageMaximized)}
-          />
-        </Box>
-      )}
+          <Box position="fixed" bottom="15px" right="20px">
+            <IconButton
+              aria-label="message"
+              icon={<AiOutlineEdit size="25px" />}
+              bg={colorMode === "dark" ? "#303030" : "gray.200"}
+              _hover={{
+                bg: colorMode === "dark" ? "#484848" : "gray.300",
+              }}
+              isRound
+              size="lg"
+              onMouseEnter={() => setIsHover(true)}
+              onMouseLeave={() => setIsHover(false)}
+              onClick={() => setIsNewMessageMaximized(!isNewMessageMaximized)}
+            />
+          </Box>
+        )}
 
-      {isHover && (
-        <Card
-          position="fixed"
-          bottom="20px"
-          right="70px"
-          padding={2}
-          zIndex={150}
-        >
-          <Text
-            textTransform="capitalize"
-            isTruncated={true}
-            maxWidth="200px"
-            fontSize="sm"
-            fontWeight="semibold"
-          >
-            New message
-          </Text>
-        </Card>
-      )}
-      {isNewMessageMaximized && (
-        <Box position="fixed" bottom="0px" right="85px" zIndex={10}>
-          <NewMessage />
-        </Box>
-      )}
+
     </>
   );
 };

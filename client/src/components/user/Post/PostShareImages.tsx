@@ -56,51 +56,69 @@ const PostShareImages = ({ posts }: PostProps) => {
     <>
       <Box display="flex" flexWrap="wrap" gap={1}>
         {images
-          .slice(posts.sharedImage ? 0 : 0, posts.sharedImage ? 1 : 6)
-          .map((image, index) => (
-            <Box
-              key={image.postImageId}
-              flexBasis={
-                posts.sharedImage ? undefined : getFlexBasis(index, length)
-              }
-              flexGrow={1}
-              position="relative"
-              cursor="pointer"
-              onClick={() =>
-                handleImageClick(posts.sharedImage ? posts.sharedImage : image)
-              }
-            >
-              <Image
-                src={
-                  posts.sharedImage
-                    ? posts.sharedImage.postImageUrl
-                    : image.postImageUrl
+          .slice(0, posts.sharedImage ? 1 : 6)
+          .map((image, index) => {
+            const targetImage = posts.sharedImage || image;
+            const src = targetImage.postImageUrl;
+            const isVideo = src?.match(/\.(mp4|webm|ogg|mov|mkv)$/i);
+
+            return (
+              <Box
+                key={targetImage.postImageId}
+                flexBasis={
+                  posts.sharedImage ? undefined : getFlexBasis(index, length)
                 }
-                objectFit="cover"
-                width="100%"
-                minHeight="100%"
-                height="auto"
-                filter={length > 6 && index === 5 ? "brightness(0.3)" : "none"}
-              />
-              {length > 6 && index === 5 && (
-                <Text
-                  position="absolute"
-                  top="50%"
-                  left="50%"
-                  transform="translate(-50%, -50%)"
-                  color="white"
-                  fontSize={{
-                    base: "x-large",
-                    md: "xx-large",
-                    lg: "xxx-large",
-                  }}
-                  fontWeight="semibold"
-                >
-                  +{gap}
-                </Text>
-              )}
-            </Box>
-          ))}
+                flexGrow={1}
+                position="relative"
+                cursor="pointer"
+                onClick={() => handleImageClick(targetImage)}
+              >
+                {isVideo ? (
+                  <video
+                    src={src}
+                    width="100%"
+                    style={{
+                      objectFit: "cover",
+                      minHeight: "100%",
+                      filter:
+                        length > 6 && index === 5 ? "brightness(0.3)" : "none",
+                    }}
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
+                ) : (
+                  <Image
+                    src={src}
+                    objectFit="cover"
+                    width="100%"
+                    minHeight="100%"
+                    height="auto"
+                    filter={
+                      length > 6 && index === 5 ? "brightness(0.3)" : "none"
+                    }
+                  />
+                )}
+                {length > 6 && index === 5 && (
+                  <Text
+                    position="absolute"
+                    top="50%"
+                    left="50%"
+                    transform="translate(-50%, -50%)"
+                    color="white"
+                    fontSize={{
+                      base: "x-large",
+                      md: "xx-large",
+                      lg: "xxx-large",
+                    }}
+                    fontWeight="semibold"
+                  >
+                    +{gap}
+                  </Text>
+                )}
+              </Box>
+            );
+          })}
         <PostImagesModal
           isOpen={isOpen}
           onClose={onClose}

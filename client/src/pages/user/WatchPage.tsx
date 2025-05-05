@@ -1,4 +1,4 @@
-import { AspectRatio, Box, Card, Grid, GridItem, Skeleton, Spinner, Text } from "@chakra-ui/react";
+import { Grid, GridItem, Skeleton, Spinner, } from "@chakra-ui/react";
 import useFetchAllPosts from "../../hooks/user/useFetchAllPosts";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NoAvailablePost from "../../components/user/ProfilePage/NoAvailablePost";
@@ -32,7 +32,7 @@ const WatchPage = () => {
           dataLength={fetchedPostData}
           next={fetchNextPage}
           hasMore={!!hasNextPage}
-          loader={<Spinner />}
+          loader
         >
           {isLoading ? (
             <>
@@ -40,20 +40,31 @@ const WatchPage = () => {
                 <Skeleton height="300px" mt="10px" key={skeleton} />
               ))}
             </>
-          ) : postLength < 1 ? (
-            <NoAvailablePost />
           ) : (
             <>
-              {data?.pages.map((page) =>
-                page.postList.map((posts) => {
-                  const hasVideo = posts.postImages?.some((img) =>
-                    img.postImageUrl?.match(/\.(mp4|webm|ogg|mov|mkv)$/i)
-                  );
+              {data && data.pages ? (
+                (() => {
+                  // Lọc các bài viết chỉ có duy nhất 1 video
+                  const filteredPosts = data.pages
+                    .flatMap((page) => page.postList)
+                    .filter((post) => {
+                      const images = post.postImages || [];
+                      return (
+                        images.length === 1 &&
+                        images[0].postImageUrl?.match(/\.(mp4|webm|ogg|mov|mkv)$/i)
+                      );
+                    });
 
-                  if (!hasVideo) return null; // ❌ Bỏ qua nếu không có video
+                  if (filteredPosts.length === 0) {
+                    return <NoAvailablePost />;
+                  }
 
-                  return <Posts key={posts.postId} posts={posts} />; // ✅ Render nếu có video
-                })
+                  return filteredPosts.map((post) => (
+                    <Posts key={post.postId} posts={post} />
+                  ));
+                })()
+              ) : (
+                <NoAvailablePost />
               )}
             </>
           )}

@@ -27,7 +27,6 @@ import { useMessageStore } from "../../../store/message-store";
 import { useNotificationStore } from "../../../store/notification-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useUserStore } from "../../../store/user-store";
-import ColorModeSwitch from "../../ColorModeSwitch";
 import Messenger from "../Chat/Messenger";
 import Notifications from "./Notifications";
 
@@ -158,7 +157,7 @@ const NavbarRight = () => {
 
   return (
     <Box display="flex" justifyContent="end" mr="10px" alignItems="center">
-      <ColorModeSwitch />
+      {/* <ColorModeSwitch /> */}
       <Box mr="5px">
         <Messenger
           fetchAllChat={fetchAllChat}

@@ -36,6 +36,7 @@ const ProfilePhotosPage = () => {
   const photosLength =
     fetchAllPhotos?.pages.flatMap((list) => list.postImageModels).length || 0;
 
+  console.log(fetchAllPhotos)
   return (
     <Card padding={{ base: 2, md: 5 }}>
       <Box display="flex" alignItems="center" mb="10px">

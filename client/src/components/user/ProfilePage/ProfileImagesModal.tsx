@@ -190,13 +190,25 @@ const ProfileImagesModal = ({
                 )}
 
                 <Box ml="5px" mr="5px">
-                  <Image
-                    src={activeImage?.postImageUrl}
-                    overflow="hidden"
-                    width="auto"
-                    height={{ base: "200px", md: "400px", xl: "100vh" }}
-                    objectFit="contain"
-                  />
+                  {activeImage?.postImageUrl?.match(/\.(mp4|webm|ogg)$/i) ? (
+                    <video
+                      src={activeImage.postImageUrl}
+                      controls
+                      style={{
+                        width: "auto",
+                        height: "100vh",
+                        objectFit: "contain",
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      src={activeImage?.postImageUrl}
+                      overflow="hidden"
+                      width="auto"
+                      height={{ base: "200px", md: "400px", xl: "100vh" }}
+                      objectFit="contain"
+                    />
+                  )}
                 </Box>
 
                 {imageList.length > 1 && isSmallScreen && (

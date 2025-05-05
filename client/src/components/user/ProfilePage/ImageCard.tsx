@@ -19,6 +19,7 @@ const ImageCard = ({ images, imageList }: Props) => {
   const [photos, setPhotos] = useState<Images[]>(imageList);
   const [activeImage, setActiveImage] = useState<Images | null>(null);
   const { setIsPostImageModalOpen } = usePostStore();
+
   const handleImageClick = (images: Images) => {
     setActiveImage(images);
     setIsPostImageModalOpen(true);
@@ -49,16 +50,31 @@ const ImageCard = ({ images, imageList }: Props) => {
     }
   };
 
+  // Function to check if the file is a video
+  const isVideo = (url: string) => {
+    return /\.(mp4|webm|ogg)$/i.test(url);
+  };
+
   return (
     <>
-      <Image
-        src={images.postImageUrl || pic}
-        height={location.pathname === `/profile/${userId}` ? "130px" : "180px"}
-        width="100%"
-        borderRadius="10px"
-        cursor="pointer"
-        onClick={() => handleImageClick(images)}
-      />
+      {isVideo(images.postImageUrl) ? (
+        <video
+          src={images.postImageUrl || pic}
+          height={location.pathname === `/profile/${userId}` ? "130px" : "180px"}
+          width="100%"
+          className=""
+          onClick={() => handleImageClick(images)}
+        />
+      ) : (
+        <Image
+          src={images.postImageUrl || pic}
+          height={location.pathname === `/profile/${userId}` ? "130px" : "180px"}
+          width="100%"
+          borderRadius="10px"
+          cursor="pointer"
+          onClick={() => handleImageClick(images)}
+        />
+      )}
       <ProfileImagesModal
         isOpen={isOpen}
         onClose={onClose}
