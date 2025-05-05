@@ -2,57 +2,110 @@ package com.facebook.server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import com.facebook.server.utils.Enum.GenderEnum;
+import com.facebook.server.entity.constants.Gender;
+import com.facebook.server.entity.constants.Role;
 
+import java.time.LocalDate;
+import java.util.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class User {
+public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId;
 
-    @Column(nullable = false, unique = true)
+    private String firstName;
+    private String lastName;
     private String email;
-
-    @Column(nullable = false)
     private String password;
-
-    private String name;
-
-    private LocalDateTime birthday;
-
+    private LocalDate dateOfBirth;
+    private String profilePicture;
+    private String coverPhoto;
+    private LocalDate createdAt;
     @Enumerated(EnumType.STRING)
-    @Column()
-    private GenderEnum gender;
+    private Gender gender;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    @ManyToOne
-    @JoinColumn()
-    private Image image;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    @OneToMany(mappedBy = "guestPoster", cascade = CascadeType.ALL)
+    private List<Post> guestPosts = new ArrayList<>();
 
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PostLike> postLikes = new ArrayList<>();
 
-    private LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PostComment> postComments = new ArrayList<>();
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PostImageLikes> postImageLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PostImageComments> postImageComments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Friendship> friends = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    private List<Notification> notifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Story> stories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Product> products = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "chat_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "chat_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+            "chat_id", "user_id" }))
+    private Set<Chat> chats = new HashSet<>();
+
+    @OneToMany(mappedBy = "sender")
+    private List<Message> messages = new ArrayList<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

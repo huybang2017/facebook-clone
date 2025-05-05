@@ -35,7 +35,7 @@ public class AiModerationPostService {
                 // Gửi request đến FastAPI
                 ToxicPostResponse response = webClient.post()
                                 .uri("/predict")
-                                .bodyValue(Map.of("text", post.getCaption()))
+                                .bodyValue(Map.of("text", post.getContent()))
                                 .retrieve()
                                 .bodyToMono(ToxicPostResponse.class)
                                 .block();

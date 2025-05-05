@@ -1,67 +1,81 @@
 package com.facebook.server.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import com.facebook.server.dto.request.PostRequest;
-import com.facebook.server.dto.response.BaseResponse;
+import com.facebook.server.dto.model.PostModel;
+import com.facebook.server.dto.request.SharePostRequest;
+import com.facebook.server.dto.response.PostListResponse;
 import com.facebook.server.dto.response.PostResponse;
-import com.facebook.server.entity.Post;
+import com.facebook.server.dto.response.SharedPostCountResponse;
 import com.facebook.server.service.PostService;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/post")
+@RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-    public PostController(PostService postService) {
-        this.postService = postService;
+    @PostMapping(value = { "/save/{userId}" }, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createPost(@PathVariable("userId") Long userId,
+            @RequestPart(value = "post", required = false) String content,
+            @RequestPart(value = "file", required = false) MultipartFile[] files) {
+        postService.createPost(userId, content, files);
     }
 
-    @GetMapping
-    public BaseResponse<List<PostResponse>> getAllPosts() {
-        List<PostResponse> posts = postService.getAllPosts()
-                .stream()
-                .map(PostResponse::fromEntity)
-                .collect(Collectors.toList());
-        return new BaseResponse<>(HttpStatus.OK, "Lấy danh sách bài viết thành công", posts);
+    @GetMapping("/{userId}")
+    public PostListResponse fetchAllUserPosts(@PathVariable Long userId,
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return postService.fetchAllUserPosts(userId, pageNo, pageSize);
     }
 
-    @GetMapping("/{id}")
-    public BaseResponse<PostResponse> getPostById(@PathVariable String id) {
-        Post post = postService.getPostById(id)
-                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại"));
-        return new BaseResponse<>(HttpStatus.OK, "Lấy bài viết thành công", PostResponse.fromEntity(post));
+    @PostMapping("/share/{postId}")
+    public void sharePost(@PathVariable("postId") Long postId,
+            @RequestBody(required = false) SharePostRequest request) {
+        postService.sharePost(postId, request);
     }
 
-    @PostMapping
-    public BaseResponse<PostResponse> createPost(@RequestBody PostRequest postRequest) {
-        Post createdPost = postService.createPost(postRequest);
-        return new BaseResponse<>(HttpStatus.CREATED, "Tạo bài viết thành công", PostResponse.fromEntity(createdPost));
+    @GetMapping("/share/count/{postId}")
+    public SharedPostCountResponse getSharedPostCount(@PathVariable("postId") Long postId) {
+        return postService.getSharedPostCount(postId);
     }
 
-    @PutMapping("/{id}")
-    public BaseResponse<PostResponse> updatePost(@PathVariable String id, @RequestBody PostRequest postRequest) {
-        try {
-            Post updatedPost = postService.updatePost(id, postRequest);
-            return new BaseResponse<>(HttpStatus.OK, "Cập nhật bài viết thành công",
-                    PostResponse.fromEntity(updatedPost));
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Bài viết không tồn tại");
-        }
+    @PostMapping("/share/image/{postId}/{postImageId}")
+    public void sharePostImage(@PathVariable("postId") Long postId,
+            @PathVariable("postImageId") Long postImageId,
+            @RequestBody(required = false) SharePostRequest request) {
+        postService.sharePostImage(postImageId, postId, request);
     }
 
-    @DeleteMapping("/{id}")
-    public BaseResponse<String> deletePost(@PathVariable String id) {
-        try {
-            postService.deletePost(id);
-            return new BaseResponse<>(HttpStatus.OK, "Xóa bài viết thành công", "Post deleted successfully!");
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Bài viết không tồn tại");
-        }
+    @GetMapping("/share/image/count/{postImageId}")
+    public SharedPostCountResponse getSharedPostImageCount(@PathVariable("postImageId") Long postImageId) {
+        return postService.getSharedPostImageCount(postImageId);
+    }
+
+    @DeleteMapping("/delete/{postId}")
+    public void deletePost(@PathVariable("postId") Long postId) {
+        postService.deletePost(postId);
+    }
+
+    @GetMapping("/find/creator/{postId}")
+    public PostResponse findPostCreatorById(@PathVariable("postId") Long postId) {
+        return postService.findPostCreatorById(postId);
+    }
+
+    @GetMapping("/get/all")
+    public PostListResponse fetchAllPosts(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return postService.fetchAllPosts(pageNo, pageSize);
+    }
+
+    @GetMapping("/get/{postId}")
+    public PostModel getPostById(@PathVariable("postId") Long postId) {
+        return postService.getPostById(postId);
     }
 }

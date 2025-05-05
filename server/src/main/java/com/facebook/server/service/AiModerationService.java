@@ -3,9 +3,10 @@ package com.facebook.server.service;
 import com.facebook.server.dto.request.ToxicCommentRequest;
 import com.facebook.server.dto.response.ToxicCommentResponse;
 import com.facebook.server.entity.AiModerationToxicCommentLog;
-import com.facebook.server.entity.Comment;
+import com.facebook.server.entity.PostComment;
 import com.facebook.server.repository.AiModerationToxicCommentLogRepository;
-import com.facebook.server.repository.CommentRepository;
+import com.facebook.server.repository.PostCommentRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class AiModerationService {
 
         private final AiModerationToxicCommentLogRepository logRepository;
-        private final CommentRepository commentRepository;
+        private final PostCommentRepository postcommentRepository;
 
         private final WebClient webClient = WebClient.builder()
                         .baseUrl("http://127.0.0.1:8000")
@@ -28,14 +29,12 @@ public class AiModerationService {
                         .build();
 
         public ToxicCommentResponse moderate(ToxicCommentRequest request) {
-                // Lấy comment từ DB
-                Comment comment = commentRepository.findById(request.getCommentId())
+                PostComment comment = postcommentRepository.findById(request.getCommentId())
                                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-                // Gửi request đến FastAPI
                 ToxicCommentResponse response = webClient.post()
                                 .uri("/predict")
-                                .bodyValue(Map.of("text", comment.getDescription()))
+                                .bodyValue(Map.of("text", comment.getComment()))
                                 .retrieve()
                                 .bodyToMono(ToxicCommentResponse.class)
                                 .block();

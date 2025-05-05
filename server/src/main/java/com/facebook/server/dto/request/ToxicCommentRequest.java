@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class ToxicCommentRequest {
-    private String commentId;
+    private Long commentId;
 }
