@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories("com.facebook.server.repository")
 public class ServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ServerApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(ServerApplication.class, args);
+  }
 
 }

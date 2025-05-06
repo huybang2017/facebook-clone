@@ -1,12 +1,16 @@
 package com.facebook.server.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.facebook.server.entity.User;
 
-@Getter
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponse {
-    private String id;
+    private UserResponse user;
     private String accessToken;
     private String refreshToken;
 }

@@ -10,8 +10,7 @@ import com.facebook.server.utils.Enum.GenderEnum;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -30,11 +29,11 @@ public class User {
     private LocalDateTime birthday;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
+    @Column()
     private GenderEnum gender;
 
     @ManyToOne
-    @JoinColumn(name = "image_id")
+    @JoinColumn()
     private Image image;
 
     @ManyToMany(fetch = FetchType.EAGER)

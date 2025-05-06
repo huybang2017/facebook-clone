@@ -9,12 +9,9 @@ import com.facebook.server.repository.ImageRepository;
 import com.facebook.server.repository.PostRepository;
 import com.facebook.server.repository.UserRepository;
 import com.facebook.server.repository.VideoRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -53,8 +50,6 @@ public class PostService {
         post.setStatusPost(postRequest.getStatusPost());
         post.setStatusShow(postRequest.getStatusShow());
         post.setUser(user);
-        post.setCreatedAt(LocalDateTime.now());
-        post.setUpdatedAt(LocalDateTime.now());
 
         if (postRequest.getImageIds() != null && !postRequest.getImageIds().isEmpty()) {
             Set<Image> images = new HashSet<>(imageRepository.findAllById(postRequest.getImageIds()));
@@ -76,7 +71,6 @@ public class PostService {
         post.setCaption(postRequest.getCaption());
         post.setStatusPost(postRequest.getStatusPost());
         post.setStatusShow(postRequest.getStatusShow());
-        post.setUpdatedAt(LocalDateTime.now());
 
         if (postRequest.getImageIds() != null) {
             Set<Image> images = new HashSet<>(imageRepository.findAllById(postRequest.getImageIds()));

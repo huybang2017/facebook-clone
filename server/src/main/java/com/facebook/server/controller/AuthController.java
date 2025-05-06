@@ -50,7 +50,7 @@ public class AuthController {
             UserResponse userResponse = userService.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
 
-            AuthResponse authData = new AuthResponse(userResponse.getId(), accessToken, refreshToken);
+            AuthResponse authData = new AuthResponse(userResponse, accessToken, refreshToken);
             return new BaseResponse<>(HttpStatus.OK, "Đăng nhập thành công", authData);
         } catch (BadCredentialsException e) {
             throw new RuntimeException("Email hoặc mật khẩu không đúng!");
@@ -63,7 +63,7 @@ public class AuthController {
         UserResponse userResponse = userService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
         if (email != null && jwtUtil.validateToken(refreshToken)) {
-            return new AuthResponse(userResponse.getId(), jwtUtil.generateAccessToken(email), refreshToken);
+            return new AuthResponse(userResponse, jwtUtil.generateAccessToken(email), refreshToken);
         }
         throw new RuntimeException("Token không hợp lệ!");
     }

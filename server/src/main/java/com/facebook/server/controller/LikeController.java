@@ -1,6 +1,7 @@
 package com.facebook.server.controller;
 
-import com.facebook.server.entity.Like;
+import com.facebook.server.dto.request.LikeRequest;
+import com.facebook.server.dto.response.LikeResponse;
 import com.facebook.server.service.LikeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,40 +18,29 @@ public class LikeController {
     private LikeService likeService;
 
     @GetMapping
-    public ResponseEntity<List<Like>> getAllLikes() {
+    public ResponseEntity<List<LikeResponse>> getAllLikes() {
         return ResponseEntity.ok(likeService.getAllLikes());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Like> getLikeById(@PathVariable String id) {
-        return likeService.getLikeById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<LikeResponse> getLikeById(@PathVariable String id) {
+        return ResponseEntity.ok(likeService.getLikeById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Like> createLike(@RequestBody Like like) {
-        Like saved = likeService.createLike(like);
-        return ResponseEntity.status(201).body(saved);
+    public ResponseEntity<LikeResponse> createLike(@RequestBody LikeRequest request) {
+        return ResponseEntity.ok(likeService.createLike(request));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Like> updateLike(@PathVariable String id, @RequestBody Like likeDetails) {
-        try {
-            Like updated = likeService.updateLike(id, likeDetails);
-            return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    // @PatchMapping("/{id}")
+    // public ResponseEntity<LikeResponse> updateLike(@PathVariable String id,
+    // @RequestBody LikeRequest request) {
+    // return ResponseEntity.ok(likeService.updateLike(id, request));
+    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLike(@PathVariable String id) {
-        try {
-            likeService.deleteLike(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        likeService.deleteLike(id);
+        return ResponseEntity.noContent().build();
     }
 }

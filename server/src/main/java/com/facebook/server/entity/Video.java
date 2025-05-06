@@ -11,8 +11,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "videos")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Video {
@@ -25,7 +24,7 @@ public class Video {
     private String video;
 
     @ManyToOne
-    @JoinColumn(name = "thumbnail_id")
+    @JoinColumn()
     private Image thumbnail;
 
     @Column(columnDefinition = "TEXT")
