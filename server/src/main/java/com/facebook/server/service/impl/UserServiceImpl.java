@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
           .orElseThrow(() -> new BadCredentialsException(StringUtil.INVALID_CREDENTIALS));
 
       return LoginResponse.builder()
-          .jwtToken(jwtService.generateToken(authentication))
+          .accessToken(jwtService.generateToken(authentication))
           .role(authentication.getAuthorities().iterator().next().getAuthority())
           .baned(Boolean.TRUE.equals(user.getBaned()))
           .build();
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
           new UsernamePasswordAuthenticationToken(userModel.getEmail(), userModel.getPassword()));
 
       return LoginResponse.builder()
-          .jwtToken(jwtService.generateToken(authentication))
+          .accessToken(jwtService.generateToken(authentication))
           .role(authentication.getAuthorities().iterator().next().getAuthority())
           .build();
     } catch (AuthenticationException e) {
