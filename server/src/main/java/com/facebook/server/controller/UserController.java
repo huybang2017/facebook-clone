@@ -8,6 +8,7 @@ import com.facebook.server.dto.response.ErrorResponse;
 import com.facebook.server.dto.response.LoginResponse;
 import com.facebook.server.dto.response.UserListResponse;
 import com.facebook.server.entity.constants.ImageType;
+import com.facebook.server.service.PostImageService;
 import com.facebook.server.service.UserService;
 import com.facebook.server.utils.StringUtil;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
   private final UserService userService;
+  private final PostImageService postImageService;
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {

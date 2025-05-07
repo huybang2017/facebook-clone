@@ -6,6 +6,5 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorResponse {
-
-    private String errorMessage;
+  private String errorMessage;
 }
