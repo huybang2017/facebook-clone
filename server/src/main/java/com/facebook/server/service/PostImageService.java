@@ -4,8 +4,6 @@ import com.facebook.server.dto.response.PhotoListResponse;
 import com.facebook.server.entity.PostImage;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 public interface PostImageService {
 
   void uploadPostImages(Long postId, MultipartFile[] files);
