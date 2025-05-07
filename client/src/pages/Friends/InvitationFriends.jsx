@@ -7,7 +7,6 @@ import { ToastContext } from "@/contexts/ToastProvider";
 const InvitationFriends = () => {
   const [invitations, setInvitations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const { toast } = useContext(ToastContext);
 
   useEffect(() => {

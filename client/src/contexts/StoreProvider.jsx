@@ -10,7 +10,7 @@ const StoreProvider = ({ children }) => {
     if (token) {
       getInfo()
         .then((res) => {
-          const user = res.data;
+          const user = res;
           if (user.image == null) {
             user.image = avatarDefault;
           }

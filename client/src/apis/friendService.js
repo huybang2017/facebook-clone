@@ -19,9 +19,10 @@ const getFriendRequests = async (userId, pageNo = 0, pageSize = 10) => {
 
 // Lấy danh sách bạn bè của user
 const getUserFriends = async (userId, pageNo = 0, pageSize = 10) => {
-  return await axiosClient.get(`/friends/list/${userId}`, {
+  const res = await axiosClient.get(`/friends/list/${userId}`, {
     params: { pageNo, pageSize },
   });
+  return res;
 };
 
 // Trạng thái bạn bè (có đang là bạn hay không)
