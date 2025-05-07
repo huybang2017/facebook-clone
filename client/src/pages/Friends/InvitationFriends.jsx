@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import axiosClient from "@/apis/axiosClient";
-import { getFriends } from "@/apis/friendService";
 import { ToastContext } from "@/contexts/ToastProvider";
 
 const InvitationFriends = () => {

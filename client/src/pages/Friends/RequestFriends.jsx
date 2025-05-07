@@ -3,14 +3,15 @@ import { Link } from "react-router-dom";
 import { ToastContext } from "@/contexts/ToastProvider";
 import defaultAvatar from "@/assets/images/default_avatar.jpg";
 import {
-  getAllUsers,
-  getFriendRequest,
-  delelteFriendRequest,
   addFriendRequest,
+  getFriendRequests,
+  getFriendSuggestions,
+  deleteFriendRequest,
 } from "@/apis/friendService";
 
 const RequestFriends = () => {
   const [sentRequests, setSentRequests] = useState([]);
+  const [newRequest, setNewRequest] = useState(null);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useContext(ToastContext);
@@ -19,7 +20,7 @@ const RequestFriends = () => {
     const fetchSentRequests = async () => {
       try {
         setLoading(true);
-        const res = await getFriendRequest();
+        const res = await getFriendRequests();
         if (res && res.data && res.data.data) {
           setSentRequests(res.data.data);
         } else {
@@ -45,7 +46,7 @@ const RequestFriends = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await getAllUsers();
+        const res = await getFriendSuggestions();
         if (res && res.data && res.data.data) {
           setUsers(res.data.data);
         } else {
@@ -70,7 +71,7 @@ const RequestFriends = () => {
 
   const handleDeleteRequest = async (requestId) => {
     try {
-      const res = await delelteFriendRequest(requestId);
+      const res = await deleteFriendRequest(requestId);
       if (res && res.data && res.data.success) {
         setSentRequests((prevRequests) =>
           prevRequests.filter((request) => request.id !== requestId)

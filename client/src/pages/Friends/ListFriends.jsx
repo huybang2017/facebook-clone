@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from "react";
-import axiosClient from "@/apis/axiosClient";
-import { getAllFriends, deleteFriend } from "@/apis/friendService";
 import FriendCard from "@/components/Friend/FriendCard";
 import Button from "@/components/Button/Button";
 import { ToastContext } from "@/contexts/ToastProvider";
+import { getUserFriends, unfriend } from "@/apis/friendService";
 
 const ListFriends = () => {
   const [friends, setFriends] = useState([]);
@@ -15,7 +14,7 @@ const ListFriends = () => {
     const fetchFriends = async () => {
       try {
         setLoading(true);
-        const res = await getAllFriends();
+        const res = await getUserFriends();
         if (res && res.data && res.data.data) {
           setFriends(res.data.data);
         } else {
@@ -40,7 +39,7 @@ const ListFriends = () => {
 
   const handleRemoveFriend = async (friendId) => {
     try {
-      const res = await deleteFriend(friendId);
+      const res = await unfriend(friendId);
       if (res && res.data && res.data.success) {
         setFriends((prevFriends) =>
           prevFriends.filter((friend) => friend.id !== friendId)
