@@ -1,8 +1,8 @@
 package com.facebook.server.exception;
 
-import com.facebook.server.dto.response.ErrorResponse;
 import com.facebook.server.utils.StringUtil;
 import jakarta.persistence.EntityExistsException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -21,66 +22,81 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
+  private CustomErrorResponse buildError(HttpServletRequest request, HttpStatus status, Object message) {
+    return new CustomErrorResponse(
+        request.getRequestURI(),
+        LocalDateTime.now(),
+        status.value(),
+        message.toString());
+  }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<CustomErrorResponse> handleBadCredentialsException(BadCredentialsException e,
+      HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(buildError(request, HttpStatus.UNAUTHORIZED, e.getMessage()));
+  }
 
-    @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<String> handleEntityExistsException(Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-    }
+  @ExceptionHandler(AuthenticationException.class)
+  public ResponseEntity<CustomErrorResponse> handleAuthenticationException(AuthenticationException e,
+      HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(buildError(request, HttpStatus.UNAUTHORIZED, e.getMessage()));
+  }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity exceptionHandler(MethodArgumentNotValidException err) {
+  @ExceptionHandler(EntityExistsException.class)
+  public ResponseEntity<CustomErrorResponse> handleEntityExistsException(EntityExistsException e,
+      HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(buildError(request, HttpStatus.CONFLICT, e.getMessage()));
+  }
 
-        Map<String, String> errors = new HashMap<>();
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<CustomErrorResponse> handleValidationException(MethodArgumentNotValidException err,
+      HttpServletRequest request) {
+    Map<String, String> errors = new HashMap<>();
+    err.getBindingResult().getAllErrors().forEach(error -> {
+      if (error instanceof FieldError fieldError) {
+        errors.put(fieldError.getField(), error.getDefaultMessage());
+      } else if (error instanceof ObjectError objectError) {
+        errors.put(objectError.getObjectName(), objectError.getDefaultMessage());
+      }
+    });
+    return ResponseEntity.badRequest().body(buildError(request, HttpStatus.BAD_REQUEST, errors));
+  }
 
-        err.getBindingResult()
-                .getAllErrors()
-                .forEach((error) -> {
-                    if (error instanceof FieldError) {
-                        String fieldName = ((FieldError) error).getField();
-                        String errorMessage = error.getDefaultMessage();
-                        errors.put(fieldName, errorMessage);
-                    } else if (error instanceof ObjectError) {
-                        String objectName = ((ObjectError) error).getObjectName();
-                        String errorMessage = error.getDefaultMessage();
-                        errors.put(objectName, errorMessage);
-                    }
-                });
-        return ResponseEntity.badRequest().body(errors);
-    }
+  @ExceptionHandler(NoSuchElementException.class)
+  public ResponseEntity<CustomErrorResponse> handleNoSuchElementException(NoSuchElementException e,
+      HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(buildError(request, HttpStatus.NOT_FOUND, e.getMessage()));
+  }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<CustomErrorResponse> handleIllegalArgumentException(IllegalArgumentException e,
+      HttpServletRequest request) {
+    return ResponseEntity.badRequest()
+        .body(buildError(request, HttpStatus.BAD_REQUEST, e.getMessage()));
+  }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ResponseEntity<CustomErrorResponse> handleImageMaxSizeException(MaxUploadSizeExceededException e,
+      HttpServletRequest request) {
+    return ResponseEntity.badRequest()
+        .body(buildError(request, HttpStatus.BAD_REQUEST, StringUtil.SIZE_EXCEEDED));
+  }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponse> handeImageMaxSizeException(MaxUploadSizeExceededException e) {
-        ErrorResponse errorResponse = new ErrorResponse(StringUtil.SIZE_EXCEEDED);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<CustomErrorResponse> handleIllegalStateException(IllegalStateException e,
+      HttpServletRequest request) {
+    return ResponseEntity.badRequest()
+        .body(buildError(request, HttpStatus.BAD_REQUEST, e.getMessage()));
+  }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception e) {
-        // ErrorResponse errorResponse = new ErrorResponse(StringUtil.ERROR_MESSAGE);
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<CustomErrorResponse> handleGeneralException(Exception e,
+      HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(buildError(request, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+  }
 }

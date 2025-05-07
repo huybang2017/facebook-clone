@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public interface PostImageService {
 
-    void uploadPostImages(Long postId, MultipartFile[] files);
+  void uploadPostImages(Long postId, MultipartFile[] files);
 
-    byte[] getImages(String filename) throws IOException;
+  // byte[] getImages(String filename) throws IOException;
 
-    PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize);
+  PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize);
 
-    PostImage getPostImage(Long postImageId);
+  PostImage getPostImage(Long postImageId);
 }

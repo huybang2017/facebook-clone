@@ -54,10 +54,10 @@ public class PostImageServiceImpl implements PostImageService {
     }
   }
 
-  @Override
-  public byte[] getImages(String filename) throws IOException {
-    return Files.readAllBytes(Paths.get(filename));
-  }
+  // @Override
+  // public byte[] getImages(String filename) throws IOException {
+  // return Files.readAllBytes(Paths.get(filename));
+  // }
 
   @Override
   public PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize) {

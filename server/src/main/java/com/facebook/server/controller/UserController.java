@@ -8,7 +8,6 @@ import com.facebook.server.dto.response.ErrorResponse;
 import com.facebook.server.dto.response.LoginResponse;
 import com.facebook.server.dto.response.UserListResponse;
 import com.facebook.server.entity.constants.ImageType;
-import com.facebook.server.service.PostImageService;
 import com.facebook.server.service.UserService;
 import com.facebook.server.utils.StringUtil;
 import jakarta.validation.Valid;
@@ -19,18 +18,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
-import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
-
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
 
   private final UserService userService;
-  private final PostImageService postImageService;
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -77,11 +70,6 @@ public class UserController {
       @RequestPart(value = "file") MultipartFile file,
       @RequestPart(value = "description", required = false) String description) {
     userService.uploadUserImage(file, imageType, description);
-  }
-
-  @GetMapping(path = "/image/{filename}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })
-  public byte[] getUserPhoto(@PathVariable("filename") String filename) throws IOException {
-    return postImageService.getImages(filename);
   }
 
   @GetMapping("/search")
