@@ -17,7 +17,6 @@ export function LoginForm({ className, ...props }) {
       if (response.data) {
         const res = response.data;
         localStorage.setItem("token", res.data.accessToken);
-        localStorage.setItem("refreshToken", res.data.refreshToken);
         toast.success(response.data.message);
         setTimeout(() => (window.location.href = "/"), 2000);
       }

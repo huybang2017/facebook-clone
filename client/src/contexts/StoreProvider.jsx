@@ -8,7 +8,7 @@ const StoreProvider = ({ children }) => {
   const token = localStorage.getItem("token");
   useEffect(() => {
     if (token) {
-      getInfo(token)
+      getInfo()
         .then((res) => {
           const user = res.data;
           if (user.image == null) {
