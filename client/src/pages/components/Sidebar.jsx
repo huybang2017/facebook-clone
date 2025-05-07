@@ -13,7 +13,7 @@ const menuItems = [
     id: 3,
     name: "Bạn bè",
     icon: <Users className="w-5 h-5" />,
-    link: "/friends",
+    link: "/friends/list",
   },
   {
     id: 4,
