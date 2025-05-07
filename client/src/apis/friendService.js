@@ -1,34 +1,53 @@
 import axiosClient from "./axiosClient";
 
-const getUsers = async () => {
-  return await axiosClient.get("/users");
+const getAllUsers = async () => {
+  return await axiosClient.get("/users/list");
 };
 
-const getFriends = async () => {
-  return await axiosClient.get("/friends");
+const getAllFriends = async () => {
+  return await axiosClient.get("/friends/list");
 };
 
-const getFriendRequests = async () => {
-  return await axiosClient.get("/friend-requests");
+const getFriendById = async (friendId) => {
+  return await axiosClient.get(`/friends/${friendId}`);
 };
 
-const sendFriendRequest = async (userId) => {
-  return await axiosClient.post("/friend-requests", { userId });
+const deleteFriend = async (friendId) => {
+  return await axiosClient.delete(`/friends/${friendId}`);
+};
+const getFriendRequest = async () => {
+  return await axiosClient.get("/friends/request");
 };
 
-const acceptFriendRequest = async (requestId) => {
-  return await axiosClient.post(`friend-requests/${requestId}/accept`);
+const delelteFriendRequest = async (requestId) => {
+  return await axiosClient.delete(`/friends/request/${requestId}`);
+};
+
+const addFriendRequest = async (friendId) => {
+  return await axiosClient.post(`/friends/request/${friendId}`);
+};
+
+const getFriendInvitation = async () => {
+  return await axiosClient.get("/friends/invitation");
+};
+
+const acceptFriendAcvitation = async (requestId) => {
+  return await axiosClient.post(`/friends/invitation/accept/${requestId}`);
 };
 
 const rejectFriendRequest = async (requestId) => {
-  return await axiosClient.post(`friend-requests/${requestId}/reject`);
+  return await axiosClient.post(`/friends/invitation/reject/${requestId}`);
 };
 
 export {
-  getUsers,
-  getFriends,
-  getFriendRequests,
-  sendFriendRequest,
-  acceptFriendRequest,
+  getAllUsers,
+  getAllFriends,
+  getFriendById,
+  deleteFriend,
+  addFriendRequest,
+  getFriendRequest,
+  delelteFriendRequest,
+  getFriendInvitation,
+  acceptFriendAcvitation,
   rejectFriendRequest,
 };

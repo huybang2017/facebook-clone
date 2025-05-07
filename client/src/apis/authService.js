@@ -17,7 +17,6 @@ const getInfo = async (token) => {
 
 const getPosts = async () => {
   const res = await axiosClient.get("/posts");
-  console.log(res);
   return res;
 };
 
