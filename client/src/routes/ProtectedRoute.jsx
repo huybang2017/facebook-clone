@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
         return;
       }
       try {
-        const res = await getInfo(token);
+        const res = await getInfo();
         if (res.status == 200) {
           setIsValid(true);
         } else {

@@ -1,47 +1,83 @@
 package com.facebook.server.controller;
 
+import com.facebook.server.dto.model.UserModel;
+import com.facebook.server.dto.request.BanUserRequest;
+import com.facebook.server.dto.request.LoginRequest;
+import com.facebook.server.dto.response.BanResponse;
+import com.facebook.server.dto.response.ErrorResponse;
+import com.facebook.server.dto.response.LoginResponse;
+import com.facebook.server.dto.response.UserListResponse;
+import com.facebook.server.entity.constants.ImageType;
+import com.facebook.server.service.PostImageService;
+import com.facebook.server.service.UserService;
+import com.facebook.server.utils.StringUtil;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
-import com.facebook.server.dto.response.BaseResponse;
-import com.facebook.server.dto.response.UserResponse;
-import com.facebook.server.dto.request.UpdateUserRequest;
-import com.facebook.server.service.UserService;
-import jakarta.validation.Valid;
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+  private final UserService userService;
+  private final PostImageService postImageService;
 
-    @GetMapping
-    public ResponseEntity<BaseResponse<List<UserResponse>>> getAllUsers() {
-        List<UserResponse> users = userService.getAllUsers();
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK, "Lấy danh sách user thành công", users));
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    try {
+      LoginResponse loginResponse = userService.login(loginRequest);
+      return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+    } catch (BadCredentialsException e) {
+      ErrorResponse errorResponse = new ErrorResponse(StringUtil.INVALID_CREDENTIALS);
+      return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
+  }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<UserResponse>> getUserById(@PathVariable String id) {
-        UserResponse user = userService.getUserById(id);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK, "Lấy user thành công", user));
-    }
+  @PostMapping("/register")
+  @ResponseStatus(HttpStatus.CREATED)
+  public LoginResponse register(@RequestBody @Valid UserModel userModel) {
+    return userService.register(userModel);
+  }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<BaseResponse<UserResponse>> updateUser(@PathVariable String id,
-            @Valid @RequestBody UpdateUserRequest userDetails) {
-        UserResponse updatedUser = userService.updateUser(id, userDetails);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK, "Cập nhật user thành công", updatedUser));
+  @PostMapping("/{id}/ban")
+  public ResponseEntity<?> banUser(
+      @PathVariable("id") Long userId,
+      @RequestBody BanUserRequest request) {
+    try {
+      BanResponse response = userService.banUser(userId, request.getBaned());
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+      ErrorResponse errorResponse = new ErrorResponse(StringUtil.BAN_STRING);
+      return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+  }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<String>> deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-        return ResponseEntity
-                .ok(new BaseResponse<>(HttpStatus.OK, "Xóa user thành công", "User deleted successfully!"));
-    }
+  @GetMapping
+  public UserModel getCurrentUserInfo() {
+    return userService.getCurrentUserInfo();
+  }
+
+  @GetMapping("/profile/{userId}")
+  public UserModel getUserProfileInfo(@PathVariable Long userId) {
+    return userService.getUserProfileInfo(userId);
+  }
+
+  @PostMapping("/profile/picture/upload/{imageType}")
+  public void uploadUserImage(@PathVariable(value = "imageType") ImageType imageType,
+      @RequestPart(value = "file") MultipartFile file,
+      @RequestPart(value = "description", required = false) String description) {
+    userService.uploadUserImage(file, imageType, description);
+  }
+
+  @GetMapping("/search")
+  public UserListResponse searchUser(@RequestParam(value = "keyword") String search,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+    return userService.searchUser(search, pageNo, pageSize);
+  }
 }

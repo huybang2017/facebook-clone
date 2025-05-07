@@ -17,7 +17,6 @@ const UserAction = () => {
   const onCloseModal = () => setOpenModal(false);
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
     navigate("/login");
   };
   return (

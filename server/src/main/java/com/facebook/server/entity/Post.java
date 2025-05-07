@@ -1,61 +1,56 @@
 package com.facebook.server.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import com.facebook.server.utils.Enum.StatusPost;
-import com.facebook.server.utils.Enum.StatusShow;
+import java.util.ArrayList;
+import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "posts")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Post {
+public class Post extends Timestamp {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long postId;
+    private String content;
 
-  private String caption;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-  @Enumerated(EnumType.STRING)
-  @Column()
-  private StatusPost statusPost;
+    @ManyToOne
+    @JoinColumn(name = "guest_poster_id")
+    private User guestPoster;
 
-  @Enumerated(EnumType.STRING)
-  @Column()
-  private StatusShow statusShow;
+    @ManyToOne
+    @JoinColumn(name = "shared_post_id")
+    private Post sharedPost;
 
-  @ManyToMany()
-  @JoinTable(name = "post_image", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "image_id", referencedColumnName = "id"))
-  private Set<Image> images = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "shared_image_id")
+    private PostImage sharedImage;
 
-  @ManyToMany()
-  @JoinTable(name = "post_video", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "video_id", referencedColumnName = "id"))
-  private Set<Video> videos = new HashSet<>();
+    @OneToMany(mappedBy = "sharedPost", cascade = CascadeType.ALL)
+    private List<Post> sharedPosts = new ArrayList<>();
 
-  @ManyToOne
-  @JoinColumn()
-  private User user;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostImage> postImages = new ArrayList<>();
 
-  @Column(updatable = false)
-  private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostLike> postLikes = new ArrayList<>();
 
-  @Column()
-  private LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostComment> postComments = new ArrayList<>();
 
-  @PrePersist
-  protected void onCreate() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = LocalDateTime.now();
-  }
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Notification> notifications = new ArrayList<>();
 
-  @PreUpdate
-  protected void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
-  }
 }

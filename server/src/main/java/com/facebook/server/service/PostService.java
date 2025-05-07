@@ -1,93 +1,37 @@
 package com.facebook.server.service;
 
-import com.facebook.server.dto.request.PostRequest;
-import com.facebook.server.entity.Image;
+import com.facebook.server.dto.model.PostModel;
+import com.facebook.server.dto.request.SharePostRequest;
+import com.facebook.server.dto.response.PostListResponse;
+import com.facebook.server.dto.response.PostListResponseAdmin;
+import com.facebook.server.dto.response.PostResponse;
+import com.facebook.server.dto.response.SharedPostCountResponse;
 import com.facebook.server.entity.Post;
-import com.facebook.server.entity.User;
-import com.facebook.server.entity.Video;
-import com.facebook.server.repository.ImageRepository;
-import com.facebook.server.repository.PostRepository;
-import com.facebook.server.repository.UserRepository;
-import com.facebook.server.repository.VideoRepository;
+import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.stereotype.Service;
+public interface PostService {
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+  void createPost(Long userId, String content, MultipartFile[] files);
 
-@Service
-public class PostService {
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
-    private final ImageRepository imageRepository;
-    private final VideoRepository videoRepository;
+  PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize);
 
-    public PostService(PostRepository postRepository, UserRepository userRepository,
-            ImageRepository imageRepository, VideoRepository videoRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-        this.imageRepository = imageRepository;
-        this.videoRepository = videoRepository;
-    }
+  PostListResponse fetchAllPosts(int pageNo, int pageSize);
 
-    public List<Post> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return posts;
-    }
+  PostListResponseAdmin fetchAllPostHaveContent(int pageNo, int pageSize);
 
-    public Optional<Post> getPostById(String id) {
-        return postRepository.findById(id);
-    }
+  void sharePost(Long postId, SharePostRequest request);
 
-    public Post createPost(PostRequest postRequest) {
-        User user = userRepository.findById(postRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+  void sharePostImage(Long postImageId, Long postId, SharePostRequest request);
 
-        Post post = new Post();
-        post.setCaption(postRequest.getCaption());
-        post.setStatusPost(postRequest.getStatusPost());
-        post.setStatusShow(postRequest.getStatusShow());
-        post.setUser(user);
+  SharedPostCountResponse getSharedPostImageCount(Long postImageId);
 
-        if (postRequest.getImageIds() != null && !postRequest.getImageIds().isEmpty()) {
-            Set<Image> images = new HashSet<>(imageRepository.findAllById(postRequest.getImageIds()));
-            post.setImages(images);
-        }
+  SharedPostCountResponse getSharedPostCount(Long postId);
 
-        if (postRequest.getVideoIds() != null && !postRequest.getVideoIds().isEmpty()) {
-            Set<Video> videos = new HashSet<>(videoRepository.findAllById(postRequest.getVideoIds()));
-            post.setVideos(videos);
-        }
+  void deletePost(Long postId);
 
-        return postRepository.save(post);
-    }
+  PostResponse findPostCreatorById(Long postId);
 
-    public Post updatePost(String id, PostRequest postRequest) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại"));
+  PostModel getPostById(Long postId);
 
-        post.setCaption(postRequest.getCaption());
-        post.setStatusPost(postRequest.getStatusPost());
-        post.setStatusShow(postRequest.getStatusShow());
-
-        if (postRequest.getImageIds() != null) {
-            Set<Image> images = new HashSet<>(imageRepository.findAllById(postRequest.getImageIds()));
-            post.setImages(images);
-        }
-
-        if (postRequest.getVideoIds() != null) {
-            Set<Video> videos = new HashSet<>(videoRepository.findAllById(postRequest.getVideoIds()));
-            post.setVideos(videos);
-        }
-
-        return postRepository.save(post);
-    }
-
-    public void deletePost(String id) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại"));
-        postRepository.delete(post);
-    }
+  Post getPost(Long postId);
 }

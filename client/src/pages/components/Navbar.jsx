@@ -14,7 +14,7 @@ const navbarItems = [
     id: 2,
     name: "Bạn bè",
     icon: <Users className="w-6 h-6 text-gray-700 hover:text-black" />,
-    link: "/friends",
+    link: "/friends/list",
   },
   {
     id: 3,

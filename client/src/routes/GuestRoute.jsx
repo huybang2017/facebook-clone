@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { StoreContext } from "@/contexts/StoreProvider";
 
 const GuestRoute = ({ children }) => {
   //   const { userInfo } = useContext(StoreContext);
