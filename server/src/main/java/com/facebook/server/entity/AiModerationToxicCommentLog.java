@@ -15,8 +15,8 @@ public class AiModerationToxicCommentLog {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "commment_id") // sửa lỗi chính tả nếu cần
-    private Comment comment;
+    @JoinColumn(name = "commment_id")
+    private PostComment comment;
 
     private LocalDateTime createdAt;
 }
