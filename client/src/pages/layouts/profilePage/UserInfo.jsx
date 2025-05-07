@@ -1,8 +1,9 @@
 
 import { useState, useEffect, useContext } from "react";
-import axiosClient from "@/apis/axiosClient";
-import { getInfo } from "@/apis/profileService";
-import Button  from "@/components/Button/Button";
+import { StoreContext } from "@/contexts/StoreProvider";
+import { uploadImage } from "@/apis/profileService";
+import ProfileEdit from "@/components/Profile/ProfileEdit";
+import CoverPhoto from "./coverphoto";
 const defaultUser = {
     name: "Bảo Phan",
     friendCount: 0,
@@ -10,88 +11,169 @@ const defaultUser = {
 };
 
 const UserInfo = () => {
-    const [Modal, setModal] = useState(false);
-    const [user, setUser] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-
+    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [coverPreview, setCoverPreview] = useState(null);
+    const { toast } = useContext(StoreContext);
+    const { userInfo } = useContext(StoreContext);
+  
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            try {
-                setLoading(true);
-                const data = await getInfo();
-                if (data) {
-                    setUser(data);
-                } else {
-                    setUser(defaultUser);
-                }
-            } catch (err) {
-                setUser(defaultUser);
-                setError("Không thể tải thông tin người dùng!");
-            } finally {
-                setLoading(false);
+        if (userInfo) {
+            setUser(userInfo);
+            setLoading(false);
+        }
+    }, [userInfo]);
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Gọi API upload ảnh đại diện nếu có
+            if (avatarPreview) {
+                const avatarFile = await fetch(avatarPreview).then(res => res.blob());
+                const avatarForm = new FormData();
+                avatarForm.append("image", avatarFile);
+                await uploadImage("avatar", avatarForm);
             }
-        };
-        fetchUserInfo();
-    }, []);
+
+            // Gọi API upload ảnh bìa nếu có
+            if (coverPreview) {
+                const coverFile = await fetch(coverPreview).then(res => res.blob());
+                const coverForm = new FormData();
+                coverForm.append("image", coverFile);
+                await uploadImage("cover", coverForm);
+            }
+
+            alert("Cập nhật ảnh thành công!");
+            setModalOpen(false);
+            // Reload lại thông tin người dùng nếu cần
+        } catch (error) {
+            console.error("Lỗi khi upload ảnh:", error);
+            alert("Đã xảy ra lỗi khi cập nhật ảnh!");
+        }
+    };
+
+
+
+
+    const handleAvatarChange = (e) => {
+        // Xử lý thay đổi ảnh đại diện ở đây
+        const file = e.target.files[0];
+        if (file) {
+            const imageURL = URL.createObjectURL(file);
+            setAvatarPreview(imageURL);
+        }
+    };
+    const handleCoverChange = (e) => {
+        // Xử lý thay đổi ảnh bìa ở đây
+        const file = e.target.files[0];
+        if (file) {
+            const imageURL = URL.createObjectURL(file);
+            setCoverPreview(imageURL);
+        }
+    };
+
+
 
     if (loading) return <p>Đang tải...</p>;
     if (!user) return <p>Không có dữ liệu người dùng.</p>;
-
+    console.log(user?.name);
     return (
-        <div style={{ display: "flex", alignItems: "center", padding: "20px", position: "relative" }}>
-            <div style={{ marginTop: "-75px", marginRight: "20px" }}>
-                <img
-                    src={user.image_id}
-                    alt="Avatar"
-                    style={{
-                        width: "150px",
-                        height: "150px",
-                        borderRadius: "50%",
-                        border: "4px solid white",
-                        boxShadow: "0 0 10px rgba(0,0,0,0.2)",
-                    }}
-                />
-            </div>
+        <>
+            <CoverPhoto coverUrl={user.coverurl} />
+            <div className="flex items-center px-5 py-5 relative">
+                <div className="-mt-[75px] mr-5">
+                    <img
+                        src={user.image}
+                        alt="Avatar"
+                        className="w-[150px] h-[150px] rounded-full border-[4px] border-white shadow-md object-cover"
+                    />
+                </div>
 
-            <div>
-                <h2 style={{ margin: 0 }}>{user.name}</h2>
-                <p style={{ color: "gray" }}>{user.friendCount} người bạn</p>
-            </div>
+                <div>
+                    <h2 className="m-0 text-lg font-semibold">{user?.name}</h2>
+                    <p className="text-gray-500">{user.friendCount} người bạn</p>
+                </div>
 
-            <div style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
-                <button style={{ padding: "8px 16px", border: "none", borderRadius: "6px", backgroundColor: "#0866FF", color: "white", fontWeight: "bold" }}>
-                    + Đăng bài viết
+                <div className="ml-auto flex gap-2">
+                    <button className="px-4 py-2 rounded-md bg-blue-600 text-white font-bold">
+                        + Đăng bài viết
                     </button>
 
-                <button style={{ padding: "8px 16px", border: "none", borderRadius: "6px", backgroundColor: "#D6D9DD", fontWeight: "bold" ,color:"black", cursor:"default"}}>
-                    Chỉnh sửa trang cá nhân
-                </button>
-                <ProfileEdit open={openModal} setOpen={setOpenModal}>
-                    <h2 className="text-xl font-bold mb-4">Cập nhật ảnh đại diện</h2>
-                    <form>
+                    <button
+                        onClick={() => setModalOpen(true)}
+                        className="px-4 py-2 rounded-md bg-gray-200 text-black font-bold cursor-pointer"
+                    >
+                        Chỉnh sửa trang cá nhân
+                    </button>
+                </div>
+            </div>
+
+
+            {/* Hiển thị Modal */}
+            <ProfileEdit open={modalOpen} setOpen={setModalOpen}>
+                <h2 className="text-xl font-semibold mb-4 text-center">Chỉnh sửa ảnh cá nhân</h2>
+
+                <form className="space-y-4">
+                    {/* Cover + Avatar Preview */}
+                    <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden">
+                        {/* Cover image */}
+                        <img
+                            src={coverPreview || "https://via.placeholder.com/800x200"}
+                            alt="Ảnh bìa"
+                            className="w-full h-full object-cover"
+                        />
+
+                        {/* Avatar image chồng lên */}
+                        <div className="absolute inset-x-0 bottom-0 flex justify-center ">
+                            <img
+                                src={avatarPreview || "https://via.placeholder.com/150"}
+                                alt="Ảnh đại diện"
+                                className="w-24 h-24 rounded-full border-4 border-white object-cover"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Upload Cover */}
+                    <div>
+                        <label className="block font-medium mb-1">Cập nhật ảnh bìa:</label>
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={handleFileChange}
-                            className="mb-4"
+                            className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
+                   file:rounded file:border-0 file:text-sm file:font-semibold
+                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            onChange={handleCoverChange}
                         />
-                        {selectedFile && (
-                            <p className="text-sm text-gray-600">
-                                File đã chọn: {selectedFile.name}
-                            </p>
-                        )}
-                        <button
-                            type="button"
-                            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
-                            onClick={() => alert("Gửi file lên server")}
-                        >
-                            Lưu thay đổi
-                        </button>
-                    </form>
-                </ProfileEdit>
-            </div>
-        </div>
+                    </div>
+
+                    {/* Upload Avatar */}
+                    <div>
+                        <label className="block font-medium mb-1">Cập nhật ảnh đại diện:</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
+                   file:rounded file:border-0 file:text-sm file:font-semibold
+                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+
+                            onChange={handleAvatarChange}
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition"
+                        onChange={handleSubmit}>
+                        Lưu thay đổi
+                    </button>
+                </form>
+            </ProfileEdit>
+
+        </>
     );
 };
 

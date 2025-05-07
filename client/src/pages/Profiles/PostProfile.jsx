@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import PostContent from "../../components/PostContent/PostContent";
 import ProfileCard from "@/components/Profile/ProfileCard.jsx";
+import { useEffect } from "react";
 import { Link } from "react-router-dom"; // Thêm import cho Link
 const PostProfile = () => {
     const [comments, setComments] = useState([
@@ -26,14 +27,55 @@ const PostProfile = () => {
         createdAt: "10 phút trước",
         userId: 1 // Assuming this is the logged-in user's ID
     }
-    // {
-    //     name: "Xuân Bảo",
-    //     caption: "This is a sample post caption",
-    //     image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    //     createdAt: "10 phút trước",
-    //     userId: 1, // Assuming this is the logged-in user's ID
-    // },
-    // ];
+const friendData = [
+    {
+        id: 1,
+        username: "Xuân Bảo",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+        },
+    {
+        id: 2,
+        username: "Nguyễn Văn A",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+        },  
+    {
+        id: 3,
+        username: "Trần Thị B",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+    },
+    {
+        id: 4,
+        username: "Xuân Bảo",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+    },
+    {
+        id: 5,
+        username: "Nguyễn Văn A",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+    },
+    {
+        id: 6,
+        username: "Trần Thị B",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+    },
+    {
+        id: 7,
+        username: "Xuân Bảo",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+    },
+    {
+        id: 8,
+        username: "Nguyễn Văn A",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+    },
+    {
+        id: 9,
+        username: "Trần Thị B",
+        image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
+    },
+    ]
+    
+    
 
     return (
 
@@ -47,71 +89,11 @@ const PostProfile = () => {
                     </div>
                     <span className="block p-2 -mt-5">130 người bạn</span>
                     {/* FriendList là component hiển thị danh sách bạn bè */}
-                    {/* <FriendList friends={friendData} /> */}
                     <div className="flex flex-wrap gap-4">
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
-                        <ProfileCard
-                            friend={{
-                                id: 1,
-                                username: "Xuân Bảo",
-                                image: "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-                            }}
-                        />
+                        {friendData.map((f) => (
+                            <ProfileCard key={f.id} friend={f} />
+                        ))}
+                        
 
                     </div>
                 </div>
