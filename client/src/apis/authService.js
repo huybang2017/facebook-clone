@@ -2,7 +2,7 @@ import axiosClient from "./axiosClient";
 
 // Hàm call api chức năng đăng ký
 const register = async (body) => {
-  return await axiosClient.post("/user/login", body);
+  return await axiosClient.post("/user/register", body);
 };
 
 // Hàm call api chức năng đăng nhập
@@ -15,8 +15,13 @@ const getInfo = async () => {
   return await axiosClient.get(`/user`);
 };
 
-const getPosts = async () => {
-  const res = await axiosClient.get("/posts");
+const getPosts = async (userId, pageNo = 0, pageSize = 10) => {
+  const res = await axiosClient.get(`/post/${userId}`, {
+    params: {
+      pageNo,
+      pageSize,
+    },
+  });
   return res;
 };
 

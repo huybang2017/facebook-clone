@@ -4,38 +4,41 @@ import FriendCard from "@/components/Friend/FriendCard";
 import Button from "@/components/Button/Button";
 import { ToastContext } from "@/contexts/ToastProvider";
 import { getUserFriends, unfriend } from "@/apis/friendService";
+import { StoreContext } from "@/contexts/StoreProvider";
 
 const ListFriends = () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useContext(ToastContext);
-
+  const { userInfo } = useContext(StoreContext);
   useEffect(() => {
     const fetchFriends = async () => {
-      try {
-        setLoading(true);
-        const res = await getUserFriends();
-        if (res && res.data && res.data.data) {
-          setFriends(res.data.data);
-        } else {
-          setFriends([]);
+      if (userInfo) {
+        try {
+          setLoading(true);
+          const res = await getUserFriends(userInfo.data.userId);
+          if (res && res.data) {
+            setFriends(res.data);
+          } else {
+            setFriends([]);
+          }
+        } catch (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            toast.error(error.response.data.message);
+          } else {
+            toast.error("Không thể tải danh sách bạn bè từ server!");
+          }
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          toast.error(error.response.data.message);
-        } else {
-          toast.error("Không thể tải danh sách bạn bè từ server!");
-        }
-      } finally {
-        setLoading(false);
       }
     };
     fetchFriends();
-  }, []);
+  }, [userInfo]);
 
   const handleRemoveFriend = async (friendId) => {
     try {
@@ -78,20 +81,23 @@ const ListFriends = () => {
         <>
           {/* Số lượng bạn bè */}
           <p className="text-gray-600 -mt-18 -mb-4 p-10 font-semibold">
-            {friends.length} người bạn
+            {friends?.length} người bạn
           </p>
 
           {/* Danh sách bạn bè */}
           <div className="w-full bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 px-10 gap-2">
-            {friends.map((friend) => (
-              <div key={friend.id} className="w-full">
-                <FriendCard friend={friend}>
-                  <Button onClick={() => handleRemoveFriend(friend.id)}>
-                    Hủy kết bạn
-                  </Button>
-                </FriendCard>
-              </div>
-            ))}
+            {friends?.userList?.map((friend) => {
+              console.log(friend);
+              return (
+                <div key={friend.id} className="w-full">
+                  <FriendCard friend={friend}>
+                    <Button onClick={() => handleRemoveFriend(friend.id)}>
+                      Hủy kết bạn
+                    </Button>
+                  </FriendCard>
+                </div>
+              );
+            })}
           </div>
         </>
       )}
