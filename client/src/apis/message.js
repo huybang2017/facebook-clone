@@ -5,7 +5,11 @@ export const sendMessage = async (messageData) => {
   return res;
 };
 
-export const fetchAllChatMessages = async (chatId, pageNo = 0, pageSize = 10) => {
+export const fetchAllChatMessages = async (
+  chatId,
+  pageNo = 0,
+  pageSize = 10
+) => {
   const res = await axiosClient.get(`/chat/message/${chatId}`, {
     params: { pageNo, pageSize },
   });

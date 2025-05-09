@@ -1,5 +1,4 @@
 import OnlyHeader from "@/pages/layouts/OnlyHeader";
-import HeaderSidebar from "@/pages/layouts/HeaderSidebar";
 import FriendPage from "@/pages/layouts/FriendLayout";
 import Home from "../pages/social-media/Home";
 import CreatePost from "../pages/social-media/CreatePost";

@@ -1,8 +1,12 @@
+import useFetchChatMessages from "@/hooks/useFetchChatMessages";
 import { Camera, Phone, SendHorizontal, Video, X } from "lucide-react";
 import { useState } from "react";
 
-const MessengerPopup = ({ user, messages, isOpen, setIsOpen }) => {
+const MessengerPopup = ({ chat, isOpen, setIsOpen }) => {
   const [input, setInput] = useState("");
+  const { data } = useFetchChatMessages({ chatId: chat?.id });
+  const messages = data?.pages?.flatMap((page) => page.messageModels) || [];
+  console.log(messages);
 
   const toggleMessenger = () => {
     setIsOpen(!isOpen);
@@ -15,10 +19,10 @@ const MessengerPopup = ({ user, messages, isOpen, setIsOpen }) => {
           {/* Header */}
           <div className="flex items-center justify-between p-3 bg-[#f0f0f0] text-black rounded-t-lg">
             <div className="flex items-center gap-2">
-              <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full" />
+              <img src={chat.avatar} alt={chat.avatar} className="w-10 h-10 rounded-full" />
               <div>
-                <p className="text-sm font-semibold">{user.name}</p>
-                <p className="text-xs text-gray-600">{user.status}</p>
+                <p className="text-sm font-semibold">{chat.sender}</p>
+                {/* <p className="text-xs text-gray-600">{chat.privateChatUser.status}</p> */}
               </div>
             </div>
             <div className="flex gap-3">
@@ -30,16 +34,16 @@ const MessengerPopup = ({ user, messages, isOpen, setIsOpen }) => {
 
           {/* Messages */}
           <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#fafafa] text-black text-sm">
-            {messages.map((msg, i) => (
+            {messages?.map((msg) => (
               <div
-                key={i}
-                className={`max-w-[80%] px-4 py-2 rounded-lg ${msg.fromSelf
+                key={msg.messageId}
+                className={`max-w-[80%] px-4 py-2 rounded-lg ${msg.sender.userId === chat.userId
                   ? "bg-blue-500 ml-auto text-white"
                   : "bg-gray-200 mr-auto text-black"
                   } break-words`}
               >
                 <div className="flex flex-col">
-                  <p>{msg.content}</p>
+                  <p>{msg.message}</p>
                   <span className="text-xs text-gray-500 mt-1">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
@@ -68,4 +72,3 @@ const MessengerPopup = ({ user, messages, isOpen, setIsOpen }) => {
 };
 
 export default MessengerPopup;
-

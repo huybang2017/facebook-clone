@@ -1,6 +1,10 @@
 import axiosClient from "./axiosClient";
 
-export const fetchAllNotifications = async (userId, pageNo = 0, pageSize = 10) => {
+export const fetchAllNotifications = async (
+  userId,
+  pageNo = 0,
+  pageSize = 10
+) => {
   const res = await axiosClient.get(`/notifications/${userId}`, {
     params: { pageNo, pageSize },
   });

@@ -1,36 +1,31 @@
+import { useContext, useState } from "react";
+import { StoreContext } from "@/contexts/StoreProvider";
+import useGetLastMessage from "@/hooks/useGetLastMessage";
 import { MessageCircle } from "lucide-react";
 import DropdownModal from "../DropdownModal";
-import { useState } from "react";
 import MessengerPopup from "./MessagePopUp";
-
-const fakeMessages = [
-  {
-    id: 1,
-    avatar: "https://www.w3schools.com/howto/img_avatar.png",
-    content: "Chào bạn, đơn hàng của bạn đã được xác nhận!",
-    sender: "Shop ABC",
-    createdAt: "2 phút trước",
-  },
-  {
-    id: 2,
-    avatar: "https://www.w3schools.com/howto/img_avatar2.png",
-    content: "Đơn hàng của bạn sẽ được giao vào ngày mai.",
-    sender: "Shop XYZ",
-    createdAt: "1 giờ trước",
-  },
-  {
-    id: 3,
-    avatar: "https://www.w3schools.com/howto/img_avatar.png",
-    content: "Bạn có muốn xem các sản phẩm mới không?",
-    sender: "Shop ABC",
-    createdAt: "3 ngày trước",
-  },
-];
+import useFetchAllUserChats from "@/hooks/useFetchAllUserChats";
 
 export default function MessageDropdown() {
-  const [messages, setMessages] = useState(fakeMessages);
+  const { userInfo } = useContext(StoreContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedChat, setSelectedChat] = useState(null);
 
+  const { data: allMessages } = useFetchAllUserChats({ userId: userInfo?.data.userId });
+
+  const { data: lastMessage } = useGetLastMessage(selectedChat?.id);
+  console.log(lastMessage);
+
+
+  const messages = allMessages?.pages.flatMap((page) =>
+    page.chatModels.map((chat) => ({
+      id: chat.chatId,
+      avatar: chat.privateChatUser?.profilePicture,
+      content: lastMessage?.chatId === chat.chatId ? lastMessage.message : "Tin nhắn chưa được gửi",
+      sender: `${chat.privateChatUser?.firstName} ${chat.privateChatUser?.lastName}`,
+      createdAt: lastMessage?.chatId === chat.chatId ? lastMessage.timestamp : "Vừa gửi",
+    }))
+  ) || [];
 
   return (
     <>
@@ -50,38 +45,39 @@ export default function MessageDropdown() {
           Tin nhắn
         </div>
         <ul className="max-h-80 overflow-y-auto divide-y divide-gray-200 bg-white">
-          {messages.map((msg) => (
-            <li key={msg.id} className="p-3 hover:bg-gray-50 cursor-pointer flex items-start space-x-3">
-              <img
-                src={msg.avatar}
-                alt="Avatar"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div className="flex-1">
-                <div className="font-medium">{msg.sender}</div>
-                <div className="text-sm">{msg.content}</div>
-                <div className="text-xs text-gray-500 mt-1">{msg.createdAt}</div>
-              </div>
-            </li>
-          ))}
-          {messages.length === 0 && (
+          {messages.length > 0 ? (
+            messages.map((msg) => (
+              <li
+                key={msg.id}
+                className="p-3 hover:bg-gray-50 cursor-pointer flex items-start space-x-3"
+                onClick={() => {
+                  setSelectedChat(msg);
+                  setIsOpen(true);
+                }}
+              >
+                <img
+                  src={msg.avatar}
+                  alt="Avatar"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <div className="flex-1">
+                  <div className="font-medium">{msg.sender}</div>
+                  <div className="text-sm">{msg.content}</div>
+                  <div className="text-xs text-gray-500 mt-1">{msg.createdAt}</div>
+                </div>
+              </li>
+            ))
+          ) : (
             <div className="p-4 text-gray-400 text-sm text-center">Không có tin nhắn mới</div>
           )}
         </ul>
       </DropdownModal>
-      <MessengerPopup
-        user={{ name: "Đinh Bá Sơn", avatar: "https://i.pravatar.cc/300", status: "Hoạt động 45 phút trước" }}
-        messages={[
-          { content: "Dậy ch", fromSelf: false },
-          { content: "Bể", fromSelf: false },
-          { content: "AOV_JXcBZHxasfdgasiudfhisahfdiuhsaiudhfiusahdiufhaiushdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", fromSelf: true },
-          { content: "Giúp a aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", fromSelf: true }
-        ]}
-        isOpen={isOpen}
-      />
-      <MessageDropdown />
-    </>
 
+      <MessengerPopup
+        chat={selectedChat}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      ></MessengerPopup>
+    </>
   );
 }
-

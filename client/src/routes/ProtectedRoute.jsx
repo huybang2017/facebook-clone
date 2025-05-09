@@ -31,12 +31,10 @@ const ProtectedRoute = ({ children }) => {
     return <div className="">Đang xác thực...</div>;
   }
 
-  // Nếu token không hợp lệ, người dùng sẽ được chuyển đến trang đăng nhập
   if (!isValid) {
     return <Navigate to={"/login"} />;
   }
 
-  // Nếu token hợp lệ thì người dùng được phép sử dụng route hiện tại
   return children;
 };
 

@@ -1,5 +1,5 @@
+import { markAsRead } from "@/apis/notification";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { markAsRead } from "@/apis/notificationApi";
 
 const useMarkAsRead = () => {
   const queryClient = useQueryClient();

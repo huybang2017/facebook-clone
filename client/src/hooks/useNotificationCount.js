@@ -1,5 +1,5 @@
+import { getNotificationCount } from "@/apis/notification";
 import { useQuery } from "@tanstack/react-query";
-import { getNotificationCount } from "@/apis/notificationApi";
 
 const useNotificationCount = (userId) => {
   return useQuery({

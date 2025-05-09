@@ -1,11 +1,13 @@
 import { fetchAllNotifications } from "@/apis/notification";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-const useNotificationList = ({ userId, pageSize = 10 }) => {
+const useFetchNotifications = ({ userId, pageSize = 3 }) => {
   return useInfiniteQuery({
     queryKey: ["notificationList", userId],
-    queryFn: ({ pageParam = 0 }) =>
-      fetchAllNotifications({ userId, pageParam, pageSize }),
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await fetchAllNotifications(userId, pageParam, pageSize);
+      return res.data;
+    },
     getNextPageParam: (lastPage) => {
       const { pageResponse } = lastPage;
       const { pageNo, totalPages } = pageResponse;
@@ -15,5 +17,4 @@ const useNotificationList = ({ userId, pageSize = 10 }) => {
   });
 };
 
-export default useNotificationList;
-
+export default useFetchNotifications;

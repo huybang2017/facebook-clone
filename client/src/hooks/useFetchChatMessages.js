@@ -1,11 +1,11 @@
+import { fetchAllChatMessages } from "@/apis/message";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchAllUserChats } from "@/apis/chat";
 
-const useFetchAllUserChats = ({ userId, pageSize = 10 }) => {
+const useFetchChatMessages = ({ chatId, pageSize = 10 }) => {
   return useInfiniteQuery({
-    queryKey: ["userChats", userId],
+    queryKey: ["chatMessages", chatId],
     queryFn: async ({ pageParam = 0 }) => {
-      const res = await fetchAllUserChats(userId, pageParam, pageSize);
+      const res = await fetchAllChatMessages(chatId, pageParam, pageSize);
       return res.data;
     },
     getNextPageParam: (lastPage) => {
@@ -13,8 +13,8 @@ const useFetchAllUserChats = ({ userId, pageSize = 10 }) => {
       const { pageNo, totalPages } = pageResponse;
       return pageNo + 1 < totalPages ? pageNo + 1 : undefined;
     },
-    enabled: !!userId,
+    enabled: !!chatId,
   });
 };
 
-export default useFetchAllUserChats;
+export default useFetchChatMessages;
