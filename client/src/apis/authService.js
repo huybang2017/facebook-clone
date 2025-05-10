@@ -12,15 +12,8 @@ const getInfo = async () => {
   return await axiosClient.get(`/user`);
 };
 
-const getPosts = async (userId, pageNo = 0, pageSize = 10) => {
-  const res = await axiosClient.get(`/post/${userId}`, {
-    params: {
-      pageNo,
-      pageSize,
-    },
-  });
-  return res;
-};
+// Hàm call api lấy danh sách bài post
+const getPosts = (userId) => axiosClient.get(`/post/${userId}`);
 
 const getProfileAnother = async (userId) => {
   const res = await axiosClient.get(`/user/profile/${userId}`);

@@ -8,19 +8,19 @@ const MenuItems = [
     id: 1,
     name: "Danh sách bạn bè",
     icon: <Users className="w-5 h-5" />,
-    link: "/friends/list",
+    link: "/friends",
   },
   {
     id: 2,
     name: "Yêu cầu kết bạn đã gửi",
     icon: <Send className="w-5 h-5" />,
-    link: "/friends/request",
+    link: "/friends/requests/sent",
   },
   {
     id: 3,
     name: "Lời mời kết bạn",
     icon: <UserPlus className="w-5 h-5" />,
-    link: "/friends/invitation",
+    link: "/friends/requests/received",
   },
 ];
 

@@ -26,11 +26,18 @@ public class FriendshipController {
         friendshipService.acceptFriendRequest(strangerUserId);
     }
 
-    @GetMapping("/request/list/{userId}")
-    public UserListResponse fetchAllFriendRequest(@PathVariable("userId") Long userId,
+    @GetMapping("/requests/sent/{userId}")
+    public UserListResponse fetchSentFriendRequests(@PathVariable("userId") Long userId,
             @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-        return friendshipService.fetchAllFriendRequest(userId, pageNo, pageSize);
+        return friendshipService.fetchSentFriendRequests(userId, pageNo, pageSize);
+    }
+
+    @GetMapping("/requests/received/{userId}")
+    public UserListResponse fetchReceivedFriendRequests(@PathVariable("userId") Long userId,
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return friendshipService.fetchReceivedFriendRequests(userId, pageNo, pageSize);
     }
 
     @GetMapping("/list/{userId}")
@@ -71,4 +78,5 @@ public class FriendshipController {
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return friendshipService.fetchAllFriendSuggestions(userid, pageNo, pageSize);
     }
+
 }

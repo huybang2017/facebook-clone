@@ -7,8 +7,8 @@ const Home = () => {
   useEffect(() => {
     const getNewFeeds = async () => {
       const res = await getPosts();
-      if (res.status == 200 && res.data.data) {
-        setPosts(res.data.data);
+      if (res.status == 200 && res) {
+        setPosts(res);
       }
     };
     getNewFeeds();
