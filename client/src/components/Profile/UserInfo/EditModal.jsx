@@ -1,6 +1,7 @@
+
 import React from "react";
 
-const ProfileEdit = ({
+const EditModal = ({
     open,
     setOpen,
     children,
@@ -21,4 +22,4 @@ const ProfileEdit = ({
         </div>
     );
 };
-export default ProfileEdit;
+export default EditModal;

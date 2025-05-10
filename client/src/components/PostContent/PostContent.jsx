@@ -45,7 +45,7 @@ const PostContent = ({ data, hidden, comments }) => {
           render={(attrs) => (
             <div className="w-[280px] max-h-[calc(100vh-80px)] rounded-lg bg-white shadow-[-6px_5px_16px_7px_rgba(0,_0,_0,_0.2)]">
               <TippyWrapper {...attrs}>
-                {userInfo.id === data.userId ? (
+                {userInfo?.id === data.userId ? (
                   <>
                     <ActionMenuItem
                       icon={<Pencil className="w-5 h-5" />}

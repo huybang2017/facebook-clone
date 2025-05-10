@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const ProfileCard = ({ friend }) => {
     return (
         <div className="min-w-[100px] flex flex-col items-start justify-center border border-gray-300 rounded-lg shadow-sm">
-            <Link to={`/profile/${friend.id}`} className="w-full h-full">
+            <Link to={`/user/profile/${friend.id}`} className="w-full h-full">
                 {/* Hình ảnh bạn bè */}
                 <div
                     className="w-full h-[80px] bg-cover bg-center border-b border-gray-300 bg-no-repeat rounded-t-lg cursor-pointer"

@@ -16,19 +16,15 @@ export function LoginForm({ className, ...props }) {
       });
       if (response.data) {
         const res = response.data;
-        localStorage.setItem("token", res.data.accessToken);
-        toast.success(response.data.message);
-        setTimeout(() => (window.location.href = "/"), 2000);
+        localStorage.setItem("token", res.accessToken);
+        toast.success("Đăng nhập thành công!");
+        setTimeout(() => (window.location.href = "/"), 1000);
       }
     } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        toast.error(error.response.data.message);
+      if (error.response.data.errorMessage) {
+        toast.error(error.response.data.errorMessage);
       } else {
-        toast.error("An unexpected error occurred. Please try again.");
+        toast.error("Hệ thống đang bảo trì, vui lòng thử lại sau!");
       }
     }
   };

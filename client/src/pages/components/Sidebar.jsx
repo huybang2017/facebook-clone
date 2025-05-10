@@ -1,6 +1,11 @@
+import { StoreContext } from "@/contexts/StoreProvider";
 import { Home, PlusSquare, User, Users } from "lucide-react";
+import { useContext } from "react";
 import { NavLink } from "react-router-dom";
 
+
+export default function Sidebar() {
+  const {userInfo} = useContext(StoreContext);
 const menuItems = [
   { id: 1, name: "Trang chủ", icon: <Home className="w-5 h-5" />, link: "/" },
   {
@@ -19,11 +24,9 @@ const menuItems = [
     id: 4,
     name: "Hồ sơ",
     icon: <User className="w-5 h-5" />,
-    link: "/profile",
+    link: `/user/profile/${userInfo?.userId}`,
   },
 ];
-
-export default function Sidebar() {
   return (
     <div className="h-screen bg-white flex flex-col pb-9">
       {/* Menu */}
