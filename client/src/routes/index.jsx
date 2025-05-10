@@ -8,9 +8,9 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import NotFound from "@/pages/exception/NotFound";
 import CommingSoon from "@/pages/exception/CommingSoon";
-import ListFriends from "@/pages/Friends/ListFriends";
-import RequestFriends from "@/pages/Friends/RequestFriends";
-import InvitationFriends from "@/pages/Friends/InvitationFriends";
+import Friends from "@/pages/Friends/Friends";
+import SentRequests from "@/pages/Friends/SentRequests";
+import ReceivedRequests from "@/pages/Friends/ReceivedRequests";
 
 const publicRoute = [
   { path: "/login", element: Login, layout: null },
@@ -21,11 +21,11 @@ const privateRoute = [
   { path: "/", element: Home },
   { path: "/create-post", element: CreatePost, layout: OnlyHeader },
   { path: "/profile", element: Profile, layout: OnlyHeader },
-  { path: "/friends/list", element: ListFriends, layout: FriendPage },
-  { path: "/friends/request", element: RequestFriends, layout: FriendPage },
+  { path: "/friends", element: Friends, layout: FriendPage },
+  { path: "/friends/requests/sent", element: SentRequests, layout: FriendPage },
   {
-    path: "/friends/invitation",
-    element: InvitationFriends,
+    path: "/friends/requests/received",
+    element: ReceivedRequests,
     layout: FriendPage,
   },
   { path: "/video", element: CommingSoon, layout: null },

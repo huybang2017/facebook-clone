@@ -1,66 +1,58 @@
 import axiosClient from "./axiosClient";
 
+// Lấy thông tin friend của user
+const getProfileUser = (friendId) =>
+  axiosClient.get(`user/profile/${friendId}`);
+
 // Gửi lời mời kết bạn
-const addFriendRequest = async (strangerUserId) => {
-  return await axiosClient.post(`/friends/add/${strangerUserId}`);
-};
+const addFriendRequest = (strangerUserId) =>
+  axiosClient.post(`/friends/add/${strangerUserId}`);
 
 // Chấp nhận lời mời kết bạn
-const acceptFriendRequest = async (strangerUserId) => {
-  return await axiosClient.post(`/friends/accept/${strangerUserId}`);
-};
+const acceptFriendRequest = (strangerUserId) =>
+  axiosClient.post(`/friends/accept/${strangerUserId}`);
 
-// Lấy danh sách lời mời kết bạn (người gửi cho user)
-const getFriendRequests = async (userId, pageNo = 0, pageSize = 10) => {
-  return await axiosClient.get(`/friends/request/list/${userId}`, {
-    params: { pageNo, pageSize },
-  });
-};
+// Lấy danh sách yêu cầu kết bạn user gửi cho người khác
+const getSentFriendRequests = (userId) =>
+  axiosClient.get(`/friends/requests/sent/${userId}?pageSize=100`);
+
+// Lấy danh sách lời mời kết bạn đã nhận
+const getReceivedFriendRequests = (userId) =>
+  axiosClient.get(`/friends/requests/received/${userId}?pageSize=100`);
 
 // Lấy danh sách bạn bè của user
-const getUserFriends = async (userId, pageNo = 0, pageSize = 10) => {
-  const res = await axiosClient.get(`/friends/list/${userId}`, {
-    params: { pageNo, pageSize },
-  });
-  return res;
-};
+const getUserFriends = (userId) =>
+  axiosClient.get(`/friends/list/${userId}?pageSize=100`);
 
 // Trạng thái bạn bè (có đang là bạn hay không)
-const getFriendshipStatus = async (friendId) => {
-  return await axiosClient.get(`/friends/status/${friendId}`);
-};
+const getFriendshipStatus = (friendId) =>
+  axiosClient.get(`/friends/status/${friendId}`);
 
 // Trạng thái lời mời kết bạn (đang chờ)
-const getFriendRequestStatus = async (friendId) => {
-  return await axiosClient.get(`/friends/status/request/${friendId}`);
-};
+const getFriendRequestStatus = (friendId) =>
+  axiosClient.get(`/friends/status/request/${friendId}`);
 
 // Hủy kết bạn
-const unfriend = async (userId, friendId) => {
-  return await axiosClient.delete(`/friends/unfriend/${userId}/${friendId}`);
-};
+const unfriend = (userId, friendId) =>
+  axiosClient.delete(`/friends/unfriend/${userId}/${friendId}`);
 
 // Xóa lời mời kết bạn đã gửi hoặc đã nhận
-const deleteFriendRequest = async (userId, strangerId) => {
-  return await axiosClient.delete(`/friends/delete/${userId}/${strangerId}`);
-};
+const deleteFriendRequest = (userId, strangerId) =>
+  axiosClient.delete(`/friends/delete/${userId}/${strangerId}`);
 
 // Đếm số lượng bạn bè
-const getFriendCount = async (userId) => {
-  return await axiosClient.get(`/friends/count/${userId}`);
-};
+const getFriendCount = (userId) => axiosClient.get(`/friends/count/${userId}`);
 
 // Gợi ý kết bạn
-const getFriendSuggestions = async (userId, pageNo = 0, pageSize = 10) => {
-  return await axiosClient.get(`/friends/suggestions/${userId}`, {
-    params: { pageNo, pageSize },
-  });
-};
+const getFriendSuggestions = (userId) =>
+  axiosClient.get(`/friends/suggestions/${userId}`);
 
 export {
+  getProfileUser,
   addFriendRequest,
   acceptFriendRequest,
-  getFriendRequests,
+  getSentFriendRequests,
+  getReceivedFriendRequests,
   getUserFriends,
   getFriendshipStatus,
   getFriendRequestStatus,
