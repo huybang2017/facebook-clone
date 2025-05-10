@@ -7,15 +7,14 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import NotFound from "@/pages/exception/NotFound";
 import CommingSoon from "@/pages/exception/CommingSoon";
-// import HeaderSidebar from "@/pages/layouts/HeaderSidebar";
-import FriendLayout from "@/pages/layouts/FriendLayout";
+import Friends from "@/pages/Friends/Friends";
+import SentRequests from "@/pages/Friends/SentRequests";
+import ReceivedRequests from "@/pages/Friends/ReceivedRequests";
 import ProfilePage from "@/pages/layouts/ProfilePage";
-import ListFriends from "@/pages/Friends/ListFriends";
-import RequestFriends from "@/pages/Friends/RequestFriends";
-import InvitationFriends from "@/pages/Friends/InvitationFriends";
 import PostProfile from "@/pages/Profiles/PostProfile";
 import ImageProfile from "@/pages/Profiles/ImageProfile";
 import FriendProfile from "@/pages/Profiles/FriendProfile";
+
 const publicRoute = [
   { path: "/login", element: Login, layout: null },
   { path: "/register", element: Register, layout: null },
@@ -23,9 +22,14 @@ const publicRoute = [
 const privateRoute = [
   { path: "/", element: Home },
   { path: "/create-post", element: CreatePost, layout: OnlyHeader },
-  { path: "/friends", element: ListFriends, layout: FriendLayout },
-  { path: "friend-request", element: RequestFriends, layout: FriendLayout },
-  { path: "friend-invitation", element: InvitationFriends, layout: FriendLayout },
+  { path: "/profile", element: ProfilePage, layout: OnlyHeader },
+  { path: "/friends", element: Friends, layout: FriendPage },
+  { path: "/friends/requests/sent", element: SentRequests, layout: FriendPage },
+  {
+    path: "/friends/requests/received",
+    element: ReceivedRequests,
+    layout: FriendPage,
+  },
   { path: "/video", element: CommingSoon, layout: null },
   { path: "/market", element: CommingSoon, layout: null },
   { path: "/game", element: CommingSoon, layout: null },

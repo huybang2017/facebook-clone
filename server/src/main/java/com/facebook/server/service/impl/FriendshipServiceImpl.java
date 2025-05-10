@@ -136,13 +136,31 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public UserListResponse fetchAllFriendRequest(Long userId, int pageNo, int pageSize) {
+    public UserListResponse fetchReceivedFriendRequests(Long userId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
-        Page<Friendship> friendships = friendshipRepository.findAllByStatusAndFriends_UserId(FriendshipStatus.PENDING,
-                userId, pageable);
+        // Lấy các yêu cầu mà userId là người nhận (friend_id)
+        Page<Friendship> friendships = friendshipRepository.findAllByStatusAndFriends_UserId(
+                FriendshipStatus.PENDING,
+                userId,
+                pageable);
+        PageResponse pageResponse = pagination.getPagination(friendships);
+        // Lấy thông tin của sender (user_id)
+        List<UserDataModel> userDataModels = this.getUserDataModels(friendships);
+        return new UserListResponse(userDataModels, pageResponse);
+    }
+
+    @Override
+    public UserListResponse fetchSentFriendRequests(Long userId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+        // Lấy các yêu cầu mà userId là người gửi (user_id)
+        Page<Friendship> friendships = friendshipRepository.findAllByStatusAndUser_UserId(
+                FriendshipStatus.PENDING,
+                userId,
+                pageable);
         PageResponse pageResponse = pagination.getPagination(friendships);
 
-        List<UserDataModel> userDataModels = this.getUserDataModels(friendships);
+        // Lấy thông tin của receiver (friend_id)
+        List<UserDataModel> userDataModels = this.getFriendsDataModels(friendships);
         return new UserListResponse(userDataModels, pageResponse);
     }
 
@@ -202,10 +220,10 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public void deleteFriendRequest(Long userId, Long strangerId) {
-        friendshipRepository.deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus.PENDING, strangerId,
-                userId);
+        friendshipRepository.deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus.PENDING, userId,
+                strangerId);
         notificationRepository.deleteByNotificationTypeAndSender_UserIdAndReceiver_UserId(
-                NotificationType.FRIEND_REQUEST, strangerId, userId);
+                NotificationType.FRIEND_REQUEST, userId, strangerId);
     }
 
     @Override
@@ -247,4 +265,5 @@ public class FriendshipServiceImpl implements FriendshipService {
         }
         return userDataModels;
     }
+
 }

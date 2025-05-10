@@ -5,7 +5,6 @@ import { ToastContext } from "@/contexts/ToastProvider";
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const { toast } = useContext(ToastContext);
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,17 +13,17 @@ export function LoginForm({ className, ...props }) {
         email,
         password,
       });
-      if (response.data) {
+      if (response.data && response.data.accessToken) {
         const res = response.data;
         localStorage.setItem("token", res.accessToken);
-        toast.success("Đăng nhập thành công!");
-        setTimeout(() => (window.location.href = "/"), 1000);
+        toast.success("Đăng nhập thành công");
+        setTimeout(() => (window.location.href = "/"), 2000);
       }
     } catch (error) {
-      if (error.response.data.errorMessage) {
+      if (error) {
         toast.error(error.response.data.errorMessage);
       } else {
-        toast.error("Hệ thống đang bảo trì, vui lòng thử lại sau!");
+        toast.error("Hệ thống đang bảo trì! Vui lòng thử lại.");
       }
     }
   };
