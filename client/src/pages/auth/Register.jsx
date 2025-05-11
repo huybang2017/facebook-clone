@@ -144,7 +144,7 @@ const Register = () => {
             required
           />
 
-          <Button themes={"bg-green"} type="submit">
+          <Button themes={"bg-green-500"} type="submit">
             Đăng ký
           </Button>
         </form>
