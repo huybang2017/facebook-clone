@@ -19,9 +19,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +51,10 @@ public class PostImageServiceImpl implements PostImageService {
     }
   }
 
-  @Override
-  public byte[] getImages(String filename) throws IOException {
-    return Files.readAllBytes(Paths.get(filename));
-  }
+  // @Override
+  // public byte[] getImages(String filename) throws IOException {
+  // return Files.readAllBytes(Paths.get(filename));
+  // }
 
   @Override
   public PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize) {

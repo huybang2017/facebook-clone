@@ -5,22 +5,27 @@ import { ToastContext } from "@/contexts/ToastProvider";
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const { toast } = useContext(ToastContext);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login({
-      email,
-      password,
-    })
-      .then((res) => {
-        localStorage.setItem("token", res.data.jwtToken);
-        toast.success(res.data.message);
-        setTimeout(() => (window.location.href = "/"), 2000);
-      })
-      .catch((error) => {
-        toast.error(error.data.message);
+    try {
+      const response = await login({
+        email,
+        password,
       });
+      if (response.data && response.data.accessToken) {
+        const res = response.data;
+        localStorage.setItem("token", res.accessToken);
+        toast.success("Đăng nhập thành công");
+        setTimeout(() => (window.location.href = "/"), 2000);
+      }
+    } catch (error) {
+      if (error) {
+        toast.error(error.response.data.errorMessage);
+      } else {
+        toast.error("Hệ thống đang bảo trì! Vui lòng thử lại.");
+      }
+    }
   };
   return (
     <form className="w-[500px] py-5 px-10">

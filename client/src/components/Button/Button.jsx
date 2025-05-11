@@ -1,30 +1,26 @@
+import clsx from "clsx";
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Button = ({
-  themes = "bg-blue-500",
-  to,
-  href,
-  children,
-  className,
-  onClick,
-}) => {
+const Button = ({ to, href, children, className = "", onClick }) => {
   let Comp = "button";
-  const props = {
-    className,
-    onClick,
-  };
+  const props = { onClick };
 
-  if (props.to) {
+  if (to) {
     Comp = Link;
-  } else if (props.href) {
+    props.to = to;
+  } else if (href) {
     Comp = "a";
+    props.href = href;
   }
+
+  const defaultClass = `
+    p-2 w-full border rounded-md text-lg text-white bg-blue-500 hover:bg-blue-600 font-bold 
+    transition-all ease-linear shadow-md cursor-pointer
+  `;
+
   return (
-    <Comp
-      {...props}
-      className={`p-2 w-full ${themes} border rounded-lg text-lg text-white font-bold transition-all ease-linear hover:${props.themes}-600 shadow-md cursor-pointer`}
-    >
+    <Comp {...props} className={clsx(defaultClass, className)}>
       {children}
     </Comp>
   );

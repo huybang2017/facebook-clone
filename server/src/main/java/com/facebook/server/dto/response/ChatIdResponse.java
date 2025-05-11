@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatIdResponse {
-    private Long chatId;
+  private Long chatId;
 }

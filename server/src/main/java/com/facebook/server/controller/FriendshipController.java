@@ -3,10 +3,14 @@ package com.facebook.server.controller;
 import com.facebook.server.dto.response.CountResponse;
 import com.facebook.server.dto.response.FriendshipStatusResponse;
 import com.facebook.server.dto.response.UserListResponse;
+import com.facebook.server.entity.constants.FriendshipStatus;
 import com.facebook.server.service.FriendshipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -26,11 +30,18 @@ public class FriendshipController {
         friendshipService.acceptFriendRequest(strangerUserId);
     }
 
-    @GetMapping("/request/list/{userId}")
-    public UserListResponse fetchAllFriendRequest(@PathVariable("userId") Long userId,
+    @GetMapping("/requests/sent/{userId}")
+    public UserListResponse fetchSentFriendRequests(@PathVariable("userId") Long userId,
             @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-        return friendshipService.fetchAllFriendRequest(userId, pageNo, pageSize);
+        return friendshipService.fetchSentFriendRequests(userId, pageNo, pageSize);
+    }
+
+    @GetMapping("/requests/received/{userId}")
+    public UserListResponse fetchReceivedFriendRequests(@PathVariable("userId") Long userId,
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return friendshipService.fetchReceivedFriendRequests(userId, pageNo, pageSize);
     }
 
     @GetMapping("/list/{userId}")
@@ -71,4 +82,5 @@ public class FriendshipController {
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return friendshipService.fetchAllFriendSuggestions(userid, pageNo, pageSize);
     }
+
 }

@@ -1,4 +1,3 @@
-import { Bell } from "lucide-react";
 import Navbar from "./Navbar";
 import Search from "./Search";
 import UserAction from "./UserAction";

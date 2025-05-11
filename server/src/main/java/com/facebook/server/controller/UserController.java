@@ -19,11 +19,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
-import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
-
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -77,11 +72,6 @@ public class UserController {
       @RequestPart(value = "file") MultipartFile file,
       @RequestPart(value = "description", required = false) String description) {
     userService.uploadUserImage(file, imageType, description);
-  }
-
-  @GetMapping(path = "/image/{filename}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })
-  public byte[] getUserPhoto(@PathVariable("filename") String filename) throws IOException {
-    return postImageService.getImages(filename);
   }
 
   @GetMapping("/search")

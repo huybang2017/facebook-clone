@@ -3,7 +3,7 @@ import { Ellipsis } from "lucide-react";
 import { StoreContext } from "@/contexts/StoreProvider";
 const AccountItem = ({ header }) => {
   const { userInfo } = useContext(StoreContext);
-  console.log(userInfo);
+  // console.log(userInfo);
   return (
     <div className="flex items-center p-2 mx-1 my-2 hover:bg-gray-100 rounded-md transition ease-in cursor-pointer">
       <div className="img max-w-[40%] h-max overflow-hidden rounded-md">

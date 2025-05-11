@@ -16,30 +16,34 @@ import java.util.Optional;
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
-    @Query("SELECT f FROM Friendship f WHERE f.user.userId = :userId AND f.friends.userId = :strangerId AND f.status = :status")
-    Optional<Friendship> findByFriendship(@Param("userId") Long userId,
-            @Param("strangerId") Long strangerId,
-            @Param("status") FriendshipStatus status);
+        @Query("SELECT f FROM Friendship f WHERE f.user.userId = :userId AND f.friends.userId = :strangerId AND f.status = :status")
+        Optional<Friendship> findByFriendship(@Param("userId") Long userId,
+                        @Param("strangerId") Long strangerId,
+                        @Param("status") FriendshipStatus status);
 
-    void deleteByUser_UserIdAndFriends_UserId(Long userId, Long strangerId);
+        @Query(value = "SELECT * FROM friendship WHERE " +
+                        "(user_id = :userId1 AND friend_id = :userId2) OR " +
+                        "(user_id = :userId2 AND friend_id = :userId1) LIMIT 1", nativeQuery = true)
+        Optional<Friendship> findFriendshipBetween(@Param("userId1") Long userId1,
+                        @Param("userId2") Long userId2);
 
-    Page<Friendship> findAllByStatusAndFriends_UserId(FriendshipStatus status, Long userId, Pageable pageable);
+        void deleteByUser_UserIdAndFriends_UserId(Long userId, Long strangerId);
 
-    Page<Friendship> findAllByStatusAndUser_UserId(FriendshipStatus status, Long userId, Pageable pageable);
+        Page<Friendship> findAllByStatusAndFriends_UserId(FriendshipStatus status, Long userId, Pageable pageable);
 
-    Optional<Friendship> findByUser_UserIdAndFriends_UserId(Long userId, Long friendId);
+        Page<Friendship> findAllByStatusAndUser_UserId(FriendshipStatus status, Long userId, Pageable pageable);
 
-    @Query("SELECT COUNT(f) FROM Friendship f WHERE f.user.userId =:userId AND f.status = 'FRIENDS'")
-    Long getFriendListCount(@Param("userId") Long userId);
+        Optional<Friendship> findByUser_UserIdAndFriends_UserId(Long userId, Long friendId);
 
-    @Query("SELECT u FROM User u WHERE u.userId != :userId " +
-            "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId) " +
-            "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId AND f.status = 'PENDING') "
-            +
-            "AND u.userId NOT IN (SELECT f.user.userId FROM Friendship f WHERE f.friends.userId = :userId AND f.status = 'PENDING')")
-    Page<User> findFriendSuggestions(@Param("userId") Long userId,
-            Pageable pageable);
+        @Query("SELECT COUNT(f) FROM Friendship f WHERE f.user.userId =:userId AND f.status = 'FRIENDS'")
+        Long getFriendListCount(@Param("userId") Long userId);
 
-    void deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus status, Long userId, Long friendId);
+        @Query("SELECT u FROM User u WHERE u.userId != :userId " +
+                        "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId AND f.status = 'FRIENDS') "
+                        +
+                        "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId AND f.status = 'PENDING')")
+        Page<User> findFriendSuggestions(@Param("userId") Long userId, Pageable pageable);
+
+        void deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus status, Long userId, Long friendId);
 
 }

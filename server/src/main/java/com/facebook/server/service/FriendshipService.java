@@ -10,7 +10,9 @@ public interface FriendshipService {
 
     void acceptFriendRequest(Long strangerUserId);
 
-    UserListResponse fetchAllFriendRequest(Long userId, int pageNo, int pageSize);
+    UserListResponse fetchReceivedFriendRequests(Long userId, int pageNo, int pageSize);
+
+    UserListResponse fetchSentFriendRequests(Long userId, int pageNo, int pageSize);
 
     UserListResponse fetchAllUserFriends(Long userId, int pageNo, int pageSize);
 

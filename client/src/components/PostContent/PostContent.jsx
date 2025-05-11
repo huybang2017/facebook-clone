@@ -14,10 +14,21 @@ import { useContext, useState } from "react";
 import TippyWrapper from "../Wrapper/TippyWrapper";
 import ActionMenuItem from "../ActionMenu/ActionMenuItem";
 import { StoreContext } from "@/contexts/StoreProvider";
+import SwiperWrapper from "../Swiper/SwiperWrapper";
 
 const PostContent = ({ data, hidden, comments }) => {
   const { userInfo } = useContext(StoreContext);
   const [visible, setVisible] = useState(false);
+  const { userId, postId, content, firstName, lastName, postImages } =
+    data || {};
+
+  const handleUrlImageVideo = () => {
+    postImages?.forEach((link) => {
+      return link?.postImageUrl.toLowerCase().endsWith(".mp4");
+    });
+
+    return false;
+  };
   return (
     <>
       {/* Header */}
@@ -31,7 +42,7 @@ const PostContent = ({ data, hidden, comments }) => {
           <div>
             <div className="flex items-center gap-1">
               <span className="font-semibold text-zinc-800 dark:text-white">
-                'Người dùng'
+                {firstName} {lastName}
               </span>
             </div>
             <p className="text-zinc-500 text-xs">{data?.createdAt}</p>
@@ -45,7 +56,7 @@ const PostContent = ({ data, hidden, comments }) => {
           render={(attrs) => (
             <div className="w-[280px] max-h-[calc(100vh-80px)] rounded-lg bg-white shadow-[-6px_5px_16px_7px_rgba(0,_0,_0,_0.2)]">
               <TippyWrapper {...attrs}>
-                {userInfo.id === data.userId ? (
+                {userInfo?.id === data.userId ? (
                   <>
                     <ActionMenuItem
                       icon={<Pencil className="w-5 h-5" />}
@@ -83,18 +94,31 @@ const PostContent = ({ data, hidden, comments }) => {
       </div>
 
       {/* Caption */}
-      <p className="mt-3 text-sm text-zinc-700 dark:text-zinc-200">
-        {data?.caption}
-      </p>
+      <p className="mt-3 text-sm text-zinc-700 dark:text-zinc-200">{content}</p>
 
-      {/* Image */}
-      {data?.image && (
+      {postImages && (
         <div className="mt-3">
-          <img
-            src="https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg"
-            alt="post"
-            className="w-full rounded-lg"
-          />
+          <SwiperWrapper
+            data={postImages}
+            itemPerPage={1}
+            showNavigation={true}
+          >
+            {(item) =>
+              item?.postImageUrl.toLowerCase().endsWith(".mp4") ? (
+                <video
+                  src={item.postImageUrl}
+                  controls
+                  className="w-full rounded-lg"
+                />
+              ) : (
+                <img
+                  src={item.postImageUrl}
+                  alt="post"
+                  className="w-full rounded-lg"
+                />
+              )
+            }
+          </SwiperWrapper>
         </div>
       )}
 
