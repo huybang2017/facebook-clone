@@ -4,11 +4,11 @@ import { StoreContext } from "@/contexts/StoreProvider";
 import {
   getSentFriendRequests,
   getFriendSuggestions,
-  addFriendRequest,
-  deleteFriendRequest,
 } from "@/apis/friendService";
 import FriendCard from "@/components/Friend/FriendCard";
 import Button from "@/components/Button/Button";
+
+import { AddFriend, DeleteRequest } from "@/utils/FriendHelper";
 
 const SentRequests = () => {
   const [sentRequests, setSentRequests] = useState([]);
@@ -54,50 +54,21 @@ const SentRequests = () => {
     fetchUserSuggests();
   }, [userInfo, toast]);
 
-  // Thêm bạn bè
-  const handleAddFriend = async (strangerUserId) => {
-    try {
-      const res = await addFriendRequest(strangerUserId);
-      if (res?.status === 200) {
-        toast.success("Đã gửi yêu cầu kết bạn thành công!");
-
-        const addedUser = suggestions.find(
-          (user) => user.userId === strangerUserId
-        );
-        setSuggestions((prev) =>
-          prev.filter((request) => request.userId !== strangerUserId)
-        );
-        if (addedUser) {
-          setSentRequests((prev) => [...prev, addedUser]);
-        }
-      } else {
-        toast.error("Không thể gửi yêu cầu kết bạn!");
-      }
-    } catch (error) {
-      toast.error("Hệ thống đang bảo trì! Vui lòng thử lại.");
-      console.log("Lỗi khi xử lý API handleAddFriend: ", error);
-    }
+  const handleAddFriend = async (friendId) => {
+    AddFriend(friendId, setSentRequests, suggestions, setSuggestions, toast);
   };
 
-  // Hủy yêu cầu kết bạn từ user -> stranger
-  const handleDeleteRequest = async (strangerUserId) => {
-    try {
-      const res = await deleteFriendRequest(
-        userInfo.data.userId, // sent
-        strangerUserId // received
-      );
-      if (res?.status === 200) {
-        toast.success("Đã hủy yêu cầu gửi kết bạn thành công!");
+  const handleDeletRequest = async (friendId) => {
+    DeleteRequest(
+      userInfo.data.userId,
+      friendId,
+      (rejectId) => {
         setSentRequests((prev) =>
-          prev.filter((user) => user.userId !== strangerUserId)
+          prev.filter((user) => user.userId !== rejectId)
         );
-      } else {
-        toast.error("Không thể hủy yêu cầu kết bạn! Vui lòng thử lại");
-      }
-    } catch (error) {
-      toast.error("Hệ thống đang bảo trì! Vui lòng thử lại.");
-      console.log("Lỗi khi xử lý API deleteFriendRequest: ", error);
-    }
+      },
+      toast
+    );
   };
 
   return (
@@ -127,9 +98,7 @@ const SentRequests = () => {
                   {/* Danh sách yêu cầu đã gửi */}
                   {sentRequests?.map((friend) => (
                     <FriendCard key={friend.userId} friend={friend}>
-                      <Button
-                        onClick={() => handleDeleteRequest(friend.userId)}
-                      >
+                      <Button onClick={() => handleDeletRequest(friend.userId)}>
                         Hủy yêu cầu kết bạn
                       </Button>
                     </FriendCard>

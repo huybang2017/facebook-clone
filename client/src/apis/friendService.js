@@ -5,12 +5,12 @@ const getProfileUser = (friendId) =>
   axiosClient.get(`user/profile/${friendId}`);
 
 // Gửi lời mời kết bạn
-const addFriendRequest = (strangerUserId) =>
-  axiosClient.post(`/friends/add/${strangerUserId}`);
+const addFriendRequest = (friendId) =>
+  axiosClient.post(`/friends/add/${friendId}`);
 
 // Chấp nhận lời mời kết bạn
-const acceptFriendRequest = (strangerUserId) =>
-  axiosClient.post(`/friends/accept/${strangerUserId}`);
+const acceptFriendRequest = (friendId) =>
+  axiosClient.post(`/friends/accept/${friendId}`);
 
 // Lấy danh sách yêu cầu kết bạn user gửi cho người khác
 const getSentFriendRequests = (userId) =>

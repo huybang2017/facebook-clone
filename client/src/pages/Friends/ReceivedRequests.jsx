@@ -1,13 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { ToastContext } from "@/contexts/ToastProvider";
 import { StoreContext } from "@/contexts/StoreProvider";
-import {
-  acceptFriendRequest,
-  deleteFriendRequest,
-  getReceivedFriendRequests,
-} from "@/apis/friendService";
+import { getReceivedFriendRequests } from "@/apis/friendService";
 import FriendCard from "@/components/Friend/FriendCard";
 import Button from "@/components/Button/Button";
+import { AcceptFriend, RejectFriend } from "@/utils/FriendHelper";
 
 const ReceivedRequests = () => {
   const [receivedRequests, setReceivedRequests] = useState([]);
@@ -34,42 +31,25 @@ const ReceivedRequests = () => {
   }, [userInfo, toast]);
 
   // Xử lý chấp nhận lời mời kết bạn
-  const handleAcceptFriend = async (strangerUserId) => {
-    try {
-      const res = await acceptFriendRequest(strangerUserId);
-      if (res?.status === 200) {
-        toast.success("Kết bạn thành công!");
+  const handleAcceptFriend = async (friendId) => {
+    AcceptFriend(
+      friendId,
+      (acceptId) => {
         setReceivedRequests((prev) =>
-          prev.filter((request) => request.userId !== strangerUserId)
+          prev.filter((request) => request.userId !== acceptId)
         );
-      } else {
-        toast.error("Không thể hủy yêu cầu kết bạn. Vui lòng thử lại");
-      }
-    } catch (error) {
-      toast.error("Hệ thống đang bảo trì! Vui lòng thử lại.");
-      console.log("Lỗi khi xử lý API acceptFriendRequest: ", error);
-    }
+      },
+      toast
+    );
   };
 
   // Xử lý từ chối lời mời kết bạn
-  const handleRejectFriend = async (strangerUserId) => {
-    try {
-      const res = await deleteFriendRequest(
-        userInfo.data.userId, // sent
-        strangerUserId // received
+  const handleRejectFriend = async (friendId) => {
+    RejectFriend(userInfo.data.userId, friendId, (rejectId) => {
+      setReceivedRequests((prev) =>
+        prev.filter((request) => request.userId !== rejectId)
       );
-      if (res?.status === 200) {
-        toast.success("Từ chối lời mời kết bạn thành công!");
-        setReceivedRequests((prev) =>
-          prev.filter((request) => request.userId !== strangerUserId)
-        );
-      } else {
-        toast.error("Không thể từ chối yêu cầu kết bạn! Vui lòng thử lại.");
-      }
-    } catch (error) {
-      toast.error("Hệ thống đang bảo trì! Vui lòng thử lại.");
-      console.log("Lỗi khi xử lý API deleteFriendRequest: ", error);
-    }
+    });
   };
 
   return (
