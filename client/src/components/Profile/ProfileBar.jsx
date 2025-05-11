@@ -16,7 +16,7 @@ const ProfileBar = ({ data }) => {
       </NavLink>
 
       <NavLink
-        to={`/profile-photos/${data?.userId}`}
+        to={`/profile-photos/${data?.userId}`}  
         className={({ isActive }) =>
           `no-underline ${
             isActive ? "text-blue-600 font-bold" : "text-gray-600"

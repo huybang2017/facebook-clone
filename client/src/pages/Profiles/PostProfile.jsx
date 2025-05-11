@@ -5,11 +5,27 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getUserFriends } from "@/apis/friendService";
 import { StoreContext } from "@/contexts/StoreProvider";
+import { getPosts } from "@/apis/authService";
+import { usePost } from "@/hooks/usePost";
+import Post from "@/components/Post/Post";
 
 const PostProfile = ({ data }) => {
   const [friends, setFriends] = useState([]);
+  const [posts, setPosts] = useState([]);
   const { userInfo } = useContext(StoreContext);
   const userId = data?.userId;
+
+  const { getPostOfUser } = usePost();
+
+  const fetchPost = async () => {
+    try {
+      const res = await getPostOfUser(userId);
+      if (res) setPosts(res);
+    } catch (error) {
+      setPosts([]);
+    }
+  };
+
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -20,33 +36,8 @@ const PostProfile = ({ data }) => {
       }
     };
     fetchFriends();
+    fetchPost();
   }, [userId]);
-
-  const [comments, setComments] = useState([
-    {
-      name: "Lê Phúc",
-      avatar:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-      value: "This is a sample comment",
-      time: "10 phút trước",
-    },
-    {
-      name: "Xuân Bảo",
-      avatar:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-      value: "This is another comment",
-      time: "20 phút trước",
-    },
-  ]);
-
-  const postData = {
-    name: "Xuân Bảo",
-    caption: "This is a sample post caption",
-    image:
-      "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    createdAt: "10 phút trước",
-    userId: 1, // Assuming this is the logged-in user's ID
-  };
 
   return (
     <div className="h-auto bg-gray-100 p-4">
@@ -72,8 +63,10 @@ const PostProfile = ({ data }) => {
         {/* Cột phải: Bài đăng */}
         <div className="w-full md:w-2/3 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 shadow-md rounded-xl p-4">
-            <PostContent data={postData} comments={comments} />
-            <PostContent data={postData} comments={comments} />
+            {/* <PostContent data={postData} comments={comments} />
+            <PostContent data={postData} comments={comments} /> */}
+            {posts &&
+              posts.map((post) => <Post data={post} key={post.postId} />)}
           </div>
         </div>
       </div>

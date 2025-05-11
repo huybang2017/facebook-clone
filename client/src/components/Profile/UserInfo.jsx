@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { StoreContext } from "@/contexts/StoreProvider";
 import { uploadImage } from "@/apis/profileService";
 import EditModal from "./UserInfo/EditModal";
@@ -14,7 +14,7 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
   const [coverPreview, setCoverPreview] = useState(null);
   const [isUpdateSuccess, setIsUpdateSuccess] = useState(false);
   const { toast } = useContext(ToastContext);
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleAvatarChange = (e) => {
     // Xử lý thay đổi ảnh đại diện ở đây
     const file = e.target.files[0];
@@ -33,9 +33,12 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
     }
   };
 
+  const avatarInputRef = useRef(null);
+  const coverInputRef = useRef(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     try {
       let i = 0;
 
@@ -67,14 +70,16 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
 
       if (i == 1 || i == 2) {
         // Add delay before success
-        setTimeout(() => {
-          toast.success("Cập nhật thành công!");
-          setModalOpen(false);
-          setIsUpdateSuccess(true);
-        }, 3000); // 2-second delay
-      }
+        setAvatarPreview(null);
+        setCoverPreview(null);
+        toast.success("Cập nhật thành công!");
+        setModalOpen(false);
+        setIsUpdateSuccess(true);
+      } // 2-second delay
     } catch (error) {
       toast.error("Lỗi khi upload ảnh:");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,23 +116,19 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
           data={data}
         />
       </div>
-
       {/* Hiển thị Modal */}
-      <EditModal open={modalOpen} setOpen={setModalOpen}>
+      <EditModal open={modalOpen} setOpen={setModalOpen} isLoading={isLoading}>
         <h2 className="text-xl font-semibold mb-4 text-center">
           Chỉnh sửa ảnh cá nhân
         </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Cover + Avatar Preview */}
           <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden">
-            {/* Cover image */}
             <img
               src={coverPreview}
               alt="Ảnh bìa"
               className="w-full h-full object-cover"
             />
-            {/* Avatar image chồng lên */}
             <div className="absolute inset-x-0 bottom-0 flex justify-center ">
               <img
                 src={avatarPreview}
@@ -136,21 +137,18 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
               />
             </div>
           </div>
-
-          {/* Upload Cover */}
           <div>
             <label className="block font-medium mb-1">Cập nhật ảnh bìa:</label>
             <input
               type="file"
               accept="image/*"
+              ref={coverInputRef}
               className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
                    file:rounded file:border-0 file:text-sm file:font-semibold
                    file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               onChange={handleCoverChange}
             />
           </div>
-
-          {/* Upload Avatar */}
           <div>
             <label className="block font-medium mb-1">
               Cập nhật ảnh đại diện:
@@ -158,6 +156,7 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
             <input
               type="file"
               accept="image/*"
+              ref={avatarInputRef}
               className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
                    file:rounded file:border-0 file:text-sm file:font-semibold
                    file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -165,10 +164,7 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
             />
           </div>
 
-          <button
-            // type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition cursor-pointer"
-          >
+          <button className="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition cursor-pointer">
             Lưu thay đổi
           </button>
         </form>

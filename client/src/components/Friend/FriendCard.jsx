@@ -42,7 +42,7 @@ const FriendCard = ({ friend, children }) => {
 
       {/* Children */}
       <div className="w-full box-border">
-        <div className="flex justify-center items-center mx-2 mb-2 gap-2">
+        <div className="flex flex-col justify-center items-center mx-2 mb-2 gap-2">
           {children}
         </div>
       </div>
