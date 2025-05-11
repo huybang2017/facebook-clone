@@ -7,17 +7,21 @@ const StoreProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const token = localStorage.getItem("token");
   useEffect(() => {
-    if (token) {
-      getInfo(token)
-        .then((res) => {
-          const user = res.data;
-          if (user.image == null) {
-            user.image = avatarDefault;
-          }
-          setUserInfo(user);
-        })
-        .catch((err) => console.log(err));
-    }
+    const getInfoUser = async () => {
+      if (token) {
+        getInfo()
+          .then((res) => {
+            const user = res.data;
+            if (!user.profilePicture) {
+              user.profilePicture = avatarDefault;
+            }
+            setUserInfo(user);
+          })
+          .catch((err) => console.log(err));
+      }
+    };
+
+    getInfoUser();
   }, [token]);
 
   return (

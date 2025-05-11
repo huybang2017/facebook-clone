@@ -1,12 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Button = ({ themes, to, href, children, className, onClick }) => {
+const Button = ({
+  themes = "bg-blue-500",
+  to,
+  href,
+  children,
+  className,
+  onClick,
+}) => {
   let Comp = "button";
   const props = {
     className,
     onClick,
-    themes: themes ? themes : "bg-blue",
   };
 
   if (props.to) {
@@ -17,7 +23,7 @@ const Button = ({ themes, to, href, children, className, onClick }) => {
   return (
     <Comp
       {...props}
-      className={`p-2 w-full ${props.themes}-500 border rounded-lg text-lg text-white font-bold transition-all ease-linear hover:${props.themes}-600 shadow-md cursor-pointer`}
+      className={`p-2 w-full ${themes} border rounded-lg text-lg text-white font-bold transition-all ease-linear hover:${props.themes}-600 shadow-md cursor-pointer`}
     >
       {children}
     </Comp>

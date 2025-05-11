@@ -14,6 +14,7 @@ const CreatePost = () => {
   const navigate = useNavigate();
   // Context
   const { userInfo } = useContext(StoreContext);
+  console.log("userInfo :", userInfo);
   const { toast } = useContext(ToastContext);
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);

@@ -9,29 +9,18 @@ export function LoginForm({ className, ...props }) {
   const { toast } = useContext(ToastContext);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await login({
-        email,
-        password,
-      });
-      if (response.data) {
-        const res = response.data;
-        localStorage.setItem("token", res.data.accessToken);
-        localStorage.setItem("refreshToken", res.data.refreshToken);
-        toast.success(response.data.message);
+    await login({
+      email,
+      password,
+    })
+      .then((res) => {
+        localStorage.setItem("token", res.data.jwtToken);
+        toast.success(res.data.message);
         setTimeout(() => (window.location.href = "/"), 2000);
-      }
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("An unexpected error occurred. Please try again.");
-      }
-    }
+      })
+      .catch((error) => {
+        toast.error(error.data.message);
+      });
   };
   return (
     <form className="w-[500px] py-5 px-10">
