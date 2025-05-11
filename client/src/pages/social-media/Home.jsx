@@ -10,7 +10,10 @@ const Home = () => {
   const fetchAllPost = async () => {
     try {
       const res = await getAllPost();
-      if (res) setPosts(res);
+      if (res) {
+        setPosts(res);
+        console.log(res);
+      }
     } catch (error) {
       throw error;
     }

@@ -1,3 +1,5 @@
+import { getCountComment } from "@/apis/commentService";
+import { getCountLike, getIsLike } from "@/apis/likeService";
 import {
   create,
   deletePost,
@@ -13,7 +15,37 @@ export const usePost = () => {
     try {
       const res = await getAll();
       if (res.data && res.status == 200) {
-        return res.data.postList;
+        const postList = res.data.postList;
+
+        const customKeyForPostList = await Promise.all(
+          postList.map(async (post) => {
+            try {
+              const likeRes = await getCountLike(post.postId);
+              const isLikedRes = await getIsLike(post.postId);
+              const commentRes = await getCountComment(post.postId);
+
+              const postLikeCount = likeRes?.data?.postLikeCount || 0;
+              const isLiked = isLikedRes?.data?.liked;
+
+              const postCommentCount = commentRes?.data?.postCommentCount || 0;
+
+              return {
+                ...post,
+                postLikeCount,
+                isLiked,
+                postCommentCount,
+              };
+            } catch (err) {
+              return {
+                ...post,
+                postLikeCount: 0,
+                isLiked: false,
+                postCommentCount,
+              };
+            }
+          })
+        );
+        return customKeyForPostList;
       }
     } catch (error) {
       throw error;

@@ -10,25 +10,32 @@ import {
   CircleMinus,
   CircleX,
 } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TippyWrapper from "../Wrapper/TippyWrapper";
 import ActionMenuItem from "../ActionMenu/ActionMenuItem";
 import { StoreContext } from "@/contexts/StoreProvider";
 import SwiperWrapper from "../Swiper/SwiperWrapper";
+import Comment from "../Comment/Comment";
 
 const PostContent = ({ data, hidden, comments }) => {
   const { userInfo } = useContext(StoreContext);
+  console.log("userInfo :", userInfo);
   const [visible, setVisible] = useState(false);
-  const { userId, postId, content, firstName, lastName, postImages } =
-    data || {};
+  const {
+    userId,
+    postId,
+    content,
+    firstName,
+    lastName,
+    postImages,
+    isLiked,
+    postLikeCount,
+    postCommentCount,
+    timestamp,
+  } = data || {};
 
-  const handleUrlImageVideo = () => {
-    postImages?.forEach((link) => {
-      return link?.postImageUrl.toLowerCase().endsWith(".mp4");
-    });
+  useEffect(() => {}, [comments]);
 
-    return false;
-  };
   return (
     <>
       {/* Header */}
@@ -45,7 +52,7 @@ const PostContent = ({ data, hidden, comments }) => {
                 {firstName} {lastName}
               </span>
             </div>
-            <p className="text-zinc-500 text-xs">{data?.createdAt}</p>
+            <p className="text-zinc-500 text-xs">{timestamp}</p>
           </div>
         </div>
         <Tippy
@@ -56,7 +63,7 @@ const PostContent = ({ data, hidden, comments }) => {
           render={(attrs) => (
             <div className="w-[280px] max-h-[calc(100vh-80px)] rounded-lg bg-white shadow-[-6px_5px_16px_7px_rgba(0,_0,_0,_0.2)]">
               <TippyWrapper {...attrs}>
-                {userInfo?.id === data.userId ? (
+                {userInfo?.data.userId === data.userId ? (
                   <>
                     <ActionMenuItem
                       icon={<Pencil className="w-5 h-5" />}
@@ -126,10 +133,12 @@ const PostContent = ({ data, hidden, comments }) => {
       <div className="mt-3 flex justify-between text-sm text-zinc-600 dark:text-zinc-400">
         <div className="flex items-center gap-2">
           <ThumbsUp className="w-4 h-4 text-yellow-500" />
-          <span>1.291</span>
+          <span>{postLikeCount}</span>
         </div>
         <div>
-          <span>762 bình luận</span>
+          <span className="hover:underline cursor-pointer">
+            {postCommentCount} bình luận
+          </span>
         </div>
       </div>
 
@@ -142,8 +151,13 @@ const PostContent = ({ data, hidden, comments }) => {
             hidden ? "hidden" : ""
           }`}
         >
-          <button className="flex items-center px-4 rounded py-2 hover:bg-gray-100 gap-2 cursor-pointer">
-            <ThumbsUp className="w-4 h-4" /> Thích
+          <button
+            className={`flex items-center px-4 rounded py-2 hover:bg-gray-100 gap-2 cursor-pointer ${
+              isLiked ? "text-blue-500 font-bold" : ""
+            }`}
+          >
+            <ThumbsUp className="w-4 h-4" strokeWidth={isLiked ? 3 : 2} />{" "}
+            <span>Thích</span>
           </button>
           <button
             onClick={() => setOpenModal(true)}
@@ -159,43 +173,13 @@ const PostContent = ({ data, hidden, comments }) => {
 
       <hr
         className={`${
-          hidden && comments.length > 0 ? "hidden" : ""
+          hidden && comments?.length > 0 ? "hidden" : ""
         } my-3 border-zinc-300 dark:border-zinc-700 `}
       />
 
       {/* Comment component */}
       <div className={`${hidden ? "hidden" : "mb-[60px]"}`}>
-        {comments.length > 0 &&
-          comments.map((comment, index) => (
-            <div key={index} class="flex gap-4 mb-4 w-full">
-              <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                <img
-                  alt=""
-                  class="w-full h-full object-cover rounded-full"
-                  src={comment.avatar}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <div class="flex flex-col p-2 bg-[#f1f2f6] rounded-xl">
-                  <h4 class="text-sm font-medium">{comment.name}</h4>
-                  <p class="text-sm font-normal">{comment.value}</p>
-                </div>
-                <div className="flex items-center gap-4 px-2 mt-1">
-                  <span className="text-xs font-medium">{comment.time}</span>
-                  <span className="text-xs font-medium hover:text-blue-500 hover:font-medium transition  cursor-pointer">
-                    Thích
-                  </span>
-                  <span className="text-xs font-medium hover:text-blue-500 hover:font-medium transition  cursor-pointer">
-                    Phản hồi
-                  </span>
-                  <span className="flex items-center justify-center text-xs bg-blue-500 text-white p-[3px] rounded-full font-medium transition ">
-                    <ThumbsUp size={12} />
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+        {comments && comments?.map((comment) => <Comment data={comment} />)}
       </div>
     </>
   );
