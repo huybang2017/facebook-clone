@@ -37,8 +37,8 @@ const unfriend = (userId, friendId) =>
   axiosClient.delete(`/friends/unfriend/${userId}/${friendId}`);
 
 // Xóa lời mời kết bạn đã gửi hoặc đã nhận
-const deleteFriendRequest = (userId, strangerId) =>
-  axiosClient.delete(`/friends/delete/${userId}/${strangerId}`);
+const deleteFriendRequest = (userId, friendId) =>
+  axiosClient.delete(`/friends/delete/${userId}/${friendId}`);
 
 // Đếm số lượng bạn bè
 const getFriendCount = (userId) => axiosClient.get(`/friends/count/${userId}`);
