@@ -56,7 +56,7 @@ export const UnFriend = async ({
 };
 
 // Hủy yêu cầu kết bạn
-export const DeleteRequest = async ({
+export const DeleteRequest = async ({  
   userId,
   friendId,
   updateData = () => {},

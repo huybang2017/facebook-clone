@@ -4,7 +4,7 @@ import ProfileBar from "../../components/Profile/ProfileBar.jsx";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { StoreContext } from "@/contexts/StoreProvider";
-import { getInfo, getProfileDetail } from "@/apis/authService";
+import { getProfileDetail } from "@/apis/authService";
 const ProfilePage = ({ children }) => {
   const { userInfo } = useContext(StoreContext);
   const [data, setData] = useState(null);
@@ -17,8 +17,9 @@ const ProfilePage = ({ children }) => {
     try {
       const res = await getProfileDetail(id);
       const fetchedUser = res.data;
-      if (userInfo && userInfo.userId === fetchedUser.userId) {
-        setData(userInfo);
+
+      if (userInfo.data.userId === fetchedUser.userId) {
+        setData(userInfo.data);
         setIsMyProfile(true);
       } else {
         setData(fetchedUser);
@@ -45,7 +46,6 @@ const ProfilePage = ({ children }) => {
               isMyProfile={isMyProfile}
               data={data}
               fetchUserInfo={fetchUserInfo}
-              isFriend={isFriend}
             />
             <ProfileBar data={data} />
 

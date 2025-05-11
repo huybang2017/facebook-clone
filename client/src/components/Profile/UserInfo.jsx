@@ -5,8 +5,7 @@ import EditModal from "./UserInfo/EditModal";
 import CoverPhoto from "./UserInfo/CoverPhoto";
 import StateButton from "./UserInfo/StateButton";
 import { ToastContext } from "@/contexts/ToastProvider";
-import Button from "../Button/Button";
-const UserInfo = ({ isMyProfile, data, fetchUserInfo, isFriend }) => {
+const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {  
   const [modalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
@@ -101,7 +100,7 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo, isFriend }) => {
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
           isMyProfile={isMyProfile}
-          isFriend={true}
+          data = {data}
         />
       </div>
 
