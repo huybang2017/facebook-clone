@@ -6,13 +6,13 @@ import {
 } from "@/apis/friendService";
 
 // Thêm bạn bè
-export const AddFriend = async (
+export const AddFriend = async ({
   friendId,
   setSentRequests = () => {},
   suggestions = [],
   setSuggestions = () => {},
-  toast = { success: () => {}, error: () => {} }
-) => {
+  toast = { success: () => {}, error: () => {} },
+}) => {
   try {
     const res = await addFriendRequest(friendId);
 
@@ -20,7 +20,6 @@ export const AddFriend = async (
       toast.success("Đã gửi yêu cầu kết bạn thành công!");
 
       const addedUser = suggestions.find((user) => user.userId === friendId);
-
       setSuggestions((prev) => prev.filter((user) => user.userId !== friendId));
 
       if (addedUser) {
@@ -36,12 +35,12 @@ export const AddFriend = async (
 };
 
 // Hủy bạn bè
-export const UnFriend = async (
+export const UnFriend = async ({
   userId,
   friendId,
   updateData = () => {},
-  toast = { success: () => {}, error: () => {} }
-) => {
+  toast = { success: () => {}, error: () => {} },
+}) => {
   try {
     const res = await unfriend(userId, friendId);
     if (res?.status === 200) {
@@ -57,12 +56,12 @@ export const UnFriend = async (
 };
 
 // Hủy yêu cầu kết bạn
-export const DeleteRequest = async (
+export const DeleteRequest = async ({
   userId,
   friendId,
   updateData = () => {},
-  toast = { success: () => {}, error: () => {} }
-) => {
+  toast = { success: () => {}, error: () => {} },
+}) => {
   try {
     const res = await deleteFriendRequest(userId, friendId);
 
@@ -79,11 +78,11 @@ export const DeleteRequest = async (
 };
 
 // Chấp nhận lời mời kết bạn
-export const AcceptFriend = async (
+export const AcceptFriend = async ({
   friendId,
   updateData = () => {},
-  toast = { success: () => {}, error: () => {} }
-) => {
+  toast = { success: () => {}, error: () => {} },
+}) => {
   try {
     const res = await acceptFriendRequest(friendId);
     if (res?.status === 200) {
@@ -99,12 +98,12 @@ export const AcceptFriend = async (
 };
 
 // Từ chối lời mời kết bạn
-export const RejectFriend = async (
+export const RejectFriend = async ({
   userId,
   friendId,
   updateData = () => {},
-  toast = { success: () => {}, error: () => {} }
-) => {
+  toast = { success: () => {}, error: () => {} },
+}) => {
   try {
     const res = await deleteFriendRequest(userId, friendId);
 
