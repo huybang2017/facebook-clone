@@ -30,14 +30,14 @@ const Friends = () => {
   }, [userInfo, toast]);
 
   const handleUnFriend = (friendId) => {
-    UnFriend(
-      userInfo.data.userId,
-      friendId,
-      (removedId) => {
+    UnFriend({
+      userId: userInfo.data.userId,
+      friendId: friendId,
+      updateData: (removedId) => {
         setFriends((prev) => prev.filter((f) => f.userId !== removedId));
       },
-      toast
-    );
+      toast: toast,
+    });
   };
 
   return (

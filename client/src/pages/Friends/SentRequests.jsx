@@ -55,22 +55,27 @@ const SentRequests = () => {
   }, [userInfo, toast]);
 
   const handleAddFriend = async (friendId) => {
-    AddFriend(friendId, setSentRequests, suggestions, setSuggestions, toast);
+    await AddFriend({
+      friendId: friendId,
+      setSentRequests: setSentRequests,
+      suggestions: suggestions,
+      setSuggestions: setSuggestions,
+      toast: toast,
+    });
   };
 
   const handleDeletRequest = async (friendId) => {
-    DeleteRequest(
-      userInfo.data.userId,
-      friendId,
-      (rejectId) => {
+    await DeleteRequest({
+      userId: userInfo.data.userId,
+      friendId: friendId,
+      updateData: (rejectId) => {
         setSentRequests((prev) =>
           prev.filter((user) => user.userId !== rejectId)
         );
       },
-      toast
-    );
+      toast: toast,
+    });
   };
-
   return (
     <>
       {/* loadingSentReuquest */}
