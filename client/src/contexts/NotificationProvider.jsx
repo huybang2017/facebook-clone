@@ -19,22 +19,14 @@ export const NotificationProvider = ({ children }) => {
         (msg) => {
           const newNotification = JSON.parse(msg.body);
           setNotifications((prev) => [newNotification, ...prev]);
-          queryClient.setQueryData(
-            ["notificationList", userInfo.data.userId],
-            (oldData) => {
-              if (!oldData) return oldData;
-              return {
-                ...oldData,
-                pages: [
-                  {
-                    ...oldData.pages[0],
-                    content: [newNotification, ...oldData.pages[0].content],
-                  },
-                  ...oldData.pages.slice(1),
-                ],
-              };
-            }
-          );
+          // queryClient.invalidateQueries([
+          //   "notificationList",
+          //   userInfo.data.userId,
+          // ]);
+          queryClient.invalidateQueries([
+            "notificationCount",
+            userInfo.data.userId,
+          ]);
         }
       );
 
@@ -48,6 +40,5 @@ export const NotificationProvider = ({ children }) => {
     </NotificationContext.Provider>
   );
 };
-
 
 export const useNotificationContext = () => useContext(NotificationContext);

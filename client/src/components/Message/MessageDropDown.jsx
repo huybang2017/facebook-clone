@@ -1,32 +1,51 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo } from "react";
 import { StoreContext } from "@/contexts/StoreProvider";
-import useGetLastMessage from "@/hooks/useGetLastMessage";
 import { MessageCircle } from "lucide-react";
 import DropdownModal from "../DropdownModal";
 import MessengerPopup from "./MessagePopUp";
 import useFetchAllUserChats from "@/hooks/useFetchAllUserChats";
+import { useChatContext } from "@/contexts/ChatProvider";
+import { useQueries } from "@tanstack/react-query";
+import { getLastMessage } from "@/apis/message";
 
 export default function MessageDropdown() {
   const { userInfo } = useContext(StoreContext);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedChat, setSelectedChat] = useState(null);
+  const { messages: socketMessages } = useChatContext();
 
-  const { data: allMessages } = useFetchAllUserChats({ userId: userInfo?.data.userId });
+  const { data: allMessages } = useFetchAllUserChats({
+    userId: userInfo?.data.userId,
+  });
 
-  const { data: lastMessage } = useGetLastMessage(selectedChat?.id);
-  console.log(lastMessage);
+  const chatModels = allMessages?.pages.flatMap((page) => page.chatModels) || [];
 
+  const lastMessagesQuery = useQueries({
+    queries: chatModels.map((chat) => ({
+      queryKey: ["lastMessage", chat.chatId],
+      queryFn: () => getLastMessage(chat.chatId),
+      enabled: !!chat.chatId,
+    })),
+  });
 
-  const messages = allMessages?.pages.flatMap((page) =>
-    page.chatModels.map((chat) => ({
-      id: chat.chatId,
-      avatar: chat.privateChatUser?.profilePicture,
-      content: lastMessage?.chatId === chat.chatId ? lastMessage.message : "Tin nhắn chưa được gửi",
-      sender: `${chat.privateChatUser?.firstName} ${chat.privateChatUser?.lastName}`,
-      createdAt: lastMessage?.chatId === chat.chatId ? lastMessage.timestamp : "Vừa gửi",
-    }))
-  ) || [];
+  const messages = useMemo(() => {
+    return chatModels.map((chat, index) => {
+      const lastSocketMsg = socketMessages
+        .filter((m) => m.chatId === chat.chatId)
+        .at(-1);
 
+      const lastApiMsg = lastMessagesQuery[index]?.data?.data;
+
+      const message = {
+        chatId: chat.chatId,
+        lastSocketMsg,
+        lastApiMsg,
+        privateChatUser: chat.privateChatUser,
+      };
+
+      return message;
+    });
+  }, [chatModels, socketMessages, lastMessagesQuery]);
   return (
     <>
       <DropdownModal
@@ -48,7 +67,7 @@ export default function MessageDropdown() {
           {messages.length > 0 ? (
             messages.map((msg) => (
               <li
-                key={msg.id}
+                key={msg.chatId}
                 className="p-3 hover:bg-gray-50 cursor-pointer flex items-start space-x-3"
                 onClick={() => {
                   setSelectedChat(msg);
@@ -56,14 +75,20 @@ export default function MessageDropdown() {
                 }}
               >
                 <img
-                  src={msg.avatar}
+                  src={msg.privateChatUser?.profilePicture}
                   alt="Avatar"
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div className="flex-1">
-                  <div className="font-medium">{msg.sender}</div>
-                  <div className="text-sm">{msg.content}</div>
-                  <div className="text-xs text-gray-500 mt-1">{msg.createdAt}</div>
+                  <div className="font-medium">
+                    {`${msg.privateChatUser?.firstName} ${msg.privateChatUser?.lastName}`}
+                  </div>
+                  <div className="text-sm text-gray-600 truncate max-w-[200px]">
+                    {msg.lastSocketMsg?.message || msg.lastApiMsg?.message || "Chưa có tin nhắn"}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {msg.lastSocketMsg?.timestamp || msg.lastApiMsg?.timestamp || "Vừa mới tạo đoạn chat"}
+                  </div>
                 </div>
               </li>
             ))
@@ -77,7 +102,7 @@ export default function MessageDropdown() {
         chat={selectedChat}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-      ></MessengerPopup>
+      />
     </>
   );
 }

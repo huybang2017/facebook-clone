@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,6 +71,23 @@ public class PostServiceImpl implements PostService {
     if (files != null && files.length > 0) {
       postImageService.uploadPostImages(savedPost.getPostId(), files);
     }
+  }
+
+  @Override
+  public void updatePost(Long postId, String content, MultipartFile[] files) {
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+    if (content != null) {
+      post.setContent(content);
+      post.setTimestamp(LocalDateTime.now());
+    }
+
+    if (files != null && files.length > 0) {
+      postImageService.uploadPostImages(postId, files);
+    }
+
+    postRepository.save(post);
   }
 
   @Override

@@ -10,6 +10,7 @@ import com.facebook.server.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +27,15 @@ public class PostController {
       @RequestPart(value = "post", required = false) String content,
       @RequestPart(value = "file", required = false) MultipartFile[] files) {
     postService.createPost(userId, content, files);
+  }
+
+  @PatchMapping("/update/{postId}")
+  public ResponseEntity<?> partialUpdatePost(
+      @PathVariable Long postId,
+      @RequestPart(value = "content", required = false) String content,
+      @RequestPart(value = "files", required = false) MultipartFile[] files) {
+    postService.updatePost(postId, content, files);
+    return ResponseEntity.ok("Cập nhật bài viết thành công");
   }
 
   @GetMapping("/{userId}")

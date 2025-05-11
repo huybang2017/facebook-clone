@@ -19,6 +19,8 @@ public interface PostService {
 
   PostListResponseAdmin fetchAllPostHaveContent(int pageNo, int pageSize);
 
+  void updatePost(Long postId, String content, MultipartFile[] files);
+
   void sharePost(Long postId, SharePostRequest request);
 
   void sharePostImage(Long postImageId, Long postId, SharePostRequest request);

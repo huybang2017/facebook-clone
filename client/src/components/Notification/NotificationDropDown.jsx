@@ -17,18 +17,28 @@ export default function NotificationDropdown() {
   const { data, fetchNextPage, hasNextPage } = useFetchNotifications({
     userId: userInfo?.data.userId,
   });
+  const [now, setNow] = useState(new Date());
   const { notifications: realTimeNotifications } = useNotificationContext();
-
-  // useEffect(() => {
-  //   console.log("Real-time notifications:", realTimeNotifications);
-  // }, [realTimeNotifications]);
 
   const fetchedNotifications =
     data?.pages?.flatMap((page) => page.notificationModels || []) || [];
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const allNotifications = [
     ...realTimeNotifications,
-    ...fetchedNotifications,
+    ...fetchedNotifications.filter(
+      (n) =>
+        !realTimeNotifications.some(
+          (r) => r.notificationId === n.notificationId
+        )
+    ),
   ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   const [profileImages, setProfileImages] = useState({});
@@ -52,13 +62,12 @@ export default function NotificationDropdown() {
     });
   }, [allNotifications, profileImages]);
 
-
   return (
     <DropdownModal
       trigger={
         <div className="relative w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center cursor-pointer">
           <Bell className="w-5 h-5 text-gray-700" />
-          {unreadCount?.data && (
+          {unreadCount?.data?.count > 0 && (
             <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1.5 -translate-y-1/2 translate-x-1/2">
               {unreadCount.data.count > 9 ? "9+" : unreadCount.data.count}
             </span>
@@ -99,8 +108,9 @@ export default function NotificationDropdown() {
                 </div>
                 <div className="text-sm">{noti.message}</div>
                 <div
-                  className={`text-xs mt-1 ${noti.read ? "text-gray-500" : "text-[#1877F2] font-medium"
-                    }`}
+                  className={`text-xs mt-1 ${
+                    noti.read ? "text-gray-500" : "text-[#1877F2] font-medium"
+                  }`}
                 >
                   {formatDistanceToNow(new Date(noti.timestamp), {
                     addSuffix: true,

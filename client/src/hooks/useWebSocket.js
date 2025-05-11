@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import SockJS from "sockjs-client/dist/sockjs";
 import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 const useWebSocket = () => {
   const [isConnected, setIsConnected] = useState(false);

@@ -1,5 +1,5 @@
+import { sendMessage } from "@/apis/message";
 import { useMutation } from "@tanstack/react-query";
-import { sendMessage } from "@/apis/chat";
 
 const useSendMessage = () => {
   return useMutation({

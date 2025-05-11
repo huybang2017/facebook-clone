@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
-
   private final UserService userService;
   private final PostImageService postImageService;
 
