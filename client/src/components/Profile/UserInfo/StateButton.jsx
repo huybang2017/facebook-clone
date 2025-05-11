@@ -8,10 +8,23 @@ import {
   UserRoundMinus,
   UserRoundPlus,
 } from "lucide-react";
-import { getFriendshipStatus,getSentFriendRequests,getReceivedFriendRequests } from "@/apis/friendService";
+import {
+  getFriendshipStatus,
+  getSentFriendRequests,
+  getReceivedFriendRequests,
+} from "@/apis/friendService";
 import { StoreContext } from "@/contexts/StoreProvider";
+import {
+  AddFriend,
+  UnFriend,
+  DeleteRequest,
+  AcceptFriend,
+  RejectFriend,
+} from "@/utils/FriendHelper";
+import { ToastContext } from "@/contexts/ToastProvider";
 
 const StateButton = ({ setModalOpen, isMyProfile, data }) => {
+  const { toast } = useContext(ToastContext);
   const navigate = useNavigate();
   const [isFriend, setIsFriend] = useState(false);
   const [isSentRequest, setIsSentRequest] = useState(false);
@@ -19,7 +32,7 @@ const StateButton = ({ setModalOpen, isMyProfile, data }) => {
   const { userInfo } = useContext(StoreContext);
   const friendId = data?.userId;
   const myId = userInfo?.data.userId;
- // trường hợp đã là bạn bè hay chưa ?
+  // trường hợp đã là bạn bè hay chưa ?
   useEffect(() => {
     const fetchIsFriend = async () => {
       if (friendId && friendId !== myId) {
@@ -39,44 +52,103 @@ const StateButton = ({ setModalOpen, isMyProfile, data }) => {
     fetchIsFriend();
   }, [friendId, myId]);
 
-// trường hợp đã gửi lời mời 
-useEffect(() => {
-  const fetchIsAcceptRequest = async () => {
-    if (friendId && friendId !== myId) {
-      try {
-        const res = await getSentFriendRequests(myId);
-        console.log("ds yeu cau",res.data);
-        const userList = res?.data?.userList || [];
-        const isSent = userList.some((user) => user.userId === friendId);        
-        setIsSentRequest(isSent);
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
+  // trường hợp đã gửi lời mời
+  useEffect(() => {
+    const fetchIsAcceptRequest = async () => {
+      if (friendId && friendId !== myId) {
+        try {
+          const res = await getSentFriendRequests(myId);
+          console.log("ds yeu cau", res.data);
+          const userList = res?.data?.userList || [];
+          const isSent = userList.some((user) => user.userId === friendId);
+          setIsSentRequest(isSent);
+        } catch (error) {
+          console.error("Lỗi khi lấy dữ liệu:", error);
+        }
       }
+    };
+
+    fetchIsAcceptRequest();
+  }, [friendId, myId]);
+  // trường hợp đã nhận lời mời
+  useEffect(() => {
+    const fetchIsAcceptRequest = async () => {
+      if (friendId && friendId !== myId) {
+        try {
+          const res = await getReceivedFriendRequests(myId);
+          console.log("ds loi moi", res.data);
+          const userList = res?.data?.userList || [];
+          const isAccept = userList.some((user) => user.userId === friendId);
+          setIsAcceptRequest(isAccept);
+        } catch (error) {
+          console.error("Lỗi khi lấy dữ liệu:", error);
+        }
+      }
+    };
+
+    fetchIsAcceptRequest();
+  }, [friendId, myId]);
+
+  const handleRejectRequest = async () => {
+    try {
+      await RejectFriend({
+        userId: myId,
+        friendId: friendId,
+        toast: toast,
+      });
+      setIsFriend(false); // Đặt trạng thái yêu cầu đã bị từ chối
+    } catch (error) {
+      console.error("Lỗi khi từ chối yêu cầu:", error);
+    }
+  };
+  const handleAddFriend = async () => {
+    try {
+      await AddFriend({
+        friendId: friendId,
+        toast: toast,
+      });
+      setIsSentRequest(true);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  fetchIsAcceptRequest();
-}, [friendId, myId]);
-// trường hợp đã nhận lời mời
-useEffect(() => {
-  const fetchIsAcceptRequest = async () => {
-    if (friendId && friendId !== myId) {
-      try {
-        const res = await getReceivedFriendRequests(myId);
-        console.log("ds loi moi",res.data);   
-        const userList = res?.data?.userList || [];
-        const isAccept = userList.some((user) => user.userId === friendId);
-        setIsAcceptRequest(isAccept);
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-      }
+  const handleUnFriend = async () => {
+    try {
+      await UnFriend({
+        userId: myId,
+        friendId: friendId,
+        toast: toast,
+      });
+      setIsFriend(false);
+    } catch (error) {
+      console.log(error);
     }
   };
-
-  fetchIsAcceptRequest();
-}, [friendId, myId]);
-
-  
+  const handleAcceptFriend = async () => {
+    try {
+      await AcceptFriend({
+        userId: myId,
+        friendId: friendId,
+        toast: toast,
+      });
+      setIsFriend(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleDeleteRequest = async () => {
+    try {
+      await DeleteRequest({
+        userId: myId,
+        friendId: friendId,
+        toast: toast,
+      });
+      setIsSentRequest(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="ml-auto grid grid-cols-1 md:grid-cols-2 gap-2">
       {isMyProfile ? (
@@ -101,7 +173,7 @@ useEffect(() => {
             <EditButton
               icon={<UserRoundMinus size={18} />}
               label="Hủy kết bạn"
-              onClick={null}
+              onClick={() => handleUnFriend()}
               className="bg-blue-600 text-white hover:bg-blue-700"
             />
           ) : isSentRequest ? (
@@ -109,7 +181,7 @@ useEffect(() => {
             <EditButton
               icon={<UserRoundMinus size={18} />}
               label="Hủy yêu cầu"
-              onClick={null}
+              onClick={() => handleDeleteRequest()}
               className="bg-blue-600 text-white hover:bg-blue-700"
             />
           ) : isAcceptRequest ? (
@@ -117,13 +189,13 @@ useEffect(() => {
               <EditButton
                 icon={<UserRoundPlus size={18} />}
                 label="Chấp nhận"
-                onClick={null}
+                onClick={() => handleAcceptFriend()}
                 className="bg-blue-600 text-white hover:bg-blue-700"
               />
               <EditButton
                 icon={<UserRoundMinus size={18} />}
                 label="Từ chối"
-                onClick={null}
+                onClick={() => handleRejectRequest()}
                 className="px-4 py-2 rounded-md bg-gray-200 text-black font-bold cursor-pointer ml-2"
               />
             </>
@@ -132,7 +204,7 @@ useEffect(() => {
             <EditButton
               icon={<UserRoundPlus size={18} />}
               label="Kết bạn"
-              onClick={null}
+              onClick={() => handleAddFriend()}
               className="bg-blue-600 text-white hover:bg-blue-700"
             />
           )}

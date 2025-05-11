@@ -19,7 +19,7 @@ const ProfilePage = ({ children }) => {
       const fetchedUser = res.data;
 
       if (userInfo.data.userId === fetchedUser.userId) {
-        setData(userInfo.data);
+        setData(fetchedUser);
         setIsMyProfile(true);
       } else {
         setData(fetchedUser);

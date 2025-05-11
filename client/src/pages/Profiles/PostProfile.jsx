@@ -1,9 +1,27 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import PostContent from "../../components/PostContent/PostContent";
 import ProfileCard from "@/components/Profile/FriendContent/ProfileCard.jsx";
 import { useEffect } from "react";
-import { Link } from "react-router-dom"; // Thêm import cho Link
-const PostProfile = () => {
+import { Link } from "react-router-dom";
+import { getUserFriends } from "@/apis/friendService";
+import { StoreContext } from "@/contexts/StoreProvider";
+
+const PostProfile = ({ data }) => {
+  const [friends, setFriends] = useState([]);
+  const { userInfo } = useContext(StoreContext);
+  const userId = data?.userId;
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const res = await getUserFriends(userId);
+        setFriends(res?.data?.userList || []);
+      } catch (error) {
+        console.log("Lỗi khi xử lý API fetchFriends: ", error);
+      }
+    };
+    fetchFriends();
+  }, [userId]);
+
   const [comments, setComments] = useState([
     {
       name: "Lê Phúc",
@@ -29,62 +47,6 @@ const PostProfile = () => {
     createdAt: "10 phút trước",
     userId: 1, // Assuming this is the logged-in user's ID
   };
-  const friendData = [
-    {
-      id: 1,
-      username: "Xuân Bảo",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-    {
-      id: 2,
-      username: "Nguyễn Văn A",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-    {
-      id: 3,
-      username: "Trần Thị B",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-    {
-      id: 4,
-      username: "Xuân Bảo",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-    {
-      id: 5,
-      username: "Nguyễn Văn A",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-    {
-      id: 6,
-      username: "Trần Thị B",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-    {
-      id: 7,
-      username: "Xuân Bảo",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-    {
-      id: 8,
-      username: "Nguyễn Văn A",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-    {
-      id: 9,
-      username: "Trần Thị B",
-      image:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-    },
-  ];
 
   return (
     <div className="h-auto bg-gray-100 p-4">
@@ -93,20 +55,17 @@ const PostProfile = () => {
         <div className="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 h-[450px] overflow-y-hidden bg-white dark:bg-zinc-900 shadow-md rounded-xl p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Danh sách bạn bè</h2>
-            <Link
-              to={`user/profile/${1}`}
-              className="text-blue-500 hover:text-blue-600"
-            >
+            <Link to={"/friends"} className="text-blue-500 hover:text-blue-600">
               Xem tất cả bạn bè
             </Link>
           </div>
-          <span className="block p-2 -mt-5">130 người bạn</span>
-
           {/* Responsive grid layout */}
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {friendData.map((f) => (
-              <ProfileCard key={f.id} friend={f} />
-            ))}
+            {friends
+              .filter((friend) => friend.userId !== userInfo.data.userId)
+              .map((friend) => (
+                <ProfileCard key={friend.userId} friend={friend} />
+              ))}
           </div>
         </div>
 

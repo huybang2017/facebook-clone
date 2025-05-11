@@ -5,7 +5,8 @@ import EditModal from "./UserInfo/EditModal";
 import CoverPhoto from "./UserInfo/CoverPhoto";
 import StateButton from "./UserInfo/StateButton";
 import { ToastContext } from "@/contexts/ToastProvider";
-const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {  
+import ImageAvatar from "@/assets/images/default_avatar.jpg";
+const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
@@ -37,6 +38,11 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
 
     try {
       let i = 0;
+
+      if (!avatarPreview && !coverPreview) {
+        toast.info("Không có thay đổi nào được thực hiện");
+        return;
+      }
       // Gọi API upload ảnh đại diện nếu có
       if (avatarPreview) {
         const avatarFile = await fetch(avatarPreview).then((res) => res.blob());
@@ -60,9 +66,12 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
       }
 
       if (i == 1 || i == 2) {
-        toast.success("Cập nhật thành công!");
-        setModalOpen(false);
-        setIsUpdateSuccess(true);
+        // Add delay before success
+        setTimeout(() => {
+          toast.success("Cập nhật thành công!");
+          setModalOpen(false);
+          setIsUpdateSuccess(true);
+        }, 3000); // 2-second delay
       }
     } catch (error) {
       toast.error("Lỗi khi upload ảnh:");
@@ -82,7 +91,7 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
       <div className="flex items-center px-5 py-5 relative">
         <div className="-mt-[75px] mr-5">
           <img
-            src={data?.profilePicture}
+            src={data?.profilePicture || ImageAvatar}
             alt="Avatar"
             className="w-[150px] h-[150px] rounded-full border-[4px] border-white shadow-md object-cover"
           />
@@ -92,15 +101,14 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
           <h2 className="m-0 text-lg font-semibold">
             {data?.firstName} {data?.lastName}
           </h2>
-          <p className="text-gray-500">{data?.friendCount}1 người bạn</p>
         </div>
 
-        {/* Button */}
+        {/* Button Trạng thái */}
         <StateButton
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
           isMyProfile={isMyProfile}
-          data = {data}
+          data={data}
         />
       </div>
 
@@ -159,7 +167,7 @@ const UserInfo = ({ isMyProfile, data, fetchUserInfo }) => {
 
           <button
             // type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition cursor-pointer"
           >
             Lưu thay đổi
           </button>
