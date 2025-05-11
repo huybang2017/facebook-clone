@@ -32,23 +32,28 @@ const ReceivedRequests = () => {
 
   // Xử lý chấp nhận lời mời kết bạn
   const handleAcceptFriend = async (friendId) => {
-    AcceptFriend(
-      friendId,
-      (acceptId) => {
+    AcceptFriend({
+      friendId: friendId,
+      updateData: (acceptId) => {
         setReceivedRequests((prev) =>
           prev.filter((request) => request.userId !== acceptId)
         );
       },
-      toast
-    );
+      toast: toast,
+    });
   };
 
   // Xử lý từ chối lời mời kết bạn
   const handleRejectFriend = async (friendId) => {
-    RejectFriend(userInfo.data.userId, friendId, (rejectId) => {
-      setReceivedRequests((prev) =>
-        prev.filter((request) => request.userId !== rejectId)
-      );
+    RejectFriend({
+      userId: userInfo.data.userId,
+      friendId: friendId,
+      updateData: (rejectId) => {
+        setReceivedRequests((prev) =>
+          prev.filter((request) => request.userId !== rejectId)
+        );
+      },
+      toast: toast,
     });
   };
 
