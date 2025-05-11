@@ -21,6 +21,12 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
                         @Param("strangerId") Long strangerId,
                         @Param("status") FriendshipStatus status);
 
+        @Query(value = "SELECT * FROM friendship WHERE " +
+                        "(user_id = :userId1 AND friend_id = :userId2) OR " +
+                        "(user_id = :userId2 AND friend_id = :userId1) LIMIT 1", nativeQuery = true)
+        Optional<Friendship> findFriendshipBetween(@Param("userId1") Long userId1,
+                        @Param("userId2") Long userId2);
+
         void deleteByUser_UserIdAndFriends_UserId(Long userId, Long strangerId);
 
         Page<Friendship> findAllByStatusAndFriends_UserId(FriendshipStatus status, Long userId, Pageable pageable);

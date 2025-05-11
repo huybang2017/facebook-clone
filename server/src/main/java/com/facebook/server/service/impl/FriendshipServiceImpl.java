@@ -192,8 +192,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
         if (isRequestStatus) {
             // Trường hợp kiểm tra xem đã là bạn bè chưa
-            friendship = friendshipRepository.findByUser_UserIdAndFriends_UserId(user.getUserId(), friendId);
-
+            friendship = friendshipRepository.findFriendshipBetween(user.getUserId(), friendId);
             if (friendship.isPresent() && friendship.get().getStatus() == FriendshipStatus.FRIENDS) {
                 return new FriendshipStatusResponse(
                         "Hai bạn đã là bạn bè! Hãy trò chuyện để hiểu nhau hơn.",
