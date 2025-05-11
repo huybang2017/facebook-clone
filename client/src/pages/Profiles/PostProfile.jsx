@@ -93,7 +93,10 @@ const PostProfile = () => {
         <div className="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 h-[450px] overflow-y-hidden bg-white dark:bg-zinc-900 shadow-md rounded-xl p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Danh sách bạn bè</h2>
-            <Link to={""} className="text-blue-500 hover:text-blue-600">
+            <Link
+              to={`user/profile/${1}`}
+              className="text-blue-500 hover:text-blue-600"
+            >
               Xem tất cả bạn bè
             </Link>
           </div>

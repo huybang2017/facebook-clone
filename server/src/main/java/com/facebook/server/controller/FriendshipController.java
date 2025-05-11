@@ -3,10 +3,14 @@ package com.facebook.server.controller;
 import com.facebook.server.dto.response.CountResponse;
 import com.facebook.server.dto.response.FriendshipStatusResponse;
 import com.facebook.server.dto.response.UserListResponse;
+import com.facebook.server.entity.constants.FriendshipStatus;
 import com.facebook.server.service.FriendshipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/friends")

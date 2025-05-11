@@ -3,30 +3,29 @@ import { Home, PlusSquare, User, Users } from "lucide-react";
 import { useContext } from "react";
 import { NavLink } from "react-router-dom";
 
-
 export default function Sidebar() {
-  const {userInfo} = useContext(StoreContext);
-const menuItems = [
-  { id: 1, name: "Trang chủ", icon: <Home className="w-5 h-5" />, link: "/" },
-  {
-    id: 2,
-    name: "Tạo bài viết",
-    icon: <PlusSquare className="w-5 h-5" />,
-    link: "/create-post",
-  },
-  {
-    id: 3,
-    name: "Bạn bè",
-    icon: <Users className="w-5 h-5" />,
-    link: "/friends",
-  },
-  {
-    id: 4,
-    name: "Hồ sơ",
-    icon: <User className="w-5 h-5" />,
-    link: `/user/profile/${userInfo?.userId}`,
-  },
-];
+  const { userInfo } = useContext(StoreContext);
+  const menuItems = [
+    { id: 1, name: "Trang chủ", icon: <Home className="w-5 h-5" />, link: "/" },
+    {
+      id: 2,
+      name: "Tạo bài viết",
+      icon: <PlusSquare className="w-5 h-5" />,
+      link: "/create-post",
+    },
+    {
+      id: 3,
+      name: "Bạn bè",
+      icon: <Users className="w-5 h-5" />,
+      link: "/friends",
+    },
+    {
+      id: 4,
+      name: "Hồ sơ",
+      icon: <User className="w-5 h-5" />,
+      link: `/user/profile/${userInfo?.data?.userId}`,
+    },
+  ];
   return (
     <div className="h-screen bg-white flex flex-col pb-9">
       {/* Menu */}
