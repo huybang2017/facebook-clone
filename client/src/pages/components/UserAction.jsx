@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Tippy from "@tippyjs/react/headless";
 import "tippy.js/dist/tippy.css";
 import TippyWrapper from "@/components/Wrapper/TippyWrapper";
@@ -12,13 +12,15 @@ import MyModal from "@/components/Modal/MyModal";
 const UserAction = () => {
   const [visible, setVisible] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const { userInfo } = useContext(StoreContext);
+  const { userInfo, avatarDefault } = useContext(StoreContext);
   const navigate = useNavigate();
   const onCloseModal = () => setOpenModal(false);
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
+
+  useEffect(() => {});
   return (
     <>
       <MyModal
@@ -60,7 +62,10 @@ const UserAction = () => {
             className="w-[280px] max-h-[calc(100vh-80px)] rounded-lg bg-white shadow-[-6px_5px_16px_7px_rgba(0,_0,_0,_0.2)]"
           >
             <TippyWrapper>
-              <AccountItem header />
+              <AccountItem
+                header
+                to={`/user/profile/${userInfo?.data.userId}`}
+              />
               <Separator />
               <div className="flex items-center p-2 my-2 hover:bg-gray-100 rounded-md transition ease-in duration-100 cursor-pointer">
                 <div className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-200">
@@ -91,7 +96,7 @@ const UserAction = () => {
             onClick={() => setVisible(!visible)}
           >
             <img
-              src={userInfo?.image}
+              src={userInfo?.data?.profilePicture || avatarDefault}
               alt="user-avatar"
               className="w-10 h-10 rounded-full"
             />

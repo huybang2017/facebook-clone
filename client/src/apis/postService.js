@@ -21,7 +21,7 @@ const create = async (body, id) => {
 
 // [DELETE] Xóa bài post theo postId
 const deletePost = async (id) => {
-  return await axiosClient.post(`/post/delete/${id}`);
+  return await axiosClient.delete(`/post/delete/${id}`);
 };
 
 export { getAll, getById, getOfUser, create, deletePost };

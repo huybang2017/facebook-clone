@@ -6,6 +6,7 @@ import StoreProvider from "./contexts/StoreProvider";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import GuestRoute from "./routes/GuestRoute";
 import ToastProvider from "./contexts/ToastProvider";
+import SimpleBar from "simplebar-react";
 
 const App = () => {
   return (

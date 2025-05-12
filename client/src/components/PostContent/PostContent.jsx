@@ -2,8 +2,6 @@ import Tippy from "@tippyjs/react/headless";
 import {
   Ellipsis,
   ThumbsUp,
-  MessageCircle,
-  Share,
   Pencil,
   Trash,
   BellOff,
@@ -15,11 +13,25 @@ import TippyWrapper from "../Wrapper/TippyWrapper";
 import ActionMenuItem from "../ActionMenu/ActionMenuItem";
 import { StoreContext } from "@/contexts/StoreProvider";
 import SwiperWrapper from "../Swiper/SwiperWrapper";
-import Comment from "../Comment/Comment";
+import { Link } from "react-router-dom";
+import ActionPost from "../ActionPost/ActionPost";
+import ListComment from "../Comment";
+import { formatDateTime } from "@/utils/formatDateTime";
+import { usePost } from "@/hooks/usePost";
+import { useLoading } from "@/hooks/useLoading";
+import { ToastContext } from "@/contexts/ToastProvider";
+import { BeatLoader } from "react-spinners";
 
-const PostContent = ({ data, hidden, comments }) => {
-  const { userInfo } = useContext(StoreContext);
-  console.log("userInfo :", userInfo);
+const PostContent = ({
+  data,
+  fetchAllPost,
+  hidden,
+  comments,
+  fetchLikeOrUnlike,
+  isLiked,
+}) => {
+  const { userInfo, avatarDefault } = useContext(StoreContext);
+  const { toast } = useContext(ToastContext);
   const [visible, setVisible] = useState(false);
   const {
     userId,
@@ -28,21 +40,43 @@ const PostContent = ({ data, hidden, comments }) => {
     firstName,
     lastName,
     postImages,
-    isLiked,
     postLikeCount,
     postCommentCount,
+    profilePicture,
     timestamp,
   } = data || {};
 
-  useEffect(() => {}, [comments]);
+  const { deletePostById } = usePost();
+  const { isLoading, loading, loaded } = useLoading();
+
+  const handleDeletePost = async () => {
+    loading();
+    try {
+      const res = await deletePostById(postId);
+      if (res) {
+        toast.success("Xóa bài viết thành công");
+        loaded();
+        fetchAllPost();
+      }
+    } catch (error) {
+      toast.error("Xóa bài viết thất bại");
+      loaded();
+      console.log(error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    console.log("Comment count in PostContent: ", postCommentCount);
+  }, [comments]);
 
   return (
     <>
       {/* Header */}
       <div className="flex items-start justify-between">
-        <div className="flex gap-3">
+        <Link to={`/user/profile/${userId}`} className="flex gap-3">
           <img
-            src="https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg"
+            src={profilePicture || avatarDefault}
             className="w-10 h-10 rounded-full object-cover"
             alt="avatar"
           />
@@ -52,9 +86,9 @@ const PostContent = ({ data, hidden, comments }) => {
                 {firstName} {lastName}
               </span>
             </div>
-            <p className="text-zinc-500 text-xs">{timestamp}</p>
+            <p className="text-zinc-500 text-xs">{formatDateTime(timestamp)}</p>
           </div>
-        </div>
+        </Link>
         <Tippy
           interactive
           visible={visible}
@@ -70,8 +104,15 @@ const PostContent = ({ data, hidden, comments }) => {
                       text={"Chỉnh sửa bài viết"}
                     />
                     <ActionMenuItem
-                      icon={<Trash className="w-5 h-5" />}
-                      text={"Xóa bài viết"}
+                      onClick={() => handleDeletePost()}
+                      icon={
+                        isLoading ? (
+                          <BeatLoader color="#2a2a2a" margin={3} size={10} />
+                        ) : (
+                          <Trash className="w-5 h-5" />
+                        )
+                      }
+                      text={isLoading ? "" : "Xóa bài viết"}
                     />
                     <ActionMenuItem
                       icon={<BellOff className="w-5 h-5" />}
@@ -103,6 +144,7 @@ const PostContent = ({ data, hidden, comments }) => {
       {/* Caption */}
       <p className="mt-3 text-sm text-zinc-700 dark:text-zinc-200">{content}</p>
 
+      {/* Image and video */}
       {postImages && (
         <div className="mt-3">
           <SwiperWrapper
@@ -132,55 +174,31 @@ const PostContent = ({ data, hidden, comments }) => {
       {/* Reactions */}
       <div className="mt-3 flex justify-between text-sm text-zinc-600 dark:text-zinc-400">
         <div className="flex items-center gap-2">
-          <ThumbsUp className="w-4 h-4 text-yellow-500" />
+          <div className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-500 ">
+            <ThumbsUp className="w-3 h-3 text-white" strokeWidth={3} />
+          </div>
           <span>{postLikeCount}</span>
         </div>
         <div>
           <span className="hover:underline cursor-pointer">
-            {postCommentCount} bình luận
+            {postCommentCount > 0 ? (
+              <span>{`${postCommentCount} bình luận`}</span>
+            ) : (
+              <></>
+            )}
           </span>
         </div>
       </div>
 
+      {/* Action buttons */}
       <div className={`${hidden ? "hidden" : ""}`}>
         <hr className="my-3 border-zinc-300 dark:border-zinc-700" />
-
-        {/* Action buttons */}
-        <div
-          className={`flex justify-between text-sm font-medium text-zinc-600 dark:text-zinc-300 ${
-            hidden ? "hidden" : ""
-          }`}
-        >
-          <button
-            className={`flex items-center px-4 rounded py-2 hover:bg-gray-100 gap-2 cursor-pointer ${
-              isLiked ? "text-blue-500 font-bold" : ""
-            }`}
-          >
-            <ThumbsUp className="w-4 h-4" strokeWidth={isLiked ? 3 : 2} />{" "}
-            <span>Thích</span>
-          </button>
-          <button
-            onClick={() => setOpenModal(true)}
-            className="flex items-center px-4 rounded py-2 hover:bg-gray-100 gap-2 cursor-pointer"
-          >
-            <MessageCircle className="w-4 h-4" /> Bình luận
-          </button>
-          <button className="flex items-center px-4 rounded py-2 hover:bg-gray-100 gap-2 cursor-pointer">
-            <Share className="w-4 h-4" /> Chia sẻ
-          </button>
-        </div>
+        <ActionPost isLiked={isLiked} fetchLikeOrUnlike={fetchLikeOrUnlike} />
       </div>
+      <hr className="my-3 border-zinc-300 dark:border-zinc-700" />
 
-      <hr
-        className={`${
-          hidden && comments?.length > 0 ? "hidden" : ""
-        } my-3 border-zinc-300 dark:border-zinc-700 `}
-      />
-
-      {/* Comment component */}
-      <div className={`${hidden ? "hidden" : "mb-[60px]"}`}>
-        {comments && comments?.map((comment) => <Comment data={comment} />)}
-      </div>
+      {/* List comment */}
+      {!hidden && <ListComment list={comments} />}
     </>
   );
 };

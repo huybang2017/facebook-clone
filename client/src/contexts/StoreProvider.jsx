@@ -1,6 +1,7 @@
 import { getInfo } from "@/apis/authService";
 import { createContext, useEffect, useState } from "react";
 import avatarDefault from "../assets/images/default_avatar.jpg";
+
 export const StoreContext = createContext();
 
 const StoreProvider = ({ children }) => {
@@ -21,7 +22,7 @@ const StoreProvider = ({ children }) => {
   }, [token]);
 
   return (
-    <StoreContext.Provider value={{ userInfo }}>
+    <StoreContext.Provider value={{ userInfo, avatarDefault }}>
       {children}
     </StoreContext.Provider>
   );

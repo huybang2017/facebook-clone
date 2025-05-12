@@ -1,12 +1,16 @@
 import { StoreContext } from "@/contexts/StoreProvider";
 import { useComment } from "@/hooks/useComment";
+import { useLoading } from "@/hooks/useLoading";
+import { formatDateTime } from "@/utils/formatDateTime";
 import { Send } from "lucide-react";
 import React, { useContext, useState } from "react";
+import { BeatLoader } from "react-spinners";
 
-const CommentInput = ({ postId, comments, setComments }) => {
+const CommentInput = ({ postId, comments, setComments, setCommentCount }) => {
   const [value, setValue] = useState("");
 
   const { userInfo } = useContext(StoreContext);
+  const { isLoading, loading, loaded } = useLoading();
 
   const { firstName, lastName, profilePicture } = userInfo?.data;
 
@@ -17,6 +21,7 @@ const CommentInput = ({ postId, comments, setComments }) => {
 
   const handleSumit = async (e) => {
     e.preventDefault();
+    loading();
     try {
       const formData = new FormData();
       formData.append("comment", value);
@@ -30,13 +35,15 @@ const CommentInput = ({ postId, comments, setComments }) => {
           lastName,
           avatar: profilePicture,
           comment: value,
-          timestamp: Date.now(),
+          timestamp: formatDateTime(Date.now()),
         };
-
         setComments([...comments, newComment]);
+        setCommentCount?.((prev) => prev + 1);
         setValue("");
+        loaded();
       }
     } catch (error) {
+      loaded();
       throw error;
     }
   };
@@ -52,14 +59,18 @@ const CommentInput = ({ postId, comments, setComments }) => {
         />
       </div>
       <button type="submit">
-        <Send
-          size={20}
-          className={`${
-            value
-              ? "text-blue-400 hover:text-blue-500 cursor-pointer"
-              : "text-gray-300"
-          }`}
-        />
+        {isLoading ? (
+          <BeatLoader color="#759cfe" margin={1} size={5} />
+        ) : (
+          <Send
+            size={20}
+            className={`${
+              value
+                ? "text-blue-400 hover:text-blue-500 cursor-pointer"
+                : "text-gray-300"
+            }`}
+          />
+        )}
       </button>
     </form>
   );

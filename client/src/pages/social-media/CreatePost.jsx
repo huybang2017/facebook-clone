@@ -4,12 +4,17 @@ import { StoreContext } from "@/contexts/StoreProvider";
 import { ToastContext } from "@/contexts/ToastProvider";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "@/hooks/usePost";
+import { useLoading } from "@/hooks/useLoading";
+import { BeatLoader } from "react-spinners";
 
 const CreatePost = () => {
   const [caption, setCaption] = useState("");
   const [mediaFiles, setMediaFiles] = useState([]);
 
+  // Custom hook
   const { createPost } = usePost();
+  const { isLoading, loading, loaded } = useLoading();
+
   const navigate = useNavigate();
   const { userInfo } = useContext(StoreContext);
   const { toast } = useContext(ToastContext);
@@ -25,7 +30,7 @@ const CreatePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    loading();
     // Ngăn đăng bài nếu không có nội dung hay file
     if (!caption.trim() && mediaFiles.length === 0) {
       toast.error("Vui lòng thêm nội dung hoặc tệp media.");
@@ -44,6 +49,7 @@ const CreatePost = () => {
 
       if (response) {
         toast.success("Đăng bài thành công!");
+        loaded();
         navigate("/");
       } else {
         toast.error("Đăng bài thất bại!");
@@ -51,6 +57,7 @@ const CreatePost = () => {
     } catch (error) {
       console.error("Lỗi khi đăng bài:", error);
       toast.error("Có lỗi xảy ra khi đăng bài.");
+      loaded();
     }
   };
 
@@ -136,10 +143,15 @@ const CreatePost = () => {
       </div>
 
       <button
+        disabled={isLoading}
         type="submit"
         className="w-full bg-blue-600 text-white py-2 rounded-xl font-semibold hover:bg-blue-700 transition"
       >
-        Đăng bài
+        {isLoading ? (
+          <BeatLoader color="#fff" margin={3} size={10} />
+        ) : (
+          <span>Đăng bài</span>
+        )}
       </button>
     </form>
   );

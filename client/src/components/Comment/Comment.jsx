@@ -1,8 +1,11 @@
+import { StoreContext } from "@/contexts/StoreProvider";
 import { useComment } from "@/hooks/useComment";
-import { ThumbsUp } from "lucide-react";
-import React, { useEffect } from "react";
+import { Mic, ThumbsUp } from "lucide-react";
+import React, { useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Comment = ({ data }) => {
+  const { userInfo, avatarDefault } = useContext(StoreContext);
   const {
     postCommentId,
     userId,
@@ -20,19 +23,22 @@ const Comment = ({ data }) => {
 
   return (
     <div class="flex gap-4 mb-4 w-full">
-      <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+      <Link
+        to={`/user/profile/${userId}`}
+        class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
+      >
         <img
           alt="avatar"
           class="w-full h-full object-cover rounded-full"
-          src={avatar}
+          src={avatar || avatarDefault}
         />
-      </div>
+      </Link>
 
       <div className="flex flex-col">
         <div class="flex flex-col p-2 bg-[#f1f2f6] rounded-xl">
-          <h4 class="text-sm font-medium">
-            {firstName} {lastName}
-          </h4>
+          <Link to={`/user/profile/${userId}`} class="text-sm font-medium">
+            {firstName} {lastName}{" "}
+          </Link>
           <p class="text-sm font-normal">{comment}</p>
         </div>
         <div className="flex items-center gap-4 px-2 mt-1">

@@ -21,7 +21,7 @@ export function LoginForm({ className, ...props }) {
       }
     } catch (error) {
       if (error) {
-        toast.error(error.response.data.errorMessage);
+        toast.error(error.response?.data.errorMessage);
       } else {
         toast.error("Hệ thống đang bảo trì! Vui lòng thử lại.");
       }
