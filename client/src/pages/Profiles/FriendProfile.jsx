@@ -1,76 +1,58 @@
-import React, { useEffect,useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { StoreContext } from "@/contexts/StoreProvider";
-const friendsData = [
-  {
-    id: 1,
-    name: "Duc Huy",
-    avatar: "https://randomuser.me/api/portraits/men/10.jpg",
-  },
-  {
-    id: 2,
-    name: "Bao Phan",
-    avatar: "https://randomuser.me/api/portraits/women/21.jpg",
-  },
-  {
-    id: 3,
-    name: "Phuc Le",
-    avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-  },
-  {
-    id: 4,
-    name: "Tan Canh",
-    avatar: "https://randomuser.me/api/portraits/women/56.jpg",
-  },
-];
+import { getUserFriends } from "@/apis/friendService";
+import defaultAavatar from "@/assets/images/default_avatar.jpg";
 
-const FriendProfile = () => {
-  const [loading, setLoading] = useState(true);
-
+const FriendProfile = ({ data }) => {
+  const [friends, setFriends] = useState([]);
   const { userInfo } = useContext(StoreContext);
+  const [avatar, setAvatar] = useState(defaultAavatar);
+  const userId = data?.userId;
   useEffect(() => {
-    // Giả lập fetch data mất 1s
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
+    const fetchFriends = async () => {
+      try {
+        const res = await getUserFriends(userId);
+        setFriends(res?.data?.userList || []);
+        setAvatar(res?.data.profilePicture || defaultAavatar);
+      } catch (error) {
+        console.log("Lỗi khi xử lý API fetchFriends: ", error);
+      }
+    };
+    fetchFriends();
+  }, [userId]);
 
-    return () => clearTimeout(timer);
-  }, []);
-  return loading ? (
-    <div className="text-center py-10">Đang tải dữ liệu người dùng...</div>
-  ) : (
-    <div className="min-h-screen bg-gray-100 px-4 xs:px-6 sm:px-8 md:px-12 lg:px-20 py-6">
-      <div className="max-w-full xs:max-w-screen-sm sm:max-w-screen-md md:max-w-4xl lg:max-w-6xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
+  return (
+    <div className="min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-12 py-10">
+      <div className="max-w-screen-xl mx-auto">
+        <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">
           Tất cả bạn bè
         </h2>
 
-        <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {friendsData.map((friend) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          {friends.map((friend) => (
             <div
-              key={friend.id}
-              className="bg-white shadow rounded-lg p-4 text-center"
+              key={friend.userId}
+              className="bg-white hover:shadow-lg transition-shadow duration-300 shadow rounded-xl p-5 text-center"
             >
-              <img
-                src={friend.avatar}
-                alt={friend.name}
-                className="w-24 h-24 rounded-full mx-auto mb-3 object-cover"
-              />
-              <h3 className="text-lg font-semibold">{friend.name}</h3>
-              <Link
-                to={`/user/profile/${friend.id}`}
-                className="mt-2 inline-block text-sm text-blue-500 hover:underline"
-              >
-                Xem trang cá nhân
+              <Link to={`/user/profile/${friend.userId}`}>
+                <img
+                  src={avatar}
+                  alt="Avatar"
+                  className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-blue-100"
+                />
+                <h3 className="text-base font-semibold text-gray-800 hover:text-blue-600 transition duration-200">
+                  {friend.firstName} {friend.lastName}
+                </h3>
               </Link>
             </div>
           ))}
         </div>
 
-        <div className="text-center mt-10">
+        <div className="text-center mt-12">
           <Link
-            to={`/user/profile/${userInfo?.userId}`}
-            className="text-blue-500 hover:underline"
+            to={`/user/profile/${userInfo?.data?.userId}`}
+            className="inline-block text-blue-600 hover:text-blue-800 transition duration-200 font-medium"
           >
             ← Quay lại trang cá nhân
           </Link>
@@ -78,6 +60,7 @@ const FriendProfile = () => {
       </div>
     </div>
   );
+  
 };
 
 export default FriendProfile;
