@@ -8,7 +8,7 @@ const OnlyHeader = ({ children }) => {
       </div>
 
       <div className="w-full lg:mx-[360px] flex justify-center mt-[100px]">
-        {children}
+        {children}  
       </div>
     </div>
   );

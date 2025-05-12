@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import FriendCard from "@/components/Friend/FriendCard";
 import Button from "@/components/Button/Button";
 import { ToastContext } from "@/contexts/ToastProvider";
-import { getUserFriends, unfriend } from "@/apis/friendService";
+import { getUserFriends } from "@/apis/friendService";
 import { StoreContext } from "@/contexts/StoreProvider";
-
+import { UnFriend } from "@/utils/FriendHelper";
 const Friends = () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,21 +29,15 @@ const Friends = () => {
     fetchFriends();
   }, [userInfo, toast]);
 
-  const handleRemoveFriend = async (friendId) => {
-    try {
-      const res = await unfriend(userInfo.data.userId, friendId);
-      if (res?.status === 200) {
-        toast.success("Đã hủy kết bạn thành công!");
-        setFriends((prev) =>
-          prev.filter((friend) => friend.userId !== friendId)
-        );
-      } else {
-        toast.error("Không thể hủy kết bạn. Vui lòng thử lại!");
-      }
-    } catch (error) {
-      toast.error("Hệ thống đang bảo trì! Vui lòng thử lại.");
-      console.log("Lỗi khi xử lý API RemoveFriend: ", error);
-    }
+  const handleUnFriend = (friendId) => {
+    UnFriend({
+      userId: userInfo.data.userId,
+      friendId: friendId,
+      updateData: (removedId) => {
+        setFriends((prev) => prev.filter((f) => f.userId !== removedId));
+      },
+      toast: toast,
+    });
   };
 
   return (
@@ -71,7 +65,7 @@ const Friends = () => {
               {friends?.map((friend) => {
                 return (
                   <FriendCard key={friend.userId} friend={friend}>
-                    <Button onClick={() => handleRemoveFriend(friend.userId)}>
+                    <Button onClick={() => handleUnFriend(friend.userId)}>
                       Hủy kết bạn
                     </Button>
                   </FriendCard>

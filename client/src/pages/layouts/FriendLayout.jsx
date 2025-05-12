@@ -39,9 +39,9 @@ const FriendPage = ({ children }) => {
               key={item.id}
               variant="ghost"
               className="flex w-full justify-start items-center gap-3 text-gray-700 p-3 rounded-lg hover:bg-gray-100"
-              style={({ isActive }) =>
-                isActive ? { backgroundColor: "#f0f2f5" } : {}
-              }
+              // style={({ isActive }) =>
+              //   isActive ? { backgroundColor: "#f0f2f5" } : {}
+              // }
             >
               {item.icon}
               <span className="pl-3">{item.name}</span>

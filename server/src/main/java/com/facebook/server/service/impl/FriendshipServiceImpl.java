@@ -191,19 +191,46 @@ public class FriendshipServiceImpl implements FriendshipService {
         Optional<Friendship> friendship;
 
         if (isRequestStatus) {
-            friendship = friendshipRepository.findByUser_UserIdAndFriends_UserId(user.getUserId(), friendId);
+            // Trường hợp kiểm tra xem đã là bạn bè chưa
+            friendship = friendshipRepository.findFriendshipBetween(user.getUserId(), friendId);
+            if (friendship.isPresent() && friendship.get().getStatus() == FriendshipStatus.FRIENDS) {
+                return new FriendshipStatusResponse(
+                        "Hai bạn đã là bạn bè! Hãy trò chuyện để hiểu nhau hơn.",
+                        user.getUserId(),
+                        friendId,
+                        "FRIENDS");
+            }
+
         } else {
+            // Trường hợp kiểm tra yêu cầu kết bạn đang chờ xác nhận
+            // TH1: kiểm tra xem mình đã gửi yêu cầu cho người ta chưa
+            friendship = friendshipRepository.findByFriendship(user.getUserId(), friendId, FriendshipStatus.PENDING);
+
+            if (friendship.isPresent()) {
+                return new FriendshipStatusResponse(
+                        "Yêu cầu kết bạn đang chờ xác nhận.",
+                        user.getUserId(),
+                        friendId,
+                        "PENDING");
+            }
+
+            // TH2: kiểm tra xem người ta gửi yêu cầu cho mình chưa
             friendship = friendshipRepository.findByFriendship(friendId, user.getUserId(), FriendshipStatus.PENDING);
+
+            if (friendship.isPresent()) {
+                return new FriendshipStatusResponse(
+                        "Người này đã gửi lời mời kết bạn. Hãy chấp nhận hoặc từ chối!",
+                        friendId,
+                        user.getUserId(),
+                        "PENDING");
+            }
         }
-
-        if (friendship.isEmpty()) {
-            return null;
-        }
-
-        FriendshipStatusResponse friendshipStatusResponse = new FriendshipStatusResponse();
-        friendshipStatusResponse.setStatus(friendship.get().getStatus().toString());
-
-        return friendshipStatusResponse;
+        // Nếu không tìm thấy bất kỳ mối quan hệ nào
+        return new FriendshipStatusResponse(
+                "Không tìm thấy mối quan hệ bạn bè. Hãy gửi lời mời để kết nối!",
+                user.getUserId(),
+                friendId,
+                null);
     }
 
     @Override

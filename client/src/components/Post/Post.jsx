@@ -2,37 +2,41 @@ import { useState } from "react";
 import { ThumbsUp, MessageCircle, Share, Send } from "lucide-react";
 import MyModal from "../Modal/MyModal";
 import PostContent from "../PostContent/PostContent";
+import { useComment } from "@/hooks/useComment";
+import { useLike } from "@/hooks/useLike";
 
 const Post = ({ data }) => {
   const [openModal, setOpenModal] = useState(false);
+  const [comments, setComments] = useState(null);
+
   const onCloseModal = () => setOpenModal(false);
 
-  const initStates = [
-    {
-      name: "Lê Phúc",
-      avatar:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-      value:
-        "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
-      time: "10 phút trước",
-    },
-    {
-      name: "Xuân Bảo",
-      avatar:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-      value: "Test comment",
-      time: "20 phút trước",
-    },
-    {
-      name: "Tấn Cảnh",
-      avatar:
-        "https://i.pinimg.com/736x/f8/dc/9a/f8dc9ac53d0fe48d2710c5c0057dc857.jpg",
-      value: "Test comment",
-      time: "10 phút trước",
-    },
-  ];
+  const { getAllCommentOfPost } = useComment();
+  const { putReaction } = useLike();
 
-  const [comments, setComments] = useState(initStates);
+  const { isLiked } = data || {};
+
+  const [liked, setLiked] = useState(isLiked);
+
+  const fetchAllComment = async () => {
+    const allComment = await getAllCommentOfPost(data?.postId);
+    if (allComment) {
+      setComments(allComment);
+    }
+  };
+
+  const fetchLikeOrUnlike = async () => {
+    try {
+      const res = await putReaction(data?.postId);
+      if (res) setLiked(!liked);
+    } catch (error) {
+      throw error;
+    }
+  };
+  const handeClickButtonComment = () => {
+    setOpenModal(true);
+    fetchAllComment();
+  };
 
   return (
     <>
@@ -40,6 +44,7 @@ const Post = ({ data }) => {
         open={openModal}
         setOpen={setOpenModal}
         onClose={onCloseModal}
+        postId={data?.postId}
         data={comments}
         setComments={setComments}
       >
@@ -57,11 +62,17 @@ const Post = ({ data }) => {
 
         {/* Action buttons */}
         <div className="flex justify-between text-sm font-medium text-zinc-600 dark:text-zinc-300">
-          <button className="flex items-center px-4 rounded py-2 hover:bg-gray-100 gap-2 cursor-pointer">
-            <ThumbsUp className="w-4 h-4" /> Thích
+          <button
+            onClick={fetchLikeOrUnlike}
+            className={`flex items-center px-4 rounded py-2 hover:bg-gray-100 gap-2 cursor-pointer ${
+              liked ? "text-blue-500 font-bold" : ""
+            }`}
+          >
+            <ThumbsUp className="w-4 h-4" strokeWidth={liked ? 3 : 2} />{" "}
+            <span>Thích</span>
           </button>
           <button
-            onClick={() => setOpenModal(true)}
+            onClick={handeClickButtonComment}
             className="flex items-center px-4 rounded py-2 hover:bg-gray-100 gap-2 cursor-pointer"
           >
             <MessageCircle className="w-4 h-4" /> Bình luận

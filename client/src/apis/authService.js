@@ -13,11 +13,20 @@ const getInfo = async () => {
 };
 
 // Hàm call api lấy danh sách bài post
-const getPosts = (userId) => axiosClient.get(`/post/${userId}`);
+const getPosts = (userId) => axiosClient.get(`/post/${userId}?pageSize=100`);
 
 const getProfileAnother = async (userId) => {
   const res = await axiosClient.get(`/user/profile/${userId}`);
   return res;
 };
 
-export { register, login, getInfo, getPosts, getProfileAnother };
+const getProfileDetail = (id) => axiosClient.get(`/user/profile/${id}`);
+
+export {
+  register,
+  login,
+  getInfo,
+  getPosts,
+  getProfileDetail,
+  getProfileAnother,
+};

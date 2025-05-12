@@ -1,17 +1,25 @@
 import { getPosts } from "@/apis/authService";
 import Post from "@/components/Post/Post";
+import { usePost } from "@/hooks/usePost";
 import { useEffect, useState } from "react";
 
 const Home = () => {
+  const { getAllPost } = usePost();
   const [posts, setPosts] = useState([]);
-  useEffect(() => {
-    const getNewFeeds = async () => {
-      const res = await getPosts();
-      if (res.status == 200 && res) {
+
+  const fetchAllPost = async () => {
+    try {
+      const res = await getAllPost();
+      if (res) {
         setPosts(res);
+        console.log(res);
       }
-    };
-    getNewFeeds();
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    fetchAllPost();
   }, []);
   return (
     <div className="max-w-xl w-full px-4">

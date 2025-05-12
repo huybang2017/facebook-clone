@@ -24,6 +24,7 @@ const MyModal = ({
   children,
   type = "post",
   data,
+  postId,
   setComments,
 }) => {
   return (
@@ -44,7 +45,11 @@ const MyModal = ({
             case "post":
               return (
                 <div className="border-t px-4 py-2 bg-white sticky bottom-0">
-                  <CommentInput comments={data} setComments={setComments} />
+                  <CommentInput
+                    postId={postId}
+                    comments={data}
+                    setComments={setComments}
+                  />
                 </div>
               );
             default:
