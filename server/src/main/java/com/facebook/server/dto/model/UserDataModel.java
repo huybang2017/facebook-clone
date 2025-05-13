@@ -17,4 +17,5 @@ public class UserDataModel {
     private String profilePicture;
     private String firstName;
     private String lastName;
+    private Boolean baned;
 }

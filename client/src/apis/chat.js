@@ -2,7 +2,7 @@ import axiosClient from "./axiosClient";
 
 export const chatUser = async (friendId) => {
   const res = await axiosClient.post(`/chat/${friendId}`);
-  return res;
+  return res.data;
 };
 
 export const fetchAllUserChats = async (userId, pageNo = 0, pageSize = 10) => {
@@ -26,11 +26,15 @@ export const uploadGroupChatPhoto = async (chatId, file) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await axiosClient.post(`/chat/group/upload/image/${chatId}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const res = await axiosClient.post(
+    `/chat/group/upload/image/${chatId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
   return res;
 };
 
@@ -45,6 +49,8 @@ export const addUserToGroupChat = async (chatId, data) => {
 };
 
 export const leaveGroupChat = async (chatId, userId, leaveReason) => {
-  const res = await axiosClient.post(`/chat/group/leave/${chatId}/${userId}/${leaveReason}`);
+  const res = await axiosClient.post(
+    `/chat/group/leave/${chatId}/${userId}/${leaveReason}`
+  );
   return res;
 };

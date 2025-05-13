@@ -7,6 +7,7 @@ import useFetchAllUserChats from "@/hooks/useFetchAllUserChats";
 import { useChatContext } from "@/contexts/ChatProvider";
 import { useQueries } from "@tanstack/react-query";
 import { getLastMessage } from "@/apis/message";
+import defaultAvatar from "@/assets/images/default_avatar.jpg";
 
 export default function MessageDropdown() {
   const { userInfo } = useContext(StoreContext);
@@ -18,7 +19,8 @@ export default function MessageDropdown() {
     userId: userInfo?.data.userId,
   });
 
-  const chatModels = allMessages?.pages.flatMap((page) => page.chatModels) || [];
+  const chatModels =
+    allMessages?.pages.flatMap((page) => page.chatModels) || [];
 
   const lastMessagesQuery = useQueries({
     queries: chatModels.map((chat) => ({
@@ -75,7 +77,7 @@ export default function MessageDropdown() {
                 }}
               >
                 <img
-                  src={msg.privateChatUser?.profilePicture}
+                  src={msg.privateChatUser?.profilePicture || defaultAvatar}
                   alt="Avatar"
                   className="w-10 h-10 rounded-full object-cover"
                 />
@@ -84,25 +86,32 @@ export default function MessageDropdown() {
                     {`${msg.privateChatUser?.firstName} ${msg.privateChatUser?.lastName}`}
                   </div>
                   <div className="text-sm text-gray-600 truncate max-w-[200px]">
-                    {msg.lastSocketMsg?.message || msg.lastApiMsg?.message || "Chưa có tin nhắn"}
+                    {msg.lastSocketMsg?.message ||
+                      msg.lastApiMsg?.message ||
+                      "Chưa có tin nhắn"}
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
-                    {msg.lastSocketMsg?.timestamp || msg.lastApiMsg?.timestamp || "Vừa mới tạo đoạn chat"}
+                    {msg.lastSocketMsg?.timestamp ||
+                      msg.lastApiMsg?.timestamp ||
+                      "Vừa mới tạo đoạn chat"}
                   </div>
                 </div>
               </li>
             ))
           ) : (
-            <div className="p-4 text-gray-400 text-sm text-center">Không có tin nhắn mới</div>
+            <div className="p-4 text-gray-400 text-sm text-center">
+              Không có tin nhắn mới
+            </div>
           )}
         </ul>
       </DropdownModal>
-
-      <MessengerPopup
-        chat={selectedChat}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      />
+      {selectedChat && (
+        <MessengerPopup
+          chat={selectedChat}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
+      )}
     </>
   );
 }

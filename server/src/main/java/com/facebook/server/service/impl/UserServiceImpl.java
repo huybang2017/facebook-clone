@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -68,6 +69,15 @@ public class UserServiceImpl implements UserService {
     } catch (AuthenticationException e) {
       throw new BadCredentialsException(StringUtil.INVALID_CREDENTIALS);
     }
+  }
+
+  @Override
+  public UserListResponse getAllUsers(int pageNo, int pageSize) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize);
+    Page<User> users = userRepository.findAll(pageable);
+    PageResponse pageResponse = this.getUserPagination(users);
+    List<UserDataModel> userDataModels = this.getUserDataModels(users);
+    return new UserListResponse(userDataModels, pageResponse);
   }
 
   @Override
@@ -214,6 +224,7 @@ public class UserServiceImpl implements UserService {
       userDataModel.setFirstName(user.getFirstName());
       userDataModel.setLastName(user.getLastName());
       userDataModel.setProfilePicture(user.getProfilePicture());
+      userDataModel.setBaned(user.getBaned());
       userDataModels.add(userDataModel);
     }
     return userDataModels;

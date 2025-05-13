@@ -37,4 +37,5 @@ public interface UserService {
 
   User getCurrentAuthenticatedUser();
 
+  UserListResponse getAllUsers(int pageNo, int pageSize);
 }

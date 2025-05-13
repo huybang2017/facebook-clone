@@ -3,38 +3,24 @@ import useFetchChatMessages from "@/hooks/useFetchChatMessages";
 import useSendMessage from "@/hooks/useSendMessage";
 import { useQueryClient } from "@tanstack/react-query";
 import { Camera, Phone, SendHorizontal, Video, X } from "lucide-react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useState } from "react";
+import defaultAvatar from "@/assets/images/default_avatar.jpg";
+import { useNavigate } from "react-router-dom";
 
 const MessengerPopup = ({ chat, isOpen, setIsOpen }) => {
+  console.log(isOpen);
+
   const [input, setInput] = useState("");
   const { userInfo } = useContext(StoreContext);
   const sendMessageMutation = useSendMessage();
   const queryClient = useQueryClient();
-  const messagesEndRef = useRef(null);
-  const messagesContainerRef = useRef(null);
+  const navigate = useNavigate();
+  console.log(chat);
 
-  const { data, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage } =
-    useFetchChatMessages({ chatId: chat?.chatId });
-  console.log(data);
+  const { data } = useFetchChatMessages({ chatId: chat?.chatId });
+  console.log(data?.pages);
 
   const messages = data?.pages?.flatMap((page) => page.messageModels) || [];
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [data]);
-
-  const handleScroll = () => {
-    const container = messagesContainerRef.current;
-    if (
-      container?.scrollTop === 0 &&
-      hasPreviousPage &&
-      !isFetchingPreviousPage
-    ) {
-      fetchPreviousPage();
-    }
-  };
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
@@ -72,17 +58,28 @@ const MessengerPopup = ({ chat, isOpen, setIsOpen }) => {
     setIsOpen(!isOpen);
   };
 
+  const handleGoToProfile = () => {
+    if (chat?.privateChatUser?.userId) {
+      navigate(`/user/profile/${chat.privateChatUser.userId}`);
+    }
+  };
+
+  const handleGoToVideoCall = () => {
+    const videoCallUrl = `/video-call/${chat?.privateChatUser?.userId}`;
+    window.open(videoCallUrl, "_blank");
+  };
+
   return (
     isOpen && (
-      <div className="fixed bottom-0 right-10 bg-white shadow-xl rounded-t-lg flex flex-col overflow-hidden border border-gray-300 w-[350px] h-[500px]">
+      <div className="fixed bottom-0 right-10 bg-white shadow-xl rounded-t-lg flex flex-col overflow-hidden border border-gray-300 w-[350px] h-[500px] z-[100000000]">
         {/* Header */}
         <div className="flex items-center justify-between p-3 bg-[#f0f0f0] text-black rounded-t-lg">
-          <div className="flex items-center gap-2">
+          <div
+            onClick={handleGoToProfile}
+            className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-1 rounded-md transition"
+          >
             <img
-              src={
-                chat?.privateChatUser?.profilePicture ||
-                "https://via.placeholder.com/40"
-              }
+              src={chat?.privateChatUser?.profilePicture || defaultAvatar}
               alt="User Avatar"
               className="w-10 h-10 rounded-full"
             />
@@ -94,10 +91,18 @@ const MessengerPopup = ({ chat, isOpen, setIsOpen }) => {
             </div>
           </div>
           <div className="flex gap-3">
-            <button title="Call" className="hover:text-blue-500">
+            <button
+              onClick={handleGoToVideoCall}
+              title="Call"
+              className="hover:text-blue-500"
+            >
               <Phone />
             </button>
-            <button title="Video" className="hover:text-blue-500">
+            <button
+              onClick={handleGoToVideoCall}
+              title="Video"
+              className="hover:text-blue-500"
+            >
               <Video />
             </button>
             <button
@@ -111,36 +116,35 @@ const MessengerPopup = ({ chat, isOpen, setIsOpen }) => {
         </div>
 
         {/* Messages */}
-        <div
-          ref={messagesContainerRef}
-          onScroll={handleScroll}
-          className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#fafafa] text-black text-sm"
-        >
-          {messages.map((msg) => (
-            <div
-              key={msg.messageId}
-              className={`max-w-[80%] px-4 py-2 rounded-lg break-words ${
-                userInfo?.data.userId === msg.sender.userId
-                  ? "bg-blue-500 ml-auto text-white"
-                  : "bg-gray-200 mr-auto text-black"
-              }`}
-            >
-              <p>{msg.message}</p>
-              <span
-                className={`text-xs mt-1 block ${
+        <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#fafafa] text-black text-sm">
+          {messages.length > 0 ? (
+            messages?.map((msg) => (
+              <div
+                key={msg.messageId}
+                className={`max-w-[80%] px-4 py-2 rounded-lg break-words ${
                   userInfo?.data.userId === msg.sender.userId
-                    ? "text-white"
-                    : "text-gray-500"
+                    ? "bg-blue-500 ml-auto text-white"
+                    : "bg-gray-200 mr-auto text-black"
                 }`}
               >
-                {new Date(msg.timestamp).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
+                <p>{msg.message}</p>
+                <span
+                  className={`text-xs mt-1 block ${
+                    userInfo?.data.userId === msg.sender.userId
+                      ? "text-white"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {new Date(msg.timestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-gray-500">Bắt đầu nhắn tin...</div>
+          )}
         </div>
 
         {/* Input */}

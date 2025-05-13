@@ -7,12 +7,16 @@ import com.facebook.server.dto.response.BanResponse;
 import com.facebook.server.dto.response.ErrorResponse;
 import com.facebook.server.dto.response.LoginResponse;
 import com.facebook.server.dto.response.UserListResponse;
+import com.facebook.server.entity.User;
 import com.facebook.server.entity.constants.ImageType;
 import com.facebook.server.service.PostImageService;
 import com.facebook.server.service.UserService;
 import com.facebook.server.utils.StringUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -59,6 +63,13 @@ public class UserController {
   @GetMapping
   public UserModel getCurrentUserInfo() {
     return userService.getCurrentUserInfo();
+  }
+
+  @GetMapping("/users")
+  public UserListResponse getAllUsers(
+      @RequestParam(defaultValue = "0") int pageNo,
+      @RequestParam(defaultValue = "10") int pageSize) {
+    return userService.getAllUsers(pageNo, pageSize);
   }
 
   @GetMapping("/profile/{userId}")

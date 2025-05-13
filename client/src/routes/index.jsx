@@ -13,6 +13,13 @@ import ProfilePage from "@/pages/layouts/ProfilePage";
 import PostProfile from "@/pages/Profiles/PostProfile";
 import ImageProfile from "@/pages/Profiles/ImageProfile";
 import FriendProfile from "@/pages/Profiles/FriendProfile";
+import VideoCallPage from "@/pages/VideoCall/VideoCallPage";
+import PostTable from "@/components/admin/PostTable";
+import Footer from "@/components/admin/AdminFooter";
+import LayoutPost from "@/pages/admin/LayoutPost";
+import LayoutAdmin from "@/pages/admin/LayoutAdmin";
+import UserTable from "@/components/admin/UserTable";
+import LayoutUser from "@/pages/admin/LayoutUser";
 
 const publicRoute = [
   { path: "/login", element: Login, layout: null },
@@ -35,7 +42,11 @@ const privateRoute = [
   { path: "/*", element: NotFound, layout: null },
   { path: "/user/profile/:id", element: PostProfile, layout: ProfilePage },
   { path: "/profile-photos/:id", element: ImageProfile, layout: ProfilePage },
-  {path: "/profile-friends/:id", element: FriendProfile, layout: ProfilePage },
+  { path: "/profile-friends/:id", element: FriendProfile, layout: ProfilePage },
+  { path: "/video-call/:friendId", element: VideoCallPage, layout: null },
+  { path: "/admin", element: Footer, layout: LayoutAdmin },
+  { path: "/admin/post", element: PostTable, layout: LayoutPost },
+  { path: "/admin/user", element: UserTable, layout: LayoutUser },
 ];
 
 export { privateRoute, publicRoute };

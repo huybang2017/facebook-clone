@@ -8,7 +8,7 @@ export const sendMessage = async (messageData) => {
 export const fetchAllChatMessages = async (
   chatId,
   pageNo = 0,
-  pageSize = 10
+  pageSize = 100000
 ) => {
   const res = await axiosClient.get(`/chat/message/${chatId}`, {
     params: { pageNo, pageSize },
