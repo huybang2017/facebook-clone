@@ -17,6 +17,7 @@ const UserAction = () => {
   const onCloseModal = () => setOpenModal(false);
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     navigate("/login");
   };
 
@@ -76,7 +77,7 @@ const UserAction = () => {
                 </span>
               </div>
               <button
-                onClick={() => setOpenModal(true)}
+                onClick={handleLogout}
                 className="w-full flex items-center p-2 my-2 hover:bg-gray-100 rounded-md transition ease-in duration-100 cursor-pointer"
               >
                 <div className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-200">

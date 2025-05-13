@@ -20,6 +20,9 @@ const getProfileAnother = async (userId) => {
   return res;
 };
 
+const searchUsers = (keyword) =>
+  axiosClient.get(`/user/search?keyword=${keyword}`);
+
 const getProfileDetail = (id) => axiosClient.get(`/user/profile/${id}`);
 
 export {
@@ -29,4 +32,5 @@ export {
   getPosts,
   getProfileDetail,
   getProfileAnother,
+  searchUsers,
 };

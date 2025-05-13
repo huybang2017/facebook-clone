@@ -18,7 +18,11 @@ export function LoginForm({ className, ...props }) {
         localStorage.setItem("token", res.accessToken);
         localStorage.setItem("role", res.role);
         toast.success("Đăng nhập thành công");
-        setTimeout(() => (window.location.href = "/"), 2000);
+        if (res.role === "ADMIN") {
+          setTimeout(() => (window.location.href = "/admin"), 2000);
+        } else {
+          setTimeout(() => (window.location.href = "/"), 2000);
+        }
       }
     } catch (error) {
       if (error) {

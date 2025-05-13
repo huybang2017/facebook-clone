@@ -1,7 +1,13 @@
+import { LogOutIcon } from "lucide-react";
 import { FaUser, FaCog } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const AdminSidebar = () => {
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
   return (
     <div>
       <aside className="w-[250px] bg-gray-800 text-white h-screen fixed top-0 left-0 shadow-md p-4">
@@ -22,6 +28,14 @@ const AdminSidebar = () => {
           >
             <FaCog />
             <span>User</span>
+          </Link>
+
+          <Link
+            onClick={handleLogout}
+            className="flex items-center gap-2 hover:text-blue-400"
+          >
+            <LogOutIcon />
+            <span>Logout</span>
           </Link>
         </div>
       </aside>

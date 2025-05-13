@@ -1,4 +1,5 @@
-import { getPosts } from "@/apis/authService";
+import { useEffect, useState } from "react";
+import IncomingCallScreen from "@/components/Message/IncomingCallScreen";
 import Post from "@/components/Post/Post";
 import { useLoading } from "@/hooks/useLoading";
 import { usePost } from "@/hooks/usePost";
@@ -6,6 +7,9 @@ import { usePost } from "@/hooks/usePost";
 const Home = () => {
   const { getAllPost } = usePost();
   const [posts, setPosts] = useState([]);
+  const [isCallActive, setIsCallActive] = useState(false);
+
+  const { isLoading, loading, loaded } = useLoading();
 
   const fetchAllPost = async () => {
     loading();
@@ -16,6 +20,8 @@ const Home = () => {
         loaded();
       }
     } catch (error) {
+      loaded();
+      console.log(error);
       throw error;
     }
   };
