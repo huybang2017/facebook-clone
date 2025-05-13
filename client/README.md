@@ -1,12 +1,12 @@
-# React + Vite
+## Cài đặt - Từ thư mục facebook-clone
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+1. cd client
+2. npm i
+3. npm start
 
-Currently, two official plugins are available:
+## Các bug khi gặp phải
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Đang lỗi comment đánh dấu là tác giá post
+2. Comment trong modal nhưng số lượng comment (count) không được cập nhật
+3. Khi một bài viết chưa có comment nào sau đó thực hiện viết comment đầu tiên thì gặp lỗi
+4. Giao diện Swiper khi có nhiều ảnh/video còn xấu

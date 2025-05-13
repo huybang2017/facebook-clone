@@ -1,6 +1,7 @@
 import { Box, Modal } from "@mui/material";
 import CommentInput from "../CommentInput/CommentInput";
-import { CircleX, X } from "lucide-react";
+import { X } from "lucide-react";
+import SimpleBar from "simplebar-react";
 
 const style = {
   position: "absolute",
@@ -30,27 +31,37 @@ const MyModal = ({
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
-        <div className="relative max-h-[calc(80vh-64px)] overflow-y-auto px-4 pt-4 pb-2">
-          <button
-            onClick={() => setOpen(false)}
-            className="absolute top-0 right-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 group hover:bg-gray-200 cursor-pointer"
-          >
-            <X className="w-6 h-6 text-gray-400 group-hover:text-gray-500" />
-          </button>
-          {children}
-        </div>
+        <button
+          onClick={() => setOpen(false)}
+          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full group cursor-pointer z-1000"
+        >
+          <X className="w-6 h-6 text-gray-300 group-hover:text-gray-500" />
+        </button>
+        <SimpleBar
+          style={{
+            maxHeight: 500,
+            height: type == "post" ? 450 : "max-content",
+            padding: "0 20px",
+            marginBottom: 20,
+            marginTop: 24,
+          }}
+        >
+          <div className="relative max-h-[calc(80vh-64px)] px-4 pb-2">
+            {children}
+          </div>
+        </SimpleBar>
 
         {(() => {
           switch (type) {
             case "post":
               return (
-                <div className="border-t px-4 py-2 bg-white sticky bottom-0">
+                <dv cilassName="border-t px-4 py-2 bg-white sticky bottom-0">
                   <CommentInput
                     postId={postId}
                     comments={data}
                     setComments={setComments}
                   />
-                </div>
+                </dv>
               );
             default:
               return <></>;

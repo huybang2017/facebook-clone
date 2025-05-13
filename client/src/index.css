@@ -3,6 +3,7 @@
 @plugin "daisyui";
 
 @plugin "tailwindcss-animate";
+@import "simplebar-react/dist/simplebar.min.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -120,4 +121,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+button {
+  cursor: pointer;
 }

@@ -31,8 +31,8 @@ export const usePost = () => {
 
               return {
                 ...post,
-                postLikeCount,
                 isLiked,
+                postLikeCount,
                 postCommentCount,
               };
             } catch (err) {
