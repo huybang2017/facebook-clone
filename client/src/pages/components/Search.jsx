@@ -3,13 +3,23 @@ import Tippy from "@tippyjs/react/headless";
 import "tippy.js/dist/tippy.css";
 import TippyWrapper from "@/components/Wrapper/TippyWrapper";
 import AccountItem from "@/components/AccountItem/AccountItem";
-
+import { searchUsers } from "@/apis/authService";
 const Search = () => {
   const [searchValue, setSearchValue] = useState("");
   const [result, setResult] = useState([]);
   const [showSearchResult, setShowSearchResult] = useState(true);
   const hide = () => {
     setShowSearchResult(false);
+  };
+
+  const handleSearch = async (keyword) => {
+    try {
+      const res = await searchUsers(keyword);
+      console.log(res);
+      setResult(res?.data?.userList || []);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="relative">
@@ -24,10 +34,9 @@ const Search = () => {
             className="w-[280px] max-h-[calc(100vh-80px)] rounded-lg bg-white shadow-sm"
           >
             <TippyWrapper>
-              <AccountItem />
-              <AccountItem />
-              <AccountItem />
-              <AccountItem />
+              {result?.map((user) => (
+                <AccountItem key={user.userId} data={user} />
+              ))}
             </TippyWrapper>
           </div>
         )}
@@ -38,8 +47,20 @@ const Search = () => {
           type="text"
           placeholder="Search..."
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onFocus={() => setResult([1, 2])}
+          onChange={(e) => {
+            const keyword = e.target.value;
+            setSearchValue(keyword);
+            if (keyword.trim() !== "") {
+              setShowSearchResult(true);
+              handleSearch(keyword);
+            } else {
+              setShowSearchResult(false);
+              setResult([]);
+            }
+          }}
+          onBlur={() => {
+            setSearchValue("");
+          }}
         />
       </Tippy>
     </div>

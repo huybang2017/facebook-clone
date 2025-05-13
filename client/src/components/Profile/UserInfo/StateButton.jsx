@@ -184,7 +184,8 @@ const StateButton = ({ setModalOpen, isMyProfile, data }) => {
               onClick={() => handleDeleteRequest()}
               className="bg-blue-600 text-white hover:bg-blue-700"
             />
-          ) : isAcceptRequest ? (
+              ) : isAcceptRequest ? (
+             // Đã nhận lời mời     
             <>
               <EditButton
                 icon={<UserRoundPlus size={18} />}

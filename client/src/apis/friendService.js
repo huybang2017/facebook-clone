@@ -47,6 +47,7 @@ const getFriendCount = (userId) => axiosClient.get(`/friends/count/${userId}`);
 const getFriendSuggestions = (userId) =>
   axiosClient.get(`/friends/suggestions/${userId}`);
 
+
 export {
   getProfileUser,
   addFriendRequest,
